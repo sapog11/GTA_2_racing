@@ -86,6 +86,13 @@ h1,h2,h3{margin:0}
 .startui{position:relative;width:100%;display:flex;flex-direction:column;align-items:center;padding:24px 16px max(22px,env(safe-area-inset-bottom));background:linear-gradient(180deg,rgba(0,0,0,0),rgba(0,0,0,.85) 35%)}
 .startui .logo .a{font-size:clamp(40px,11vw,80px)}.startui .logo .b{font-size:clamp(18px,4.6vw,30px)}
 #scr-start.full .startui{opacity:0;pointer-events:none;transition:opacity .4s}
+#scr-menu{align-items:flex-start;justify-content:flex-start;padding-left:max(14px,env(safe-area-inset-left));background:linear-gradient(100deg,rgba(5,6,12,.82) 0,rgba(5,6,12,.45) 30%,rgba(5,6,12,0) 48%)}
+#scr-menu .logo{text-align:left;margin:0 0 2px}
+#scr-menu .logo .a{font-size:clamp(34px,9vw,60px)}#scr-menu .logo .b{font-size:clamp(12px,3.2vw,20px);letter-spacing:3px}
+#scr-menu .money{justify-content:flex-start;font-size:11px;gap:4px;margin:2px 0 4px;max-width:44vw}#scr-menu .money span{padding:2px 6px}
+#scr-menu .btn{min-width:0;width:min(170px,40vw);font-size:18px;padding:4px 12px;margin:3px 0;text-align:left;box-shadow:3px 3px 0 #111}
+#scr-menu .row{justify-content:flex-start;gap:6px;margin-top:4px}#scr-menu .row .btn{width:auto;font-size:13px;padding:3px 8px}
+#scr-menu .note{display:none}
 /* cinematic promo */
 #cine{position:fixed;inset:0;z-index:3;pointer-events:none;overflow:hidden;display:none}
 #cine .ci{position:absolute;inset:-6%;background-size:cover;background-position:center;opacity:0;transition:opacity .45s}
@@ -183,7 +190,7 @@ body.drag #kL,body.drag #kR{display:none}
 <div id="promoTxt"></div>
 <button id="skip" class="btn sm dark">Přeskočit ▸</button>
 
-<div id="scr-menu" class="scr dim" style="justify-content:center">
+<div id="scr-menu" class="scr">
   <div class="logo"><span class="a">ÚSTÍ</span><span class="b">MĚSTO ANDĚLŮ</span></div>
   <div class="money" id="menuMoney"></div>
   <button class="btn" data-go="play">HRÁT</button>
@@ -625,13 +632,13 @@ function updateWorld(w,dt,pctl){
       if(d<100&&p.flee<=0){const vx=c.vx/sp,vy=c.vy/sp;if((dx*vx+dy*vy)/d>.55){const side=(-vy*dx+vx*dy)>0?1:-1;p.fdx=-vy*side;p.fdy=vx*side;p.flee=.6;if(R()<.4&&!p.say)say(p,LINES.hit,1.6)}}}
     if(p.flee>0){p.flee-=dt;p.x+=p.fdx*110*dt;p.y+=p.fdy*110*dt;p.a=Math.atan2(p.fdy,p.fdx);p.walk+=dt*16;continue}
     if(p.type==='fight'){if(p.mate){p.a=Math.atan2(p.mate.y-p.y,p.mate.x-p.x);p.punch=(Math.sin(w.t*7+(p.x%7))>.6)?1:0;p.walk+=dt*3;if(p.sayT<0){p.sayT=rr(2.5,5);say(p,LINES.fight,1.8)}}else{p.type='walker';p.sp=34}continue}
-    if(p.type==='girl'||p.type==='smoker'){p.walk+=dt*1.2;if(p.sayT<0){p.sayT=rr(6,12);if(R()<.6)say(p,p.type==='girl'?LINES.girl:LINES.walker,2)}continue}
+    if(p.type==='girl'||p.type==='smoker'){p.walk+=dt*1.2;if(p.sayT<0){p.sayT=w.chatty?rr(3,7):rr(6,12);if(R()<.6)say(p,p.type==='girl'?LINES.girl:LINES.walker,2)}continue}
     let sp=p.sp;if(p.type==='drunk'){p.wob+=dt*2.2;sp*=.7+.3*Math.sin(p.wob*1.7)}
     const nx=p.x+p.dx*12,ny=p.y+p.dy*12;
     if(!isWalk(tileAt(Math.floor(nx/T),Math.floor(ny/T)))||R()<.002){const opts=[[1,0],[-1,0],[0,1],[0,-1]].filter(d=>isWalk(tileAt(Math.floor((p.x+d[0]*14)/T),Math.floor((p.y+d[1]*14)/T))));const nr=opts.filter(d=>!(d[0]===-p.dx&&d[1]===-p.dy));const q=pick(nr.length?nr:opts.length?opts:[[-p.dx,-p.dy]]);p.dx=q[0];p.dy=q[1]}
     const wob=p.type==='drunk'?Math.sin(p.wob*3)*.6:0;
     p.x+=(p.dx*sp+(p.dy?wob*sp:0))*dt;p.y+=(p.dy*sp+(p.dx?wob*sp:0))*dt;p.a=Math.atan2(p.dy,p.dx)+wob*.5;p.walk+=dt*sp*.25;
-    if(p.sayT<0){p.sayT=rr(5,12);if(R()<.5)say(p,LINES[p.type]||LINES.walker)}}
+    if(p.sayT<0){p.sayT=w.chatty?rr(2.5,6):rr(5,12);if(R()<(w.chatty?.8:.5))say(p,LINES[p.type]||LINES.walker,w.chatty?3:2.2)}}
   // civs
   if(w.civMax){let n=0;for(let i=w.cars.length-1;i>=0;i--){const c=w.cars[i];if(c.kind!=='civ')continue;n++;const d=Math.hypot(c.x-w.cam.x,c.y-w.cam.y);if(d>1500||(c.wreck>6&&d>500)){w.cars.splice(i,1);n--}}
     if(n<w.civMax&&R()<.05)spawnCiv(w)}
@@ -791,7 +798,7 @@ function render(c2,w,vw,vh,cam,Z,opts){
   c2.restore();
   // speech bubbles
   c2.font='600 12px Oswald, sans-serif';c2.textAlign='center';c2.textBaseline='middle';
-  for(const p of w.cars.concat(w.peds)){if(!p.say)continue;const X=(p.x-cam.x)*Z+vw/2,Y=(p.y-cam.y)*Z+vh/2-18;if(X<-80||X>vw+80||Y<-40||Y>vh+40)continue;const tw=c2.measureText(p.say).width+12;c2.fillStyle='rgba(255,255,255,.95)';rrect(c2,X-tw/2,Y-11,tw,20,8);c2.fill();c2.beginPath();c2.moveTo(X-4,Y+8);c2.lineTo(X,Y+15);c2.lineTo(X+4,Y+8);c2.fill();c2.fillStyle='#111';c2.fillText(p.say,X,Y)}
+  for(const p of w.cars.concat(w.peds)){if(!p.say)continue;const X=(p.x-cam.x)*Z+vw/2,Y=(p.y-cam.y)*Z+vh/2-18;if(X<-80||X>vw+80||Y<-40||Y>vh+40)continue;const tw=c2.measureText(p.say).width+12,BX2=clamp(X,tw/2+4,vw-tw/2-4);c2.fillStyle='rgba(255,255,255,.95)';rrect(c2,BX2-tw/2,Y-11,tw,20,8);c2.fill();c2.beginPath();c2.moveTo(X-4,Y+8);c2.lineTo(X,Y+15);c2.lineTo(X+4,Y+8);c2.fill();c2.fillStyle='#111';c2.fillText(p.say,BX2,Y)}
   // rain
   if(w.rain){c2.strokeStyle='rgba(170,195,230,.33)';c2.lineWidth=1;c2.beginPath();const n=isTouch?110:160;for(let i=0;i<n;i++){const d=rainDrops[i];const y=((d.y+t*1.6*d.s)%1)*(vh+60)-30,x=((d.x+t*.25*d.s)%1)*(vw+60)-30;c2.moveTo(x,y);c2.lineTo(x-5*d.s,y-18*d.s)}c2.stroke();
     c2.strokeStyle='rgba(170,195,230,.25)';for(let i=0;i<10;i++){const x=R()*vw,y=R()*vh;c2.beginPath();c2.ellipse(x,y,4,1.6,0,0,7);c2.stroke()}}
@@ -808,7 +815,7 @@ function baseZoom(){return clamp(Math.min(VW,VH)/400,.8,1.6)}
 
 /* ---------------- GAME STATE ---------------- */
 const G={mode:'start',world:null,level:null,keys:{},cam:{x:IX(2),y:IX(6)}};
-function ambientWorld(){const w=newWorld({rain:true,dark:.8,civMax:9,pedMax:30});w.cam={x:IX(2)+150,y:IX(24)};for(let i=0;i<5;i++)spawnCiv(w);for(let i=0;i<24;i++)spawnPed(w,60,700);return w}
+function ambientWorld(){const w=newWorld({rain:true,dark:.74,civMax:9,pedMax:36,chatty:true});w.cam={x:IX(2)+150,y:IX(24)};for(let i=0;i<5;i++)spawnCiv(w);for(let i=0;i<24;i++)spawnPed(w,60,700);return w}
 
 /* ---------------- PROMO ---------------- */
 const ART=['keyart','street','heist','bridge','racestart','lucie','marek','kaja'];
@@ -867,7 +874,11 @@ function hideAll(){for(const s of screens)$(s).classList.remove('on');$('hud').c
 function show(id){hideAll();$(id).classList.add('on');$(id).scrollTop=0}
 function moneyHTML(){return`<span>RESPEKT <b>${SAVE.resp}</b></span><span>PRACHY <b>${SAVE.cash.toLocaleString('cs-CZ')} Kč</b></span>`}
 function ensureAmbient(){if(!G.world||G.mode==='race'||G.mode==='result'){G.world=ambientWorld()}G.mode='ambient'}
-function showMenu(){ensureAmbient();$('menuMoney').innerHTML=moneyHTML();$('bMute').textContent=SAVE.mute?'🔇 Zvuk':'🔊 Zvuk';show('scr-menu');Snd.startMusic(true)}
+function menuStage(){const w=G.world;if(!w)return;const sx=IX(2)+T*1.6,sy=IX(24)+T*1.45;w.peds.length=0;
+  const f1=makePed('fight',sx+T*2,sy),f2=makePed('fight',sx+T*2+16,sy);f1.mate=f2;f2.mate=f1;f1.sayT=.5;f2.sayT=2;w.peds.push(f1,f2);
+  const add=(t,x,dy,st)=>{const q=makePed(t,x,sy+(dy||0));q.sayT=st;w.peds.push(q)};add('drunk',sx+T*3.6,2,1.2);add('drunk',sx+T*.6,-3,3);add('girl',sx+T*4.4,-4,2.2);add('girl',sx+T*4.75,4,4);add('smoker',sx+T*1.2,-6,1.6);add('walker',sx+T*5.5,0,3.5);add('worker',sx-T*.5,0,5);
+  for(let k=0;k<10;k++)spawnPed(w,150,600);w.stage={x:sx+T*3,y:sy}}
+function showMenu(){ensureAmbient();$('menuMoney').innerHTML=moneyHTML();menuStage();$('bMute').textContent=SAVE.mute?'🔇 Zvuk':'🔊 Zvuk';show('scr-menu');Snd.startMusic(true)}
 function topBar(title,back){return`<div class="top"><button class="btn sm dark" data-back="${back||'menu'}">◂ Zpět</button><h2>${title}</h2><div style="width:60px"></div></div><div class="money">${moneyHTML()}</div>`}
 function showHeroes(next){const el=$('scr-heroes');let h=topBar('POSTAVY')+`<p class="tag" style="margin:0 0 10px">Jedete spolu. Vyber, za koho hraješ.</p><div class="cards">`;
   for(const k of['lucie','marek']){const H=HEROES[k];h+=`<div class="card ${SAVE.hero===k?'sel':''}"><div class="portrait"><img src="art/${k}.jpg" alt="${H.name}"></div><div class="role">${H.role}</div><h3>${H.name}</h3><p>${H.desc}</p><p style="color:#ffcc1a">★ ${H.perk}</p><button class="btn ${k==='lucie'?'pink':''}" data-hero="${k}">${SAVE.hero===k?'VYBRÁNO':'HRÁT ZA '+(k==='lucie'?'LUCII':'MARKA')}</button></div>`}
@@ -1153,7 +1164,7 @@ function frame(now){const dt=Math.min(.033,(now-last)/1000);last=now;
   else if(G.mode==='roam'){updateRoam(dt)}
   else if(G.mode==='ambient'||G.mode==='result'||G.mode==='paused'){const w=G.world;if(w){if(G.mode==='ambient'){updateWorld(w,dt,{});
       if(!amb.tgt||!w.cars.includes(amb.tgt)){amb.tgt=w.cars.find(c=>c.kind==='civ')||null}
-      if(amb.tgt){w.cam.x=lerp(w.cam.x,amb.tgt.x,dt*.8);w.cam.y=lerp(w.cam.y,amb.tgt.y,dt*.8)}w.zoom=baseZoom()*.95}}}
+      const Zm=baseZoom()*1.15;if($('scr-menu').classList.contains('on')&&w.stage){const tx=w.stage.x-VW*.17/Zm+Math.sin(w.t*.15)*30,ty=w.stage.y-VH*.14/Zm;if(Math.hypot(w.cam.x-tx,w.cam.y-ty)>900){w.cam.x=tx;w.cam.y=ty}w.cam.x=lerp(w.cam.x,tx,dt*1.5);w.cam.y=lerp(w.cam.y,ty,dt*1.5)}else if(amb.tgt){w.cam.x=lerp(w.cam.x,amb.tgt.x,dt*.8);w.cam.y=lerp(w.cam.y,amb.tgt.y,dt*.8)}w.zoom=Zm}}}
   const w=G.world;if(w)render(ctx,w,VW,VH,w.cam,w.zoom||baseZoom(),{arrow:G.mode==='race',arrowTo:G.mode==='roam'&&RS?RS.arrowTo:null,markers:G.mode==='roam'?MARKERS():null});
   }catch(err){console.error(err)}
   requestAnimationFrame(frame)}
