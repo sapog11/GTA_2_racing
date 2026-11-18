@@ -49,7 +49,11 @@ h1,h2,h3{margin:0}
 .stat{display:grid;grid-template-columns:96px 1fr;align-items:center;gap:8px;font-size:14px;margin:5px 0}
 .bar{height:9px;background:#23263a;border-radius:2px;overflow:hidden}
 .bar i{display:block;height:100%;background:linear-gradient(90deg,var(--acc),#ff7a1a)}
-.carview{width:100%;height:170px;display:block;background:radial-gradient(circle at 50% 50%,#2a2d3a,#0c0d14 75%);border-radius:4px}
+.carview{width:100%;aspect-ratio:3/2;display:block;border-radius:4px;background:#0c0d14 center/cover no-repeat;position:relative;overflow:hidden}
+.carview.locked:after{content:"🔒";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:54px;background:rgba(0,0,0,.5)}
+.gnav{display:grid;grid-template-columns:52px 1fr 52px;align-items:center;gap:8px;margin-top:10px}
+.gnav .btn{min-width:0;width:52px;padding:6px 0;margin:0;font-family:Oswald;font-size:26px;line-height:1}
+.gnav h3{font-size:clamp(22px,6vw,30px);text-align:center;line-height:1.05}
 .ups{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}
 .ups div{background:#141724;border:1px dashed #3a3f55;border-radius:4px;padding:8px 4px;text-align:center;font-size:12px;color:var(--mut)}
 .ups div b{display:block;font-size:20px}
@@ -873,15 +877,13 @@ function showGarage(){const el=$('scr-garage');gIdx=Math.max(0,CARS.findIndex(c=
 function renderGarage(){const el=$('scr-garage'),c=CARS[gIdx],own=SAVE.owned.includes(c.id);
   const bar=(l,v)=>`<div class="stat"><span>${l}</span><div class="bar"><i style="width:${clamp(v,5,100)}%"></i></div></div>`;
   let btn=own?(SAVE.car===c.id?`<button class="btn" disabled>VYBRÁNO</button>`:`<button class="btn" data-pick="${c.id}">VYBRAT</button>`):`<button class="btn pink" data-buy="${c.id}" ${SAVE.resp<c.price?'disabled':''}>ODEMKNOUT • ${c.price} RESPEKTU</button>`;
-  el.innerHTML=topBar('GARÁŽ')+`<div class="card" style="width:100%;max-width:560px"><canvas class="carview" id="carview"></canvas>
-  <div class="row" style="justify-content:space-between;margin-top:8px"><button class="btn sm dark" data-gnav="-1">◀</button><div style="text-align:center"><h3>${c.name}</h3><div class="tag">${gIdx+1} / ${CARS.length} ${own?'':'• 🔒 ZAMČENO'}</div></div><button class="btn sm dark" data-gnav="1">▶</button></div>
+  el.innerHTML=topBar('GARÁŽ')+`<div class="card" style="width:100%;max-width:560px"><div class="carview ${own?'':'locked'}" style="background-image:url(art/car_${c.id}.jpg)"></div>
+  <div class="gnav"><button class="btn sm dark" data-gnav="-1">‹</button><div style="text-align:center"><h3>${c.name}</h3><div class="tag">${gIdx+1} / ${CARS.length} ${own?'':'• ZAMČENO'}</div></div><button class="btn sm dark" data-gnav="1">›</button></div>
   <p>${c.desc}</p>${bar('Rychlost',(c.max-200)/1.6)}${bar('Zrychlení',(c.acc-150)/1.3)}${bar('Ovládání',(c.turn*c.grip-14)*2.6)}${bar('Odolnost',(c.hp-80)*2)}
   <div style="text-align:center">${btn}</div>
   <div class="tag" style="margin-top:10px">Tuning</div><div class="ups"><div><b>🛞</b>Kola<br>🔒 brzy</div><div><b>⚙️</b>Převodovka<br>🔒 brzy</div><div><b>🔧</b>Motor<br>🔒 brzy</div><div><b>🎨</b>Lak<br>🔒 brzy</div></div></div>
   <p class="note">Respekt získáš za mise. Prachy budou na tuning (brzy).</p>`;
-  const cvs=$('carview');const r=cvs.getBoundingClientRect();cvs.width=r.width*2;cvs.height=r.height*2;const g=cvs.getContext('2d');g.scale(2,2);g.translate(r.width/2,r.height/2);g.scale(3.2,3.2);
-  drawCar(g,{x:0,y:0,a:-Math.PI/2+.5,L:c.L,Wd:c.Wd,col:c.col,st:c,hp:1,maxhp:1},0);
-  if(!own){g.setTransform(1,0,0,1,0,0);g.fillStyle='rgba(0,0,0,.45)';g.fillRect(0,0,cvs.width,cvs.height);g.font='bold 60px Bangers';g.textAlign='center';g.fillStyle='#fff';g.fillText('🔒',cvs.width/2,cvs.height/2+20)}}
+  for(const k of CARS){const im=new Image();im.src='art/car_'+k.id+'.jpg'}}
 function showLevels(){const el=$('scr-levels');let h=topBar('MISE')+`<div class="cards">`;
   for(const L of LEVELS){const locked=L.soon||(L.req&&!SAVE.done[L.req]);const d=SAVE.done[L.id];
     h+=`<div class="card lvl" ${locked?'':`data-lvl="${L.id}"`}><div class="role">${L.type==='chase'?'Útěk před policií':L.type==='race'?'Pouliční závod':'Příběh'}</div><h3>${L.name}</h3><div class="meta">${L.sub}</div>
