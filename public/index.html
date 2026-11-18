@@ -1303,13 +1303,13 @@ const DJL={
 const DJ={t:15,speaking:false,voice:null,ok:'speechSynthesis' in window,
  init(){if(!this.ok)return;const f=()=>{const vs=speechSynthesis.getVoices();this.voice=vs.find(v=>/^cs/i.test(v.lang))||null};f();speechSynthesis.onvoiceschanged=f},
  unlock(){if(!this.ok||this.unl)return;this.unl=1;try{const u=new SpeechSynthesisUtterance(' ');u.volume=0;speechSynthesis.speak(u)}catch(e){}},
- say(text,station){if(!this.ok||SAVE.mute||!Snd.ctx)return;try{speechSynthesis.cancel()}catch(e){}
+ say(text,station){if(SAVE.mute||!Snd.ctx)return;
   const u=new SpeechSynthesisUtterance(text);u.lang='cs-CZ';if(this.voice)u.voice=this.voice;const pol=station==='chase';u.rate=pol?1.12:1.04;u.pitch=pol?.75:1.05;u.volume=1;
   const sub=$('djsub');sub.innerHTML='<b>'+(pol?'📡 POLICIE:':'📻 '+((STY[station]||{}).name||'RÁDIO')+':')+'</b>'+text;sub.classList.add('on');
-  const g=Snd.mus&&Snd.mus.gain,c=Snd.ctx;this.speaking=true;if(g){this.prev=(STY[Snd.style]||{}).vol||.34;g.setTargetAtTime(this.prev*.25,c.currentTime,.15)}if(pol)Snd.nz(.25,'bandpass',1800,.25);
+  const g=null,c=Snd.ctx;this.speaking=true;if(pol)Snd.nz(.25,'bandpass',1800,.25);
   const t0=performance.now(),minS=Math.max(3500,text.length*55);const end=()=>{if(!this.speaking)return;this.speaking=false;clearTimeout(this.subT);this.subT=setTimeout(()=>{if(!this.speaking)sub.classList.remove('on')},Math.max(0,minS-(performance.now()-t0)));if(g&&Snd.style!=='off')g.setTargetAtTime(this.prev,c.currentTime,.4);if(pol)Snd.nz(.2,'bandpass',1800,.2)};
-  u.onend=end;u.onerror=end;setTimeout(end,Math.max(4000,text.length*95));try{speechSynthesis.speak(u)}catch(e){end()}},
- update(dt){if(!this.ok||!Snd.ctx||SAVE.mute)return;const st=Snd.style;if(!st||st==='off')return;
+  setTimeout(end,Math.max(4000,text.length*70))},
+ update(dt){if(!Snd.ctx||SAVE.mute)return;const st=Snd.style;if(!st||st==='off')return;
   if(!(G.mode==='roam'||G.mode==='race'||(G.mode==='ambient'&&$('scr-menu').classList.contains('on'))))return;
   this.t-=dt;if(this.t>0||this.speaking)return;this.t=rr(35,60);const own=DJL[st]||[],pool=(st==='chase'||st==='race')?own:(R()<.4?own:DJL.any);if(pool.length)this.say(pick(pool),st)},
  stationId(st){if(!DJL[st]||!DJL[st].length||st==='off')return;this.t=rr(30,50);clearTimeout(this.sidT);this.sidT=setTimeout(()=>this.say(DJL[st][0],st),700)},
