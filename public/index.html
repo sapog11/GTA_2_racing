@@ -78,7 +78,7 @@ h1,h2,h3{margin:0}
 #promoTxt{position:fixed;left:0;right:0;bottom:16%;text-align:center;z-index:6;pointer-events:none;padding:0 20px}
 #promoTxt div{font-family:Bangers;font-size:clamp(28px,8vw,58px);letter-spacing:2px;color:#fff;text-shadow:3px 3px 0 #000,0 0 20px rgba(255,46,99,.6);opacity:0;transition:opacity .6s,transform .6s;transform:translateY(10px)}
 #promoTxt div.on{opacity:1;transform:none}
-#promoTxt div.small{font-family:Oswald;font-size:clamp(15px,4vw,22px);letter-spacing:5px;text-transform:uppercase;color:var(--acc);text-shadow:2px 2px 0 #000}
+#promoTxt div.small{font-family:Bangers;font-size:clamp(26px,7vw,46px);letter-spacing:4px;margin-bottom:4px;text-transform:uppercase;color:var(--acc);text-shadow:2px 2px 0 #000}
 #skip{position:fixed;right:14px;top:max(14px,env(safe-area-inset-top));z-index:7;display:none}
 .bars:before,.bars:after{content:"";position:fixed;left:0;right:0;height:7vh;background:#000;z-index:5}
 .bars:before{top:0}.bars:after{bottom:0}
@@ -122,6 +122,17 @@ h1,h2,h3{margin:0}
 @media (max-aspect-ratio:1/1){#card .pic{width:100%;clip-path:none!important;left:0!important;right:0!important;bottom:30%}#card .slab{top:auto;height:36%;width:100%;clip-path:polygon(0 18%,100% 0,100% 100%,0 100%)!important;left:0!important;right:0!important}#card .nm{bottom:9%;left:6%!important;right:6%!important;text-align:left!important}}
 #titlecard{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;background:radial-gradient(circle,rgba(0,0,0,.2),rgba(0,0,0,.75))}
 #titlecard.on{display:flex;animation:pin .8s ease-out}
+#titlecard .logo .a{font-size:clamp(84px,26vw,180px)}#titlecard .logo .nad{display:block;font-family:Bangers;font-size:clamp(30px,9vw,64px);letter-spacing:6px;color:#fff;-webkit-text-stroke:1px #111;filter:drop-shadow(3px 3px 0 #111);margin-top:-4px}#titlecard .logo .b{font-size:clamp(22px,6.5vw,44px)}
+#titlecard .studio{font-family:Bangers;font-size:clamp(28px,8vw,52px);letter-spacing:8px;color:#fff;text-shadow:3px 3px 0 #000}
+@media (max-aspect-ratio:1/1){
+ #cine .ci{inset:0;overflow:hidden}
+ #cine .ci:before{content:"";position:absolute;inset:-10%;background-image:inherit;background-size:cover;background-position:center;filter:blur(18px) brightness(.45)}
+ #cine .ci:after{content:"";position:absolute;inset:0;background-image:inherit;background-size:contain;background-repeat:no-repeat;background-position:center 42%}
+ #cine .kb-in{animation:kbin2 6s linear forwards}#cine .kb-left{animation:kbl2 6s linear forwards}#cine .kb-right{animation:kbr2 6s linear forwards}
+}
+@keyframes kbin2{from{transform:scale(1)}to{transform:scale(1.07)}}
+@keyframes kbl2{from{transform:scale(1.04) translateX(2%)}to{transform:scale(1.04) translateX(-2%)}}
+@keyframes kbr2{from{transform:scale(1.04) translateX(-2%)}to{transform:scale(1.04) translateX(2%)}}
 .panel .art{position:absolute;inset:0;background-size:cover;background-position:center}
 .panel .inset{position:absolute;bottom:12px;width:34%;aspect-ratio:1;background-size:cover;background-position:center 15%;border:4px solid #f4efe2;outline:3px solid #111;box-shadow:4px 4px 0 #111}
 .panel .inset.l{left:12px}.panel .inset.r{right:12px}
@@ -187,7 +198,7 @@ body.drag #kL,body.drag #kR{display:none}
   </div>
 </div>
 
-<div id="cine"><div class="ci" id="ciA"></div><div class="ci" id="ciB"></div><div class="shade"></div><div id="card"></div><div id="titlecard"><div class="tag" style="color:#fff">ZORYX studio</div><div class="logo"><span class="a">ÚSTÍ</span><span class="b">MĚSTO ANDĚLŮ</span></div><div class="tag" style="color:#ffcc1a;margin-top:10px">Brzy na mobilu i na PC</div></div><div id="grain"></div><div id="flash"></div></div>
+<div id="cine"><div class="ci" id="ciA"></div><div class="ci" id="ciB"></div><div class="shade"></div><div id="card"></div><div id="titlecard"><div class="studio">ZORYX STUDIO</div><div class="logo"><span class="a">ÚSTÍ</span><span class="nad">NAD LABEM</span><span class="b">MĚSTO ANDĚLŮ</span></div><div class="tag" style="color:#ffcc1a;margin-top:10px;font-size:clamp(16px,4.4vw,24px)">Brzy na mobilu i na PC</div></div><div id="grain"></div><div id="flash"></div></div>
 <div id="promoTxt"></div>
 <button id="skip" class="btn sm dark">Přeskočit ▸</button>
 
@@ -1169,7 +1180,8 @@ if(location.search.includes('rec'))document.body.classList.add('rec');
 /* ---------------- LOOP ---------------- */
 G.world=ambientWorld();G.mode='ambient';let amb={tgt:null};
 let last=performance.now();
-function frame(now){const dt=Math.min(.033,(now-last)/1000);last=now;
+const REC=location.search.includes('rec');
+function frame(now){const dt=Math.min(REC?.1:.033,(now-last)/1000);last=now;
   ctx.setTransform(DPR,0,0,DPR,0,0);
   try{
   if(G.mode==='promo'&&promo){updatePromo(dt)}
