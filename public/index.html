@@ -96,6 +96,8 @@ h1,h2,h3{margin:0}
 #scr-menu .row{justify-content:flex-start;gap:6px;margin-top:4px}#scr-menu .row .btn{width:auto;font-size:13px;padding:3px 8px}
 #scr-menu .note{display:none}
 #zoomB{position:fixed;right:12px;bottom:max(16px,env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:8px}#zoomB .btn{width:48px!important;font-family:Oswald;font-size:26px!important;text-align:center!important;padding:2px 0!important}
+#djsub{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(170px + env(safe-area-inset-bottom));max-width:min(92vw,560px);background:rgba(5,6,12,.82);border:1px solid rgba(255,204,26,.5);border-radius:8px;padding:7px 12px;font-size:14px;line-height:1.3;color:#f3efe6;z-index:12;display:none;pointer-events:none}
+#djsub b{color:#ffcc1a;font-weight:700;margin-right:4px}#djsub.on{display:block;animation:pin .3s ease-out}
 /* cinematic promo */
 #cine{position:fixed;inset:0;z-index:3;pointer-events:none;overflow:hidden;display:none}
 #cine .ci{position:absolute;inset:-6%;background-size:cover;background-position:center;opacity:0;transition:opacity .45s}
@@ -205,6 +207,7 @@ body.drag #kL,body.drag #kR{display:none}
 </div>
 
 <div id="cine"><div class="ci" id="ciA"></div><div class="ci" id="ciB"></div><div class="shade"></div><div id="card"></div><div id="titlecard"><div class="studio">ZORYX STUDIO</div><div class="logo"><span class="a">ÚSTÍ</span><span class="nad">NAD LABEM</span><span class="b">MĚSTO ANDĚLŮ</span></div><div class="tag" style="color:#ffcc1a;margin-top:10px;font-size:clamp(16px,4.4vw,24px)">Na mobilu i na PC</div></div><div id="grain"></div><div id="flash"></div></div>
+<div id="djsub"></div>
 <div id="promoTxt"></div>
 <button id="skip" class="btn sm dark">Přeskočit ▸</button>
 
@@ -523,7 +526,7 @@ const Snd={ctx:null,
   // music delay
   this.dl=c.createDelay();this.dl.delayTime.value=.33;const fb=c.createGain();fb.gain.value=.35;this.dl.connect(fb);fb.connect(this.dl);this.dl.connect(this.mus);
  },
- unlock(){
+ unlock(){DJ.unlock();
   try{if(navigator.audioSession)navigator.audioSession.type='playback'}catch(e){}
   if(!this.ctx)this.init();const c=this.ctx;if(!c)return;
   if(c.state!=='running')c.resume().catch(()=>{});
@@ -532,7 +535,7 @@ const Snd={ctx:null,
     ws(0,'RIFF');v.setUint32(4,36+n*2,true);ws(8,'WAVE');ws(12,'fmt ');v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,1,true);v.setUint32(24,sr,true);v.setUint32(28,sr*2,true);v.setUint16(32,2,true);v.setUint16(34,16,true);ws(36,'data');v.setUint32(40,n*2,true);
     const a=new Audio(URL.createObjectURL(new Blob([ab],{type:'audio/wav'})));a.loop=true;a.setAttribute('playsinline','');a.volume=.01;a.play().then(()=>{this.keep=a}).catch(()=>{})}catch(e){}}
  },
- setMute(m){SAVE.mute=m;save();if(this.master)this.master.gain.value=m?0:.8},
+ setMute(m){if(m)DJ.stop();SAVE.mute=m;save();if(this.master)this.master.gain.value=m?0:.8},
  engine(v,on,boost){if(!this.ctx)return;const t=this.ctx.currentTime,f=38+Math.abs(v)*.33+(boost?40:0);this.eng.o1.frequency.setTargetAtTime(f,t,.05);this.eng.o2.frequency.setTargetAtTime(f,t,.05);this.eng.g.gain.setTargetAtTime(on?.05+Math.min(.05,Math.abs(v)/5000):0,t,.1)},
  siren(level,tt){if(!this.ctx)return;const t=this.ctx.currentTime;this.sir.o.frequency.setTargetAtTime(Math.floor(tt/.42)%2?960:720,t,.02);this.sir.g.gain.setTargetAtTime(level*.045,t,.1)},
  rain(on){if(this.ctx)this.rainG.gain.setTargetAtTime(on?.07:0,this.ctx.currentTime,.4)},
@@ -952,7 +955,7 @@ const PROMO=[
 ];
 const PROMO_END=45.4;
 let promo=null,ciFlip=0;
-function startPromo(){hideAll();Snd.setStyle('labe');preloadArt();G.mode='promo';const w=ambientWorld();G.world=w;promo={t:0,shot:-1,w,pan:{vx:0,vy:0}};document.body.classList.add('bars');$('skip').style.display='block';$('cine').style.display='block';Snd.startMusic(true,true);Snd.rain(true)}
+function startPromo(){DJ.stop();hideAll();Snd.setStyle('labe');preloadArt();G.mode='promo';const w=ambientWorld();G.world=w;promo={t:0,shot:-1,w,pan:{vx:0,vy:0}};document.body.classList.add('bars');$('skip').style.display='block';$('cine').style.display='block';Snd.startMusic(true,true);Snd.rain(true)}
 function cineCut(){const f=$('flash');f.classList.remove('go');void f.offsetWidth;f.classList.add('go')}
 function setTxt(a,b){const el=$('promoTxt');el.innerHTML=a||b?`<div class="small">${a||''}</div><div>${b||''}</div>`:'';setTimeout(()=>el.children[0]&&el.children[0].classList.add('on'),250);setTimeout(()=>el.children[1]&&el.children[1].classList.add('on'),1000)}
 function promoShot(i){const w=promo.w,s=PROMO[i];cineCut();
@@ -1123,7 +1126,7 @@ function beginRace(L){hideAll();const w=newWorld({rain:L.rain,dark:L.dark,civMax
   $('hint').textContent=isTouch?'':(L.type==='race'?'←→ řízení • ↑ plyn • ↓ brzda • MEZERNÍK nitro • R rádio • P pauza':'←→ řízení • ↑ plyn • ↓ brzda • MEZERNÍK střelba • P pauza');
   $('keyB').style.display='none';G.engineOff=false;
   $('hMainL').textContent=L.type==='race'?'POZICE':'DO CÍLE';$('hMain').classList.remove('small');$('obj').classList.remove('on');$('area').classList.remove('on');
-  Snd.startMusic(false);Snd.setStyle(L.type==='chase'?'chase':'race');Snd.rain(L.rain);drawMinimapBg();
+  Snd.startMusic(false);Snd.setStyle(L.type==='chase'?'chase':'race');DJ.stop();DJ.t=L.type==='chase'?6:12;Snd.rain(L.rain);drawMinimapBg();
 }
 let msgT=0;function floatMsg(t,dur){$('center').textContent=t;msgT=dur||1.1}
 const STK={id:null,x:0,y:0,dx:0,dy:0};
@@ -1202,7 +1205,7 @@ function endRace(win,title,text){RS.end=1.6;RS.win=win;RS.title=title;RS.text=te
   if(win){RS.gain.resp=L.reward.resp+(L.type==='chase'?RS.kills*25:0);RS.gain.cash=L.reward.cash;SAVE.done[L.id]=(SAVE.done[L.id]||0)+1}
   else if(L.type==='chase')RS.gain.resp=RS.kills*10;
   SAVE.resp+=RS.gain.resp;SAVE.cash+=RS.gain.cash;save()}
-function showResult(){G.mode='result';{const r=G.world.route,e=r[r.length-1],q=r[r.length-2];const a=Math.atan2(e.y-q.y,e.x-q.x);G.lastPos={x:e.x-Math.sin(a)*18+Math.cos(a)*60,y:e.y+Math.cos(a)*18+Math.sin(a)*60,a}}Snd.engine(0,false);Snd.siren(0,0);const el=$('scr-result'),L=RS.L;
+function showResult(){DJ.stop();G.mode='result';{const r=G.world.route,e=r[r.length-1],q=r[r.length-2];const a=Math.atan2(e.y-q.y,e.x-q.x);G.lastPos={x:e.x-Math.sin(a)*18+Math.cos(a)*60,y:e.y+Math.cos(a)*18+Math.sin(a)*60,a}}Snd.engine(0,false);Snd.siren(0,0);const el=$('scr-result'),L=RS.L;
   el.innerHTML=`<div class="res"><div class="tag">${L.name}</div><h2 style="color:${RS.win?'var(--acc)':'var(--acc2)'}">${RS.title}</h2><p>${RS.text}</p>
   <div class="lines"><div><span>Čas</span><b>${RS.t.toFixed(1)} s</b></div>${L.type==='chase'?`<div><span>Zničení policajti</span><b>${RS.kills}</b></div>`:`<div><span>Umístění</span><b>${RS.win?1:RS.finishOrder.length+1}. / 5</b></div>`}
   <div><span>Respekt</span><b>+${RS.gain.resp}</b></div><div><span>Prachy</span><b>+${RS.gain.cash.toLocaleString('cs-CZ')} Kč</b></div><div><span>Celkem respektu</span><b>${SAVE.resp}</b></div></div>
@@ -1234,7 +1237,7 @@ for(const b of document.querySelectorAll('#ctrl button')){const k=b.dataset.k;
   const on=e=>{e.preventDefault();G.keys[k]=true;b.classList.add('on');try{b.setPointerCapture(e.pointerId)}catch(_){}};
   const off=e=>{G.keys[k]=false;b.classList.remove('on')};
   b.addEventListener('pointerdown',on);b.addEventListener('pointerup',off);b.addEventListener('pointercancel',off);b.addEventListener('lostpointercapture',off);b.addEventListener('contextmenu',e=>e.preventDefault())}
-function pause(){if(!(G.mode==='race'||G.mode==='roam')||(RS&&RS.end))return;G.prevMode=G.mode;G.mode='paused';Snd.engine(0,false);Snd.siren(0,0);const el=$('scr-pause');
+function pause(){if(!(G.mode==='race'||G.mode==='roam')||(RS&&RS.end))return;DJ.stop();G.prevMode=G.mode;G.mode='paused';Snd.engine(0,false);Snd.siren(0,0);const el=$('scr-pause');
   el.innerHTML=`<h2 class="logo"><span class="b" style="font-size:44px">PAUZA</span></h2><button class="btn" id="pRes">POKRAČOVAT</button>${G.prevMode==='race'?`<button class="btn dark" data-lvlgo="${RS.L.id}">ZNOVU</button><button class="btn dark" data-go="city">VZDÁT → MĚSTO</button>`:''}
   <div class="toggle">Řízení: <button class="btn sm dark" id="pSteer">${SAVE.steer==='drag'?'TAH PRSTEM':'ŠIPKY'}</button></div><div class="toggle">Auto-plyn (mobil): <button class="btn sm dark" id="pAuto">${SAVE.autoGas?'ZAP':'VYP'}</button></div><button class="btn sm dark" id="pRadio">📻 ${STY[Snd.style]?STY[Snd.style].name:'RÁDIO'}</button><button class="btn sm dark" id="pMute">${SAVE.mute?'🔇 Zvuk vyp':'🔊 Zvuk zap'}</button><button class="btn pink" data-go="menu">MENU</button>`;
   $('ctrl').classList.remove('on');el.classList.add('on');
@@ -1245,7 +1248,7 @@ function pause(){if(!(G.mode==='race'||G.mode==='roam')||(RS&&RS.end))return;G.p
   $('pMute').onclick=()=>{Snd.setMute(!SAVE.mute);$('pMute').textContent=SAVE.mute?'🔇 Zvuk vyp':'🔊 Zvuk zap'}}
 $('pauseB').addEventListener('click',pause);
 function radioList(){const md=G.mode==='paused'?G.prevMode:G.mode;const L=md==='race'&&G.level?[G.level.type==='chase'?'chase':'race']:[];return L.concat(RADIO)}
-function nextRadio(){const L=radioList();let i=L.indexOf(Snd.style);const n=L[(i+1)%L.length];Snd.setStyle(n);{const md=G.mode==='paused'?G.prevMode:G.mode;if(n==='labe')Snd.lead=md!=='race'&&md!=='roam';if(md!=='race'){SAVE.radio=n;save()}}if($('mRadio'))$('mRadio').textContent='📻 '+STY[n].name;if($('pRadio'))$('pRadio').textContent='📻 '+STY[n].name;const a=$('area');a.textContent='📻 '+STY[n].name;a.classList.add('on');areaT=2.5}
+function nextRadio(){const L=radioList();let i=L.indexOf(Snd.style);const n=L[(i+1)%L.length];Snd.setStyle(n);if(n==='off')DJ.stop();else DJ.stationId(n);{const md=G.mode==='paused'?G.prevMode:G.mode;if(n==='labe')Snd.lead=md!=='race'&&md!=='roam';if(md!=='race'){SAVE.radio=n;save()}}if($('mRadio'))$('mRadio').textContent='📻 '+STY[n].name;if($('pRadio'))$('pRadio').textContent='📻 '+STY[n].name;const a=$('area');a.textContent='📻 '+STY[n].name;a.classList.add('on');areaT=2.5}
 $('radioB').addEventListener('click',nextRadio);$('mRadio').addEventListener('click',()=>{Snd.unlock();nextRadio()});
 function toast(t){const a=$('area');a.textContent=t;a.classList.add('on');areaT=2.2}
 function toggleEngine(){if(G.mode!=='roam')return;G.engineOff=!G.engineOff;$('keyB').classList.toggle('off',G.engineOff);if(G.engineOff){toast('🔑 MOTOR VYPNUTÝ');Snd.engine(0,false)}else{toast('🔑 NASTARTOVÁNO');Snd.nz(.5,'lowpass',300,.4);Snd.tone(50,90,.6,'sawtooth',.2)}}
@@ -1279,6 +1282,35 @@ $('bMute').onclick=()=>{Snd.setMute(!SAVE.mute);$('bMute').textContent=SAVE.mute
 ['pointerdown','touchend','keydown'].forEach(ev=>addEventListener(ev,()=>{if(G.mode!=='start'||Snd.ctx)Snd.unlock()},{passive:true}));
 document.addEventListener('visibilitychange',()=>{if(document.hidden){if(G.mode==='race'||G.mode==='roam')pause();if(Snd.ctx)Snd.ctx.suspend()}else if(Snd.ctx){Snd.ctx.resume();if(Snd.keep)Snd.keep.play().catch(()=>{})}});
 
+/* ---------------- RADIO DJ (speech synthesis) ---------------- */
+const DJL={
+ any:['Zprávy: v Ústí dnes opět prší. Meteorologové jsou překvapení jako vždycky.','Reklama: Kebab u Fora. Otevřeno nonstop, protože hlad nemá zavíračku.','Hotel Bohemia hledá recepční. Podmínka jediná: nebát se ničeho.','Herna Nonstop. Šance na výhru je stejná jako šance, že v Ústí nebude pršet.','Dopravní zpravodajství: na Mariánském mostě kolona. Nějakej blázen v černý káře zase ujíždí policajtům.','Zastavárna u Labe. Přineste nám cokoliv. Na nic se neptáme.','Pozor, na Teplický zase měřej rychlost. Nebo taky ne. Kdo ví.','Spolchemie hlásí: dnes to smrdí jen trochu. Můžete otevřít okna. Asi.','Hledá se pes jménem Drago. Je černej, rychlej a nikoho neposlouchá.','Pozdrav z Předlic pro všechny, co ještě nespí. Vy víte, kdo jste.'],
+ labe:['Tady Labe FM, nejlepší rádio mezi Střekovem a Předlicema.','Labe FM. Hrajem, dokud nás nevypnou.'],
+ rap:['Rap Předlice. Tady se nerapuje o prachách. Tady se rapuje o tom, kde je vzít.','Pozdrav pro Káju, co si zase myslí, že je nejrychlejší na sídlišti.'],
+ trap:['Bass Ústí. Basy tak hluboký, že se třese i Spolchemie.','Bass Ústí. Zesilte to, ať to slyší i na Střekově.'],
+ oldschool:['Oldschool hip hop. Pro všechny, co ještě pamatujou kazety a tepláky.','Tohle je oldschool. Žádnej autotune, jenom poctivý beaty.'],
+ synth:['Noční Ústí. Pro ty, co nemůžou spát. Nebo nesmějí.','Noční Ústí. Světla města, déšť a neon.'],
+ dnb:['Chemička DnB. Rychlý jak policejní honička, smrdí jak chemička.'],
+ classic:['Klasika FM. Johann Sebastian Bach. Ani on by se v Ústí neztratil.','Dobrý večer, ctění posluchači. Prosíme řidiče, aby nepřejížděli chodce. Děkujeme.'],
+ polka:['Rádio Dechovka! Pro babičky, dědečky a všechny, co jedou po Teplický sedmdesátkou.','Dechovka hraje, Ústí tančí. A kdo netančí, ten platí rundu.'],
+ chase:['Všem hlídkám: černý vůz, ujíždí směr Neštěmice. Opakuji, černý vůz.','Centrála, tady hlídka tři. Střílejí po nás! Potřebujeme posily!','Uzavřete Benešův most. Opakuji, uzavřete most.','Podezřelí jsou dva. Žena řídí, muž je ozbrojen. Buďte opatrní.'],
+ race:['Na Předlicích zase závodí. Sousedi volají policii. Zase.','Kája hlásí, že dneska vyhraje. Kája to hlásí každej tejden.']};
+const DJ={t:15,speaking:false,voice:null,ok:'speechSynthesis' in window,
+ init(){if(!this.ok)return;const f=()=>{const vs=speechSynthesis.getVoices();this.voice=vs.find(v=>/^cs/i.test(v.lang))||null};f();speechSynthesis.onvoiceschanged=f},
+ unlock(){if(!this.ok||this.unl)return;this.unl=1;try{const u=new SpeechSynthesisUtterance(' ');u.volume=0;speechSynthesis.speak(u)}catch(e){}},
+ say(text,station){if(!this.ok||SAVE.mute||!Snd.ctx)return;try{speechSynthesis.cancel()}catch(e){}
+  const u=new SpeechSynthesisUtterance(text);u.lang='cs-CZ';if(this.voice)u.voice=this.voice;const pol=station==='chase';u.rate=pol?1.12:1.04;u.pitch=pol?.75:1.05;u.volume=1;
+  const sub=$('djsub');sub.innerHTML='<b>'+(pol?'📡 POLICIE:':'📻 '+((STY[station]||{}).name||'RÁDIO')+':')+'</b>'+text;sub.classList.add('on');
+  const g=Snd.mus&&Snd.mus.gain,c=Snd.ctx;this.speaking=true;if(g){this.prev=(STY[Snd.style]||{}).vol||.34;g.setTargetAtTime(this.prev*.25,c.currentTime,.15)}if(pol)Snd.nz(.25,'bandpass',1800,.25);
+  const t0=performance.now(),minS=Math.max(3500,text.length*55);const end=()=>{if(!this.speaking)return;this.speaking=false;clearTimeout(this.subT);this.subT=setTimeout(()=>{if(!this.speaking)sub.classList.remove('on')},Math.max(0,minS-(performance.now()-t0)));if(g&&Snd.style!=='off')g.setTargetAtTime(this.prev,c.currentTime,.4);if(pol)Snd.nz(.2,'bandpass',1800,.2)};
+  u.onend=end;u.onerror=end;setTimeout(end,Math.max(4000,text.length*95));try{speechSynthesis.speak(u)}catch(e){end()}},
+ update(dt){if(!this.ok||!Snd.ctx||SAVE.mute)return;const st=Snd.style;if(!st||st==='off')return;
+  if(!(G.mode==='roam'||G.mode==='race'||(G.mode==='ambient'&&$('scr-menu').classList.contains('on'))))return;
+  this.t-=dt;if(this.t>0||this.speaking)return;this.t=rr(35,60);const own=DJL[st]||[],pool=(st==='chase'||st==='race')?own:(R()<.4?own:DJL.any);if(pool.length)this.say(pick(pool),st)},
+ stationId(st){if(!DJL[st]||!DJL[st].length||st==='off')return;this.t=rr(30,50);clearTimeout(this.sidT);this.sidT=setTimeout(()=>this.say(DJL[st][0],st),700)},
+ stop(){clearTimeout(this.subT);$('djsub').classList.remove('on');this.speaking=false;if(!this.ok)return;try{speechSynthesis.cancel()}catch(e){}}};
+DJ.init();
+
 /* ---------------- PROMO AUDIO (offline render for video export) ---------------- */
 async function renderPromoAudio(sec){const SR=44100,oc=new OfflineAudioContext(2,Math.ceil(SR*sec),SR);const S=Object.create(Snd);S.ctx=null;S.timer=null;S.style='labe';S.init(oc);S.master.gain.value=.8;S.lead=true;S.spb=60/92/4;S.mus.gain.value=.5;
   let t=.05,st=0;while(t<sec-.3){S.play(st,t);t+=S.spb;st++}
@@ -1302,6 +1334,7 @@ const REC=location.search.includes('rec');
 function frame(now){const dt=Math.min(REC?.1:.033,(now-last)/1000);last=now;
   ctx.setTransform(DPR,0,0,DPR,0,0);
   try{
+  DJ.update(dt);
   if(G.mode==='promo'&&promo){updatePromo(dt)}
   else if(G.mode==='race'){updateRace(dt)}
   else if(G.mode==='roam'){updateRoam(dt)}
