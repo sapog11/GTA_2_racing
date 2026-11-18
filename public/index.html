@@ -76,15 +76,16 @@ h1,h2,h3{margin:0}
 .pg{color:var(--mut);font-size:14px;min-width:50px;text-align:center}
 /* promo */
 #promoTxt{position:fixed;left:0;right:0;bottom:16%;text-align:center;z-index:6;pointer-events:none;padding:0 20px}
-#promoTxt div{font-family:Bangers;font-size:clamp(28px,8vw,58px);letter-spacing:2px;color:#fff;text-shadow:3px 3px 0 #000,0 0 20px rgba(255,46,99,.6);opacity:0;transition:opacity .6s,transform .6s;transform:translateY(10px)}
+#promoTxt div{font-family:Bangers;font-size:clamp(44px,13vw,100px);line-height:.95;letter-spacing:2px;color:#fff;text-shadow:3px 3px 0 #000,0 0 20px rgba(255,46,99,.6);opacity:0;transition:opacity .6s,transform .6s;transform:translateY(10px)}
 #promoTxt div.on{opacity:1;transform:none}
-#promoTxt div.small{font-family:Bangers;font-size:clamp(26px,7vw,46px);letter-spacing:4px;margin-bottom:4px;text-transform:uppercase;color:var(--acc);text-shadow:2px 2px 0 #000}
+#promoTxt div.small{font-family:Bangers;font-size:clamp(32px,9.5vw,70px);letter-spacing:4px;margin-bottom:6px;text-transform:uppercase;color:var(--acc);text-shadow:2px 2px 0 #000}
 #skip{position:fixed;right:14px;top:max(14px,env(safe-area-inset-top));z-index:7;display:none}
 .bars:before,.bars:after{content:"";position:fixed;left:0;right:0;height:7vh;background:#000;z-index:5}
 .bars:before{top:0}.bars:after{bottom:0}
 #pv{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#000}
 .startui{position:relative;width:100%;display:flex;flex-direction:column;align-items:center;padding:24px 16px max(22px,env(safe-area-inset-bottom));background:linear-gradient(180deg,rgba(0,0,0,0),rgba(0,0,0,.85) 35%)}
 .startui .logo .a{font-size:clamp(40px,11vw,80px)}.startui .logo .b{font-size:clamp(18px,4.6vw,30px)}
+#bSound{animation:wig 2.6s infinite}@keyframes wig{0%,78%,100%{transform:skew(-6deg) rotate(0) scale(1)}82%{transform:skew(-6deg) rotate(-4deg) scale(1.07)}86%{transform:skew(-6deg) rotate(4deg) scale(1.07)}90%{transform:skew(-6deg) rotate(-3deg) scale(1.04)}94%{transform:skew(-6deg) rotate(2deg)}}
 #scr-start.full .startui{opacity:0;pointer-events:none;transition:opacity .4s}
 #scr-menu{pointer-events:none}#scr-menu>*{pointer-events:auto}
 #scr-menu{align-items:flex-start;justify-content:flex-start;padding-left:max(14px,env(safe-area-inset-left));background:linear-gradient(100deg,rgba(5,6,12,.82) 0,rgba(5,6,12,.45) 30%,rgba(5,6,12,0) 48%)}
@@ -276,7 +277,9 @@ const T=48, NX=12, NY=31, BX=NX-1, BY=NY-1, MAPW=(NX-1)*8+2, MAPH=(NY-1)*8+2, RI
 const BRIDGES={4:'Tyršův most',8:'Nový most',14:'Most v Povrlech',19:'Most v Neštěmicích',23:'Benešův most',25:'Mariánský most'};
 const ROAD=0,WALK=1,BUILD=2,GRASS=3,WATER=4,BRIDGE=5,PLAZA=6,LOT=7,FOREST=8,ROCK=9;
 const tiles=new Uint8Array(MAPW*MAPH);
-const blocks=[],buildings=[],lamps=[],trees=[],signs=[],parked=[],landmarks=[],barriers=[];
+const blocks=[],buildings=[],lamps=[],trees=[],signs=[],parked=[],landmarks=[],barriers=[],awn=[];
+const SHOPS=['POTRAVINY','VEČERKA','TABÁK','LÉKÁRNA','PEKÁRNA','SMÍŠENÉ ZBOŽÍ','KADEŘNICTVÍ','SECOND HAND','TETOVÁNÍ','ELEKTRO','ŘEZNICTVÍ','KVĚTINY'];
+const BARS=['HOSPODA U LABE','BAR NONSTOP','PIVNICE','HERNA BAR','KLUB ATOM','HOSPODA NA RAŽÁKU','PIVO 29,-'];
 const IX=i=>(8*i+1)*T;
 function tileAt(tx,ty){return(tx<0||ty<0||tx>=MAPW||ty>=MAPH)?FOREST:tiles[ty*MAPW+tx]}
 const isSolid=t=>t===BUILD||t===WATER||t===FOREST||t===ROCK;
@@ -297,6 +300,7 @@ function district(bi,bj){const E=bi>RIVER;if(bi===RIVER)return'Labe';
 function blockType(bi,bj,r){const E=bi>RIVER,x=r();
   if(bi===RIVER)return'water';
   if(bi===3&&bj===24)return'plaza';
+  if(bi===3&&bj===23)return'church';
   if(bi===6&&bj===27)return'castle';
   if(bi===7&&bj===5)return'castle';
   if(bi===4&&(bj===6||bj===7))return'rock';
@@ -349,8 +353,14 @@ function genCity(){
       else if(k<.5){const s=1+Math.floor(r()*3);rects=[[0,0,s,4],[s,0,4-s,4]]}
       else if(k<.75){const s=1+Math.floor(r()*3);rects=[[0,0,4,s],[0,s,4,4-s]]}
       else rects=[[0,0,2,2],[2,0,2,2],[0,2,2,2],[2,2,2,2]];
-      for(const q of rects)addB(ix+q[0]*T,iy+q[1]*T,q[2]*T,q[3]*T,.06+r()*.2,rp(ROOF));
-    }else if(B.type==='panel')addB(ix,iy,S,S,.3,'#7b7f86',{panel:1});
+      for(const q of rects){const k2=r(),bw=q[2]*T,bh=q[3]*T,o={};if(k2<.24)o.shop=1;else if(k2<.36)o.bar=1;else if(k2<.44&&bw*bh>=4*T*T)o.hotel=1;
+        const ht=o.hotel?.36+r()*.1:(o.shop||o.bar)?.05+r()*.05:.08+r()*.18,col=o.shop?rp(['#8a8478','#7d7a70','#958c7a']):o.hotel?rp(['#c9c2b0','#a8b0bd','#b9a98e']):rp(ROOF);
+        const b=addB(ix+q[0]*T,iy+q[1]*T,bw,bh,ht,col,o),bot=q[1]+q[3]===4,ey=bot?b.y+bh:b.y;
+        if(o.shop){signs.push({x:b.x+bw/2,y:ey,text:rp(SHOPS),col:'#f4f1e6',ht:ht,top:!bot});awn.push({x:b.x+6,y:bot?ey:ey-12,w:bw-12,c:rp(['#c8102e','#1f7a3a','#1e4bd6','#e8a21a'])})}
+        if(o.bar)signs.push({x:b.x+bw/2,y:ey,text:rp(BARS),col:rp(NEON),ht:ht,top:!bot});
+        if(o.hotel)signs.push({x:b.x+bw/2,y:ey,text:'HOTEL '+rp(['LABE','PALACE','VAŇOV','ATOM','MĚSTO']),col:'#ffd02e',ht:ht,big:1,top:!bot})}
+    }else if(B.type==='panel'){const k=r(),pc=rp(['#7b7f86','#8a8f99','#6f7480','#9a8f86']);if(k<.35)addB(ix,iy,S,S,.3,pc,{panel:1});else if(k<.7){addB(ix,iy,S,T*1.4,.38,pc,{panel:1});addB(ix,iy+S-T*1.4,S,T*1.4,.38,pc,{panel:1})}else{addB(ix,iy,T*1.4,S,.42,pc,{panel:1});addB(ix+S-T*1.4,iy,T*1.4,S,.42,pc,{panel:1})}}
+    else if(B.type==='church'){addB(ix+T*.9,iy+T*1.4,T*3,T*1.2,.3,'#6a5e52',{church:1});addB(ix+T*2.5,iy+T*.4,T*.95,T*3.2,.3,'#6a5e52',{church:1});addB(ix+T*.05,iy+T*1.3,T*.95,T*1.4,1,'#8a7d6b',{tower:1,lean:1});signs.push({x:ix+S/2,y:iy+S,text:'KOSTEL',col:'#f4f1e6',ht:.3,big:1})}
     else if(B.type==='factory'){addB(ix,iy,S,S,.07,'#5d564d',{factory:1});addB(ix+S-T*.95,iy+T*.35,T*.6,T*.6,.75,'#8a3d2c',{chimney:1});}
     else if(B.type==='park'||B.type==='field'){const n=B.type==='park'?5+Math.floor(r()*5):1+Math.floor(r()*3);for(let i=0;i<n;i++)trees.push({x:ix+12+r()*(S-24),y:iy+12+r()*(S-24),r:13+r()*11,c:rp(['#1f4a26','#295a2c','#1b3f22','#33602f'])})}
     else if(B.type==='forest'){for(let i=0;i<5;i++)trees.push({x:(8*bi+2)*T+10+r()*(6*T-20),y:(8*bj+2)*T+10+r()*(6*T-20),r:16+r()*14,c:rp(['#163a1c','#1d4522','#123018','#24502a'])})}
@@ -358,14 +368,14 @@ function genCity(){
     else if(B.type==='water'){for(let k=0;k<4;k++){if(r()<.5)trees.push({x:(8*bi+2.5)*T,y:iy+k*T+20,r:12,c:'#244a22'});if(r()<.5)trees.push({x:(8*bi+7.5)*T,y:iy+k*T+30,r:12,c:'#244a22'})}}
     else if(B.type==='castle'){addB(ix+T*.3,iy+T*.4,T*3.2,T*2.2,.22,'#8a7d6b',{castle:1});addB(ix+T*2.6,iy+T*2.4,T*1,T*1,.5,'#9a8c78',{tower:1});landmarks.push({x:ix+S/2,y:iy+S/2,name:bj>20?'HRAD STŘEKOV':'ZÁMEK DĚČÍN'})}
     else if(B.type==='rock'){for(let i=0;i<5;i++)trees.push({x:ix+r()*S,y:iy+r()*S,r:10+r()*8,c:'#2a3a26'})}
-    if((B.type==='build'||B.type==='panel')&&r()<.5)signs.push({x:ix+S*(.3+r()*.4),y:iy+S,text:rp(SIGNS),col:rp(NEON)});
-    if(['build','panel','plaza','lot','park','factory','castle'].includes(B.type)){const ox=(8*bi+2)*T,oy=(8*bj+2)*T;
+    if(B.type==='panel'&&r()<.35)signs.push({x:ix+S*(.3+r()*.4),y:iy+S,text:rp(SIGNS),col:rp(NEON)});
+    if(['build','panel','plaza','lot','park','factory','castle','church'].includes(B.type)){const ox=(8*bi+2)*T,oy=(8*bj+2)*T;
       for(const[a,b]of[[.5,.5],[5.5,.5],[.5,5.5],[5.5,5.5],[3,.5],[3,5.5]])lamps.push({x:ox+a*T,y:oy+b*T})}
   }
   for(const j in BRIDGES)for(const k of[42.5,45,47.5]){lamps.push({x:k*T,y:8*j*T+6});lamps.push({x:k*T,y:(8*j+2)*T-6})}
   // Mariánský most pylon (east bank, south of bridge)
   {const px=47*T,py=(8*25+2)*T;tiles[(8*25+2)*MAPW+47]=BUILD;addB(px+8,py+6,T-16,T-16,1.25,'#e8ecf0',{pylon:1})}
-  for(const s of signs){let h=.1;for(const b of buildings)if(s.x>=b.x&&s.x<=b.x+b.w&&Math.abs(b.y+b.h-s.y)<2)h=b.ht;s.ht=h}
+  for(const s of signs){if(s.ht!==undefined)continue;let h=.1;for(const b of buildings)if(s.x>=b.x&&s.x<=b.x+b.w&&Math.abs(b.y+b.h-s.y)<2)h=b.ht;s.ht=h}
   buildings.sort((a,b)=>a.ht-b.ht);
   signs.push({x:(8*3+5)*T,y:(8*24+3)*T-2,text:'ZLATNICTVÍ',col:'#ffd02e',ht:.02});
   signs.push({x:(8*4+5)*T,y:(8*26+7)*T,text:'FORUM',col:'#2ef0ff',ht:.25,big:1});
@@ -462,6 +472,7 @@ const COMICS={
   {scene:'city',art:'keyart',cap:'Ústí nad Labem. Město andělů. Chemička nikdy nespí, Labe teče furt stejně líně… a ty jsi tu novej.'},
   {scene:'river',who:['lucie','marek'],bubs:[{w:'lucie',t:'Tak tohle je ono, Marku. Novej život.',x:4,y:8},{w:'marek',t:'Novej život, nový cíle. Ale tady jsme nikdo.',x:36,y:34}]},
   {scene:'fight',art:'street',who:[null,'kaja'],cap:'Fabriky, kopce, herny nonstop a ulice, kde se respekt nedědí.',bubs:[{w:'kaja',t:'Co čumíš, ty vole? Tohle je náš rajón, do píče!',x:8,y:40,shout:1}]},
+  {scene:'fight',art:'street',cap:'Sídliště. Kluci se zase hádaj o nic.',bubs:[{w:'pepa',t:'Co na mě čumíš, ty šlapko?',x:4,y:30,shout:1},{w:'denis',t:'Vole, chceš do huby, nebo co?!',x:38,y:52},{w:'pepa',t:'Tak pojď, ty opice!',x:10,y:74,shout:1}]},
   {scene:'car',who:['lucie','marek'],bubs:[{w:'marek',t:'Potřebujem prachy na káru a jméno.',x:40,y:10},{w:'lucie',t:'Já řídím. Ty střílíš. Jako vždycky.',x:4,y:34}],cap2:'Odpracuj si respekt.'}]},
  utek:{title:'Kapitola 2: Zlatnictví',panels:[
   {scene:'plaza',cap:'02:47. Zlatnictví u Mírového náměstí. Leje jak z konve.'},
@@ -476,7 +487,7 @@ const COMICS={
  ch4:{title:'Kapitola 4: Chemička',cost:400,soon:true},
  ch5:{title:'Kapitola 5: Střekovskej hrad',cost:800,soon:true},
 };
-const WHO_NAME={lucie:'LUCIE',marek:'MAREK',kaja:'KÁJA',police:'POLICIE'};
+const WHO_NAME={pepa:'PEPA',denis:'DENIS',lucie:'LUCIE',marek:'MAREK',kaja:'KÁJA',police:'POLICIE'};
 
 /* ---------------- AUDIO ---------------- */
 const STY={
@@ -592,7 +603,7 @@ function spawnCiv(w){for(let tries=0;tries<12;tries++){const ci=Math.round((w.ca
   c.path=[{i:o[0],j:o[1],pi:i,pj:j}].concat(civPath(o[0],o[1],i,j,6));c.pi=0;w.cars.push(c);return c}}
 
 /* ---- peds ---- */
-const LINES={pub:['Na zdraví, vole!','Ještě jedno a jdem.','Kdo platí tuhle rundu?','Ty vole, já tě mám rád!','Hospoda je můj druhej domov.','Pivo za 29? To je dar!','Zavolej mi taxíka…','Půjč mi kilo do pátku!','Hele, ty nejsi odsud, co?'],car:['Ty opice!','Kam čumíš, vole?!','Naučíš se řídit?!','Debile!','Do píče, moje auto!','Papíry máš z Lidlu?!','Ty kreténe!'],police:['Zastavte vozidlo!','Policie! Stůjte!','Okamžitě zastav!','Máme tě, kreténe!','Ruce na volant!'],rival:['Čau, šnečku!','Papa, loosere!','Tohle sou Předlice, vole!','Seš pomalej jak tramvaj!','Ty opice!'],drunk:['Hik…','Máš cigo?','Půjč mi kilo do pátku!','Ty vole, kde je hospoda?','Ještě jedno, pane vrchní!','Já nejsem ožralej!','Pivo je tekutej chleba!'],fight:['Do píče!','Co čumíš?!','Dej mi ty prachy!','Chceš do huby?','Vole, nech toho!','Pojď sem, ty kreténe!'],girl:['Svezeš mě, zlato?','Ahoj fešáku…','Tady je zima jak sviňa.','Máš cígo?'],hit:['Ty opice!','Ty kreténe!','Pomalu, vole!','Debile!','Kurva!','Jezdi pořádně!','Do píče, málem!'],worker:['Zase noční šichta…','Chemička smrdí jak vždycky.','Kde je ten autobus?'],walker:['Máš cigo?','Ty vole, prší.','Máš drobný?','Kam jdeš?','Půjč mi kilo do pátku.','Vrátím ti to, fakt!']};
+const LINES={pub:['Na zdraví, vole!','Ještě jedno a jdem.','Kdo platí tuhle rundu?','Ty vole, já tě mám rád!','Hospoda je můj druhej domov.','Pivo za 29? To je dar!','Zavolej mi taxíka…','Půjč mi kilo do pátku!','Hele, ty nejsi odsud, co?'],car:['Ty šlapko!','Ty opice!','Kam čumíš, vole?!','Naučíš se řídit?!','Debile!','Do píče, moje auto!','Papíry máš z Lidlu?!','Ty kreténe!'],police:['Zastavte vozidlo!','Policie! Stůjte!','Okamžitě zastav!','Máme tě, kreténe!','Ruce na volant!'],rival:['Čau, šnečku!','Papa, loosere!','Tohle sou Předlice, vole!','Seš pomalej jak tramvaj!','Ty opice!'],drunk:['Hik…','Máš cigo?','Půjč mi kilo do pátku!','Ty vole, kde je hospoda?','Ještě jedno, pane vrchní!','Já nejsem ožralej!','Pivo je tekutej chleba!'],fight:['Ty šlapko!','Do píče!','Co čumíš?!','Dej mi ty prachy!','Chceš do huby?','Vole, nech toho!','Pojď sem, ty kreténe!'],girl:['Svezeš mě, zlato?','Ahoj fešáku…','Tady je zima jak sviňa.','Máš cígo?'],hit:['Ty opice!','Ty kreténe!','Pomalu, vole!','Debile!','Kurva!','Jezdi pořádně!','Do píče, málem!'],worker:['Zase noční šichta…','Chemička smrdí jak vždycky.','Kde je ten autobus?'],walker:['Máš cigo?','Ty vole, prší.','Máš drobný?','Kam jdeš?','Půjč mi kilo do pátku.','Vrátím ti to, fakt!']};
 const PEDCOL=['#3a6ea5','#a53a3a','#4a8a4a','#8a6a3a','#555','#7a3a8a','#c8c8c8','#2a2a2a','#b8862b'];
 function makePed(type,x,y){const p={type,x,y,a:pick([0,Math.PI/2,Math.PI,-Math.PI/2]),dx:0,dy:0,sp:type==='drunk'?16:rr(24,34),walk:R()*6,col:pick(PEDCOL),hair:pick(['#1a1410','#3a2a1a','#c9a04a','#6a3a1a','#111','#8a8a8a']),skin:pick(['#e8b896','#d79c74','#c08060','#f0c8a8']),down:0,flee:0,say:null,sayT:rr(2,10),wob:R()*6,mate:null,punch:0};
  if(type==='girl'){p.col=pick(['#ff2e88','#d4145a','#b46bff']);p.hair=pick(['#f2d27a','#c9a04a','#1a1410']);p.sp=0}
@@ -709,7 +720,7 @@ function updateWorld(w,dt,pctl){
     const wob=p.type==='drunk'?Math.sin(p.wob*3)*.6:0;
     if(!pmove(p,(p.dx*sp+(p.dy?wob*sp:0))*dt,(p.dy*sp+(p.dx?wob*sp:0))*dt)){p.dx=-p.dx;p.dy=-p.dy}p.a=Math.atan2(p.dy,p.dx)+wob*.5;p.walk+=dt*sp*.25;
     if(p.sayT<0){p.sayT=w.chatty?rr(2.5,6):rr(5,12);if(R()<(w.chatty?.8:.5))say(p,LINES[p.type]||LINES.walker,w.chatty?3:2.2)}}
-  if(R()<.05)for(const sg of signs){if(!/HOSPODA|BAR|PIVO|HERNA/.test(sg.text))continue;const d=Math.hypot(sg.x-w.cam.x,sg.y-w.cam.y);if(d>900)continue;if(sg.popW===w&&w.t-sg.popT<25)continue;sg.popT=w.t;sg.popW=w;
+  if(R()<.05)for(const sg of signs){if(!/HOSPODA|BAR|PIVO|HERNA|PIVNICE|KLUB/.test(sg.text))continue;const d=Math.hypot(sg.x-w.cam.x,sg.y-w.cam.y);if(d>900)continue;if(sg.popW===w&&w.t-sg.popT<25)continue;sg.popT=w.t;sg.popW=w;
     for(const yy of[sg.y+T*.5,sg.y+T*3.5]){if(!isWalk(tileAt(Math.floor(sg.x/T),Math.floor(yy/T))))continue;const n=2+Math.floor(R()*2);for(let k=0;k<n;k++){const q=makePed('party',sg.x+(k-n/2)*16+rr(-4,4),yy+rr(-5,5));q.a=k%2?Math.PI/2:-Math.PI/2;q.sayT=rr(.5,5);w.peds.push(q)}}}
   // civs
   if(w.civMax){let n=0;for(let i=w.cars.length-1;i>=0;i--){const c=w.cars[i];if(c.kind!=='civ')continue;n++;const d=Math.hypot(c.x-w.cam.x,c.y-w.cam.y);if(d>1500||(c.wreck>6&&d>500)){w.cars.splice(i,1);n--}}
@@ -785,21 +796,23 @@ function drawGround(c2,x0,y0,x1,y1,t,wet){
     case LOT:{c2.fillStyle=pat('asphalt')||'#2f3035';c2.fillRect(X,Y,T+.5,T+.5);c2.fillStyle='rgba(230,230,220,.45)';c2.fillRect(X,Y,2,T*.45);c2.fillRect(X,Y+T*.55,2,T*.45);break}
     case FOREST:{const pf=pat('forest');c2.fillStyle=pf||'#12260f';c2.fillRect(X,Y,T+.5,T+.5);if(pf){c2.fillStyle='rgba(0,8,0,.3)';c2.fillRect(X,Y,T+.5,T+.5)}else{c2.fillStyle='#183214';c2.fillRect(X+(h%20),Y+((h>>5)%20),14,14)}break}
     case ROCK:{c2.fillStyle='#4a4842';c2.fillRect(X,Y,T+.5,T+.5);c2.fillStyle='#5c5a52';c2.beginPath();c2.moveTo(X+(h%30),Y+4);c2.lineTo(X+T-4,Y+((h>>4)%30)+8);c2.lineTo(X+8,Y+T-6);c2.fill();break}
-    default:{c2.fillStyle='#19191c';c2.fillRect(X,Y,T+.5,T+.5)}}}
+    default:{if(k===BUILD&&blocks[ty>>3]&&blocks[ty>>3][tx>>3]&&blocks[ty>>3][tx>>3].type==='panel'){c2.fillStyle=pat('grass')||'#22391f';c2.fillRect(X,Y,T+.5,T+.5);c2.fillStyle='rgba(0,10,0,.3)';c2.fillRect(X,Y,T+.5,T+.5);break}c2.fillStyle='#19191c';c2.fillRect(X,Y,T+.5,T+.5)}}}
 }
 function drawBuilding(c2,b,cx,cy,night,glow){
-  const h=b.ht,P=(x,y)=>[x+(x-cx)*h,y+(y-cy)*h];
+  const h=b.ht,lean=b.lean?5:0,P=(x,y)=>[x+(x-cx)*h+lean*h,y+(y-cy)*h-lean*h*.4];
   const A=[b.x,b.y],B=[b.x+b.w,b.y],C=[b.x+b.w,b.y+b.h],D=[b.x,b.y+b.h];const a=P(...A),bb=P(...B),cc=P(...C),d=P(...D);
   const q=(p1,p2,p3,p4,col)=>{c2.fillStyle=col;c2.beginPath();c2.moveTo(p1[0],p1[1]);c2.lineTo(p2[0],p2[1]);c2.lineTo(p3[0],p3[1]);c2.lineTo(p4[0],p4[1]);c2.closePath();c2.fill()};
   const walls=[[A,B,bb,a,b.c3],[B,C,cc,bb,b.c2],[C,D,d,cc,b.c1],[D,A,a,d,b.c4]];
   for(let s=0;s<4;s++){const w=walls[s];q(w[0],w[1],w[2],w[3],w[4]);
     if(night&&!b.chimney)for(const wn of b.win[s]){const bx=lerp(w[0][0],w[1][0],wn[0]),by=lerp(w[0][1],w[1][1],wn[0]),tx=lerp(w[3][0],w[2][0],wn[0]),ty=lerp(w[3][1],w[2][1],wn[0]);glow.push({k:'win',x:lerp(bx,tx,wn[1]),y:lerp(by,ty,wn[1])})}}
-  const rw=cc[0]-a[0],rh=cc[1]-a[1];const rk=b.panel?'roof_tar':b.factory?'roof_metal':b.castle?'roof_tiles':(b.chimney||b.pylon||b.tower)?null:(((b.x*7+b.y*13)/T|0)%3===0?'roof_tiles':'roof_tar');
+  const rw=cc[0]-a[0],rh=cc[1]-a[1];const rk=b.panel?'roof_tar':b.factory?'roof_metal':(b.castle||b.church)?'roof_tiles':b.shop?'roof_metal':(b.chimney||b.pylon||b.tower)?null:(((b.x*7+b.y*13)/T|0)%3===0?'roof_tiles':'roof_tar');
   const rp2=rk&&pat(rk,a[0],a[1],1+h);if(rp2){c2.fillStyle=rp2;c2.fillRect(a[0],a[1],rw,rh);c2.globalAlpha=rk==='roof_tiles'?.18:.4;c2.fillStyle=b.col;c2.fillRect(a[0],a[1],rw,rh);c2.globalAlpha=1}else{c2.fillStyle=b.col;c2.fillRect(a[0],a[1],rw,rh)}
   c2.strokeStyle=b.cr;c2.lineWidth=3;c2.strokeRect(a[0]+2,a[1]+2,rw-4,rh-4);
   if(b.panel){c2.fillStyle='rgba(0,0,0,.18)';for(let i=1;i<6;i++)c2.fillRect(a[0]+rw*i/6,a[1]+4,1.5,rh-8);c2.fillStyle='#5f636a';c2.fillRect(a[0]+rw*.2,a[1]+rh*.4,rw*.12,rh*.2);c2.fillRect(a[0]+rw*.65,a[1]+rh*.4,rw*.12,rh*.2)}
   else if(b.factory){c2.fillStyle='rgba(0,0,0,.25)';for(let i=0;i<7;i++)c2.fillRect(a[0]+6,a[1]+8+i*rh/7,rw-12,rh/14);c2.fillStyle='#7a7266';c2.fillRect(a[0]+rw*.08,a[1]+rh*.6,rw*.25,rh*.3)}
   else if(b.pylon){c2.strokeStyle='rgba(240,244,250,.75)';c2.lineWidth=1.5;const tx=a[0]+rw/2,ty=a[1]+rh/2;for(let k=-5;k<=5;k++){if(!k)continue;c2.beginPath();c2.moveTo(tx,ty);c2.lineTo(43*T+(k+5)*T*.45,8*25*T+T);c2.stroke()}}
+  else if(b.church){c2.strokeStyle='rgba(240,236,220,.85)';c2.lineWidth=3;const mx=a[0]+rw/2,my=a[1]+rh/2;c2.beginPath();if(rw>rh){c2.moveTo(mx-8,my);c2.lineTo(mx+8,my);c2.moveTo(mx-3,my-5);c2.lineTo(mx-3,my+5)}else{c2.moveTo(mx,my-8);c2.lineTo(mx,my+8);c2.moveTo(mx-5,my-3);c2.lineTo(mx+5,my-3)}c2.stroke()}
+  else if(b.hotel){c2.strokeStyle='rgba(255,255,255,.6)';c2.lineWidth=3;const mx=a[0]+rw/2,my=a[1]+rh/2,rr2=Math.min(rw,rh)*.28;c2.beginPath();c2.arc(mx,my,rr2,0,7);c2.stroke();c2.fillStyle='rgba(255,255,255,.7)';c2.font='bold '+(rr2|0)+'px Oswald';c2.textAlign='center';c2.textBaseline='middle';c2.fillText('H',mx,my)}
   else if(b.castle||b.tower){c2.fillStyle=b.c2;for(let i=0;i<8;i++){c2.fillRect(a[0]+i*rw/8,a[1],rw/16,5);c2.fillRect(a[0]+i*rw/8,a[1]+rh-5,rw/16,5)}if(b.tower){c2.fillStyle='#5a2a20';c2.beginPath();c2.arc(a[0]+rw/2,a[1]+rh/2,rw*.35,0,7);c2.fill()}}
   else if(b.chimney){c2.fillStyle='#1a1414';c2.beginPath();c2.arc(a[0]+rw/2,a[1]+rh/2,rw*.32,0,7);c2.fill();c2.strokeStyle='#d8d8d8';c2.lineWidth=2;c2.strokeRect(a[0]+1,a[1]+rh*.15,rw-2,rh*.12)}
   else for(const dt of b.det){c2.fillStyle=b.c2;c2.fillRect(a[0]+rw*dt.u,a[1]+rh*dt.v,rw*dt.s,rh*dt.s);c2.fillStyle='rgba(255,255,255,.08)';c2.fillRect(a[0]+rw*dt.u,a[1]+rh*dt.v,rw*dt.s,2)}
@@ -816,6 +829,7 @@ function render(c2,w,vw,vh,cam,Z,opts){
   // skids
   c2.strokeStyle='rgba(8,8,10,.55)';c2.lineWidth=3;c2.beginPath();for(const s of w.skids){if(s[0]<x0||s[0]>x1||s[1]<y0||s[1]>y1)continue;c2.moveTo(s[0],s[1]);c2.lineTo(s[2],s[3])}c2.stroke();
   for(const p of parked)if(p.x>x0&&p.x<x1&&p.y>y0&&p.y<y1)drawCar(c2,{x:p.x,y:p.y,a:p.a,L:p.L,Wd:p.Wd,col:p.col,st:{},hp:1,maxhp:1},t);
+  for(const a of awn)if(a.x>x0-100&&a.x<x1&&a.y>y0-20&&a.y<y1){const n=Math.max(2,a.w/10|0);for(let k=0;k<n;k++){c2.fillStyle=k%2?'#efe9dc':a.c;c2.fillRect(a.x+k*a.w/n,a.y,a.w/n+.5,12)}c2.fillStyle='rgba(0,0,0,.35)';c2.fillRect(a.x,a.y+12,a.w,3)}
   for(const b of barriers)if(b.x>x0-60&&b.x<x1&&b.y>y0-60&&b.y<y1){for(let k=0;k<6;k++){c2.fillStyle=k%2?'#f2f2f2':'#e0201a';c2.fillRect(b.x+k*8,b.y+18,8,12)}c2.fillStyle='#111';c2.fillRect(b.x,b.y+30,T,3)}
   for(const p of w.peds)if(p.x>x0&&p.x<x1&&p.y>y0&&p.y<y1)drawPed(c2,p);
   for(const c of w.cars)if(c.x>x0-30&&c.x<x1+30&&c.y>y0-30&&c.y<y1+30){drawCar(c2,c,t);c.hitT=Math.max(0,(c.hitT||0)-1/60)}
@@ -879,8 +893,8 @@ function render(c2,w,vw,vh,cam,Z,opts){
     c2.fillStyle='rgba(255,90,90,.95)';const dy=(8*9)*T;if(dy>y0-200&&dy<y1+200){c2.strokeText('DĚČÍN — ZAVŘENO',(8*5)*T,dy-fs);c2.fillText('DĚČÍN — ZAVŘENO',(8*5)*T,dy-fs)}}
   c2.restore();
   // speech bubbles
-  c2.font='600 12px Oswald, sans-serif';c2.textAlign='center';c2.textBaseline='middle';
-  for(const p of w.cars.concat(w.peds)){if(!p.say)continue;const X=(p.x-cam.x)*Z+vw/2,Y=(p.y-cam.y)*Z+vh/2-18;if(X<-80||X>vw+80||Y<-40||Y>vh+40)continue;const tw=c2.measureText(p.say).width+12,BX2=clamp(X,tw/2+4,vw-tw/2-4);c2.fillStyle='rgba(255,255,255,.95)';rrect(c2,BX2-tw/2,Y-11,tw,20,8);c2.fill();c2.beginPath();c2.moveTo(X-4,Y+8);c2.lineTo(X,Y+15);c2.lineTo(X+4,Y+8);c2.fill();c2.fillStyle='#111';c2.fillText(p.say,BX2,Y)}
+  const bfs=G.mode==='promo'?19:isTouch?14:13;c2.font='600 '+bfs+'px Oswald, sans-serif';c2.textAlign='center';c2.textBaseline='middle';
+  const placed=[];for(const p of w.cars.concat(w.peds)){if(!p.say)continue;const X=(p.x-cam.x)*Z+vw/2;let Y=(p.y-cam.y)*Z+vh/2-18;if(X<-80||X>vw+80||Y<-40||Y>vh+40)continue;const tw=c2.measureText(p.say).width+14,BX2=clamp(X,tw/2+4,vw-tw/2-4),bh2=bfs+9;for(let k=0;k<4;k++){if(!placed.some(r=>Math.abs(r[0]-BX2)<(r[2]+tw)/2&&Math.abs(r[1]-Y)<bh2+2))break;Y-=bh2+3}placed.push([BX2,Y,tw]);c2.fillStyle='rgba(255,255,255,.96)';rrect(c2,BX2-tw/2,Y-bh2/2-1,tw,bh2,8);c2.fill();c2.beginPath();c2.moveTo(X-4,Y+8);c2.lineTo(X,Y+15);c2.lineTo(X+4,Y+8);c2.fill();c2.fillStyle='#111';c2.fillText(p.say,BX2,Y)}
   // rain
   if(w.rain){c2.strokeStyle='rgba(170,195,230,.33)';c2.lineWidth=1;c2.beginPath();const n=isTouch?110:160;for(let i=0;i<n;i++){const d=rainDrops[i];const y=((d.y+t*1.6*d.s)%1)*(vh+60)-30,x=((d.x+t*.25*d.s)%1)*(vw+60)-30;c2.moveTo(x,y);c2.lineTo(x-5*d.s,y-18*d.s)}c2.stroke();
     c2.strokeStyle='rgba(170,195,230,.25)';for(let i=0;i<10;i++){const x=R()*vw,y=R()*vh;c2.beginPath();c2.ellipse(x,y,4,1.6,0,0,7);c2.stroke()}}
@@ -938,12 +952,14 @@ function promoShot(i){const w=promo.w,s=PROMO[i];cineCut();
       for(let k=0;k<12;k++)spawnPed(w,80,500)}
     if(s.game==='chase'){setRoute(w,[[0,21],[3,21],[3,23],[8,23],[8,25]]);const sp={col:'#141519',max:235,acc:240,turn:2.9,grip:6,hp:999,L:40,Wd:19};const g=makeCar(sp,IX(0)+60,IX(21)+18,0,'run');g.path=routePath(w,18);g.v=200;g.vx=200;w.cars.push(g);
       for(let k=0;k<2;k++){const p=makeCar(Object.assign({},POLICE,{max:228,hp:999}),IX(0)-80-k*70,IX(21)+(k?-18:18),0,'run');p.path=routePath(w,k?-18:18);p.v=200;p.vx=200;w.cars.push(p)}
-      promo.follow=g;w.cam.x=g.x;w.cam.y=g.y;for(let k=0;k<14;k++)spawnPed(w,80,600)}}
+      promo.follow=g;w.cam.x=g.x;w.cam.y=g.y;const PL=['Ty šlapko, pomalu!','Do píče, fízlové!','Jeď, jeď, JEĎ!','Málem mě zajel, kretén!','To je ta černá kára!','Ty vole, točím to!','Zase honěj někoho…','Policie, kurva!'];
+      for(let k=0;k<8;k++){const q=makePed(k%3?'walker':'drunk',IX(0)+T*(2.5+k*3),IX(21)+(k%2?T*1.4:-T*1.4));q.sp=0;q.promoLine=PL[k%PL.length];w.peds.push(q)}}}
 }
 function updatePromo(dt){promo.t+=dt;const w=promo.w;let i=-1;for(let k=0;k<PROMO.length;k++)if(promo.t>=PROMO[k].t)i=k;
   if(promo.t>PROMO_END){endPromo();return}
   if(i!==promo.shot){promo.shot=i;promoShot(i)}
   updateWorld(w,dt,{});
+  for(const q of w.peds)if(q.promoLine&&promo.follow&&!q.said&&Math.hypot(q.x-promo.follow.x,q.y-promo.follow.y)<170&&!w.peds.some(o=>o.say&&o!==q&&Math.abs(o.x-q.x)<260&&Math.abs(o.y-q.y)<120)){q.said=1;q.say=q.promoLine;q.sayL=2.2}
   if(promo.follow){const f=promo.follow;w.cam.x=lerp(w.cam.x,f.x+f.vx*.3,Math.min(1,dt*3));w.cam.y=lerp(w.cam.y,f.y+f.vy*.3,Math.min(1,dt*3));Snd.siren(.9,w.t)}
   else{w.cam.x+=promo.pan.vx*dt;w.cam.y+=promo.pan.vy*dt;Snd.siren(PROMO[promo.shot]&&PROMO[promo.shot].img==='bridge'?.7:0,w.t)}
   w.zoom=baseZoom()*(PROMO[promo.shot]&&PROMO[promo.shot].game==='chase'?.95:1.08);
@@ -1223,7 +1239,7 @@ document.addEventListener('click',e=>{const t=e.target.closest('button,[data-lvl
 const pv=$('pv');
 if(!location.search.includes('rec')){const v=innerWidth<innerHeight?'vertical':'landscape';pv.poster='promo/'+v+'.jpg';pv.src='promo/'+v+'.mp4';pv.play&&pv.play().catch(()=>{})}
 $('bStart').onclick=()=>{Snd.unlock();pv.pause();Snd.startMusic(true);showMenu()};
-$('bSound').onclick=()=>{Snd.unlock();pv.loop=false;pv.muted=false;pv.currentTime=0;pv.play().catch(()=>{});$('scr-start').classList.add('full')};
+$('bSound').onclick=()=>{Snd.unlock();try{navigator.vibrate&&navigator.vibrate([40,30,60])}catch(e){}pv.loop=false;pv.muted=false;pv.currentTime=0;pv.play().catch(()=>{});$('scr-start').classList.add('full')};
 pv.addEventListener('timeupdate',()=>{if(pv.muted&&pv.currentTime<4.5)pv.currentTime=4.7});
 pv.addEventListener('ended',()=>{$('scr-start').classList.remove('full');pv.muted=true;pv.loop=true;pv.play().catch(()=>{})});
 pv.addEventListener('click',()=>{if($('scr-start').classList.contains('full')){pv.pause();pv.muted=true;$('scr-start').classList.remove('full')}});preloadArt();
