@@ -149,6 +149,9 @@ body.rec #skip{display:none!important}
 .hp{width:120px;height:9px;background:#2b0f15;border-radius:2px;overflow:hidden;margin-top:3px}
 .hp i{display:block;height:100%;background:linear-gradient(90deg,#ff2e63,#ffcc1a);width:100%}
 #mm{width:96px;height:96px;border:2px solid rgba(255,255,255,.25);border-radius:6px;background:#0b0d14;display:block;margin-top:6px}
+#keyB{pointer-events:auto;font-size:18px;background:rgba(8,9,16,.8);color:#fff;border:1px solid rgba(255,255,255,.3);border-radius:5px;width:40px;height:36px}#keyB.off{background:rgba(200,30,40,.85)}
+#radioB.on{position:relative}#radioB.on:before,#radioB.on:after{content:'';position:absolute;left:50%;top:50%;width:30px;height:30px;margin:-15px 0 0 -15px;border:2px solid rgba(255,204,26,.8);border-radius:50%;animation:rw 1.4s ease-out infinite;pointer-events:none}#radioB.on:after{animation-delay:.7s}
+@keyframes rw{from{transform:scale(.5);opacity:.9}to{transform:scale(1.9);opacity:0}}
 #radioB{pointer-events:auto;font-size:18px;background:rgba(8,9,16,.8);color:#fff;border:1px solid rgba(255,255,255,.3);border-radius:5px;width:40px;height:36px}
 #pauseB{pointer-events:auto;font-family:Bangers;font-size:20px;background:rgba(8,9,16,.8);color:#fff;border:1px solid rgba(255,255,255,.3);border-radius:5px;width:40px;height:36px}
 #center{position:absolute;left:0;right:0;top:30%;text-align:center;font-family:Bangers;font-size:clamp(46px,14vw,96px);letter-spacing:3px;color:#fff;text-shadow:4px 4px 0 #000,0 0 30px rgba(255,46,99,.7)}
@@ -217,6 +220,7 @@ body.drag #kL,body.drag #kR{display:none}
     <button class="btn sm dark" id="bMute">🔊 Zvuk</button>
     <button class="btn sm dark" data-go="promo">▶ Intro</button>
   </div>
+  <div class="row"><button class="btn sm dark" id="mRadio">📻 LABE FM</button></div>
   <div id="zoomB"><button class="btn sm dark" id="zIn">＋</button><button class="btn sm dark" id="zOut">−</button></div>
   <p class="note">Verze 0.1 — prototyp. Názvy aut a postavy jsou smyšlené.</p>
 </div>
@@ -233,7 +237,7 @@ body.drag #kL,body.drag #kR{display:none}
   <div class="hrow">
     <div class="hbox"><div id="hLabel">AUTO</div><div class="hp"><i id="hHp"></i></div><div style="margin-top:4px">RESPEKT <span id="hResp" style="color:var(--acc)">0</span></div></div>
     <div class="hbox" style="text-align:center"><div id="hMainL">POZICE</div><div class="big" id="hMain">1/5</div></div>
-    <div style="display:flex;flex-direction:column;align-items:flex-end"><div style="display:flex;gap:6px"><button id="radioB">📻</button><button id="pauseB">II</button></div><canvas id="mm" width="192" height="192"></canvas></div>
+    <div style="display:flex;flex-direction:column;align-items:flex-end"><div style="display:flex;gap:6px"><button id="keyB" title="Motor (E)">🔑</button><button id="radioB" title="Rádio (R)">📻</button><button id="pauseB">II</button></div><canvas id="mm" width="192" height="192"></canvas></div>
   </div>
   <div id="bust"><b>POLICIE TĚ MÁ!</b><div class="hp"><i id="hBust"></i></div></div>
   <div id="center"></div><div id="area"></div><div id="obj"></div>
@@ -631,7 +635,7 @@ function carPhysics(w,c,ctl,dt){
   if(c.boost){maxV*=1.42;acc*=1.7}
   const thr=ctl.thr||0;c.brake=false;
   if(thr>0){if(c.v<0)c.v+=st.acc*2.2*dt;else c.v+=acc*thr*dt*(1-Math.max(0,c.v)/maxV*.55)}
-  else if(thr<0){if(c.v>5){c.v-=st.acc*1.9*dt;c.brake=true}else c.v=Math.max(-90,c.v-st.acc*.6*dt)}
+  else if(thr<0){if(c.v>5){c.v-=st.acc*1.9*dt*Math.min(1,-thr);c.brake=-thr>.5}else if(thr>-.5){c.v=Math.max(0,c.v-st.acc*dt)}else c.v=Math.max(-90,c.v-st.acc*.6*dt)}
   else c.v*=1-.7*dt;
   if(c.v>maxV)c.v-=(c.v-maxV)*2.5*dt;
   const sp=Math.abs(c.v);c.steer=lerp(c.steer,ctl.steer||0,Math.min(1,dt*10));
@@ -883,6 +887,7 @@ function render(c2,w,vw,vh,cam,Z,opts){
   }
   if(opts.arrow&&w.route){const F=w.route[w.route.length-1];const g=c2.createRadialGradient(F.x,F.y,0,F.x,F.y,140);g.addColorStop(0,'rgba(255,230,120,.45)');g.addColorStop(1,'rgba(0,0,0,0)');c2.fillStyle=g;c2.fillRect(F.x-140,F.y-140,280,280)}
   for(const q of w.parts)if(q.type==='fire'){const a=q.life/q.max;c2.fillStyle=`rgba(255,${120+a*100|0},40,${a*.8})`;c2.beginPath();c2.arc(q.x,q.y,q.size*(1.4-a*.4),0,7);c2.fill()}
+  if(w.player&&(G.mode==='roam'||G.mode==='race')&&Snd.style&&Snd.style!=='off'&&!G.engineOff&&!SAVE.mute){const p=w.player,ph=(t*1.6)%1;for(const o of[0,.5]){const q=(ph+o)%1;c2.strokeStyle=`rgba(255,204,26,${.35*(1-q)})`;c2.lineWidth=2;c2.beginPath();c2.arc(p.x,p.y,14+q*46,0,7);c2.stroke()}}
   if(w.muzzle>0&&w.player){const p=w.player,ca=Math.cos(p.a),sa=Math.sin(p.a);c2.fillStyle='rgba(255,220,120,.9)';c2.beginPath();c2.arc(p.x+ca*(p.L*.5+8)-sa*6,p.y+sa*(p.L*.5+8)+ca*6,5+R()*5,0,7);c2.fill()}
   c2.restore();
   c2.save();c2.translate(vw/2+sx,vh/2+sy);c2.scale(Z,Z);c2.translate(-cam.x,-cam.y);c2.textAlign='center';c2.textBaseline='middle';c2.font='700 12px Oswald, sans-serif';c2.fillStyle='rgba(235,235,225,.42)';
@@ -976,7 +981,7 @@ function menuStage(){const w=G.world;if(!w)return;const sx=IX(2)+T*1.6,sy=IX(24)
   const f1=makePed('fight',sx+T*2,sy),f2=makePed('fight',sx+T*2+16,sy);f1.mate=f2;f2.mate=f1;f1.sayT=.5;f2.sayT=2;w.peds.push(f1,f2);
   const add=(t,x,dy,st)=>{const q=makePed(t,x,sy+(dy||0));q.sayT=st;w.peds.push(q)};add('drunk',sx+T*3.6,2,1.2);add('drunk',sx+T*.6,-3,3);add('girl',sx+T*4.4,-4,2.2);add('girl',sx+T*4.75,4,4);add('smoker',sx+T*1.2,-6,1.6);add('walker',sx+T*5.5,0,3.5);add('worker',sx-T*.5,0,5);
   for(let k=0;k<10;k++)spawnPed(w,150,600);w.stage={x:sx+T*3,y:sy}}
-function showMenu(){ensureAmbient();Snd.setStyle('labe');$('menuMoney').innerHTML=moneyHTML();menuStage();$('bMute').textContent=SAVE.mute?'🔇 Zvuk':'🔊 Zvuk';show('scr-menu');Snd.startMusic(true)}
+function showMenu(){ensureAmbient();{const r=SAVE.radio&&SAVE.radio!=='chase'&&SAVE.radio!=='race'?SAVE.radio:'labe';Snd.setStyle(r);if(r==='labe')Snd.lead=true;if($('mRadio'))$('mRadio').textContent='📻 '+STY[r].name}$('menuMoney').innerHTML=moneyHTML();menuStage();$('bMute').textContent=SAVE.mute?'🔇 Zvuk':'🔊 Zvuk';show('scr-menu');Snd.startMusic(true)}
 function topBar(title,back){return`<div class="top"><button class="btn sm dark" data-back="${back||'menu'}">◂ Zpět</button><h2>${title}</h2><div style="width:60px"></div></div><div class="money">${moneyHTML()}</div>`}
 function showHeroes(next){const el=$('scr-heroes');let h=topBar('POSTAVY')+`<p class="tag" style="margin:0 0 10px">Jedete spolu. Vyber, za koho hraješ.</p><div class="cards">`;
   for(const k of['lucie','marek']){const H=HEROES[k];h+=`<div class="card ${SAVE.hero===k?'sel':''}"><div class="portrait"><img src="art/${k}.jpg" alt="${H.name}"></div><div class="role">${H.role}</div><h3>${H.name}</h3><p>${H.desc}</p><p style="color:#ffcc1a">★ ${H.perk}</p><button class="btn ${k==='lucie'?'pink':''}" data-hero="${k}">${SAVE.hero===k?'VYBRÁNO':'HRÁT ZA '+(k==='lucie'?'LUCII':'MARKA')}</button></div>`}
@@ -1042,7 +1047,7 @@ function finishComic(){const d=comic.done;comic=null;if(d)d();else showComics()}
 
 /* ---------------- FREE ROAM ---------------- */
 function MARKERS(){return LEVELS.filter(L=>!L.soon).map(L=>{const r=L.route?L.route[0]:L.at;return{L,x:IX(r[0]),y:IX(r[1]),open:!L.soon&&(!L.req||SAVE.done[L.req])}})}
-function startRoam(at,target){hideAll();at=at||HOME;const w=newWorld({rain:R()<.45,dark:.8,civMax:8,pedMax:28});G.world=w;G.mode='roam';G.level=null;
+function startRoam(at,target){hideAll();G.engineOff=false;$('keyB').classList.remove('off');$('keyB').style.display='';at=at||HOME;const w=newWorld({rain:R()<.45,dark:.8,civMax:8,pedMax:28});G.world=w;G.mode='roam';G.level=null;
   const car=CARS.find(c=>c.id===SAVE.car)||CARS[0];const p=makeCar(Object.assign({},car),at.x,at.y,at.a,'player');p.handMul=SAVE.hero==='lucie'?1.15:1;w.player=p;w.cars.push(p);
   w.cam={x:p.x,y:p.y};w.zoom=baseZoom();for(let i=0;i<5;i++)spawnCiv(w);for(let i=0;i<20;i++)spawnPed(w,100,800);
   RS={roam:true,nitro:.6,nitroFill:SAVE.hero==='lucie'?.098:.07,target:target||null,enterCD:2.5};G.roamDist='';
@@ -1057,7 +1062,7 @@ function updateRoam(dt){const w=G.world,p=w.player;
   updateWorld(w,dt,ctl);if(p.hp<p.maxhp)p.hp=Math.min(p.maxhp,p.hp+dt*3);if(p.hp<=5)p.hp=5;
   const sp=Math.hypot(p.vx,p.vy);w.cam.x=lerp(w.cam.x,p.x+p.vx*.42,Math.min(1,dt*4));w.cam.y=lerp(w.cam.y,p.y+p.vy*.42,Math.min(1,dt*4));
   w.zoom=lerp(w.zoom||baseZoom(),baseZoom()*(1-clamp(sp/p.st.max,0,1.3)*.2),Math.min(1,dt*2));shakeA=Math.max(0,shakeA-dt*30);
-  Snd.engine(p.v,true,p.boost);Snd.siren(0,0);
+  Snd.engine(p.v,!G.engineOff,p.boost);Snd.siren(0,0);
   const ptx=Math.floor(p.x/T),pty=Math.floor(p.y/T);let bi=clamp(Math.floor(ptx/8),0,BX-1),bj=clamp(Math.floor(pty/8),0,BY-1);if(bi===RIVER&&ptx%8<2)bi=RIVER-1;let d=district(bi,bj);
   if(tileAt(ptx,pty)===BRIDGE)d=BRIDGES[pty>>3]||d;
   if(d!==G.roamDist){G.roamDist=d;$('hMain').textContent=d.toUpperCase();const a=$('area');a.textContent=d.toUpperCase();a.classList.add('on');areaT=2.5}
@@ -1100,15 +1105,19 @@ function beginRace(L){hideAll();const w=newWorld({rain:L.rain,dark:L.dark,civMax
   $('kU').style.display=SAVE.autoGas?'none':'block';
   $('kAt').textContent=L.type==='race'?'NITRO':'PAL';
   $('hint').textContent=isTouch?'':(L.type==='race'?'←→ řízení • ↑ plyn • ↓ brzda • MEZERNÍK nitro • R rádio • P pauza':'←→ řízení • ↑ plyn • ↓ brzda • MEZERNÍK střelba • P pauza');
+  $('keyB').style.display='none';G.engineOff=false;
   $('hMainL').textContent=L.type==='race'?'POZICE':'DO CÍLE';$('hMain').classList.remove('small');$('obj').classList.remove('on');$('area').classList.remove('on');
   Snd.startMusic(false);Snd.setStyle(L.type==='chase'?'chase':'race');Snd.rain(L.rain);drawMinimapBg();
 }
 let msgT=0;function floatMsg(t,dur){$('center').textContent=t;msgT=dur||1.1}
 const STK={id:null,x:0,y:0,dx:0,dy:0};
-function playerCtl(){const k=G.keys;let thr=(k.u?1:0)+(k.d?-1:0);if(SAVE.autoGas&&!k.d&&isTouch)thr=1;let steer=(k.r?1:0)-(k.l?1:0);
-  const p=G.world&&G.world.player;
-  if(STK.id!==null&&p){const L=Math.hypot(STK.dx,STK.dy);if(L>14){const want=Math.atan2(STK.dy,STK.dx);let d=wrapA(want-p.a);
-      if(Math.abs(d)>2.3&&p.v<40&&!SAVE.autoGas){}steer=clamp(d*2.4,-1,1);if(!k.d)thr=Math.max(thr,clamp(L/60,.35,1))}}
+function playerCtl(){const k=G.keys;const p=G.world&&G.world.player;
+  if(G.engineOff)return{thr:p&&p.v>3?-1:0,steer:0};
+  let thr=(k.u?1:0)+(k.d?-1:0);let steer=(k.r?1:0)-(k.l?1:0);
+  const drag=SAVE.steer==='drag'&&isTouch;
+  if(SAVE.autoGas&&!k.d&&isTouch&&!drag)thr=1;
+  if(STK.id!==null&&p){const L=Math.hypot(STK.dx,STK.dy);if(L>14){const want=Math.atan2(STK.dy,STK.dx);const d=wrapA(want-p.a);steer=clamp(d*2.4,-1,1);if(!k.d)thr=Math.max(thr,clamp(L/60,.35,1))}}
+  else if(drag&&!k.d&&!k.u)thr=-.3;
   return{thr,steer}}
 function stickOn(){return SAVE.steer==='drag'&&isTouch&&(G.mode==='race'||G.mode==='roam')}
 cv.addEventListener('pointerdown',e=>{if(!stickOn()||STK.id!==null)return;STK.id=e.pointerId;STK.x=e.clientX;STK.y=e.clientY;STK.dx=STK.dy=0;const s=$('stick');s.style.left=e.clientX+'px';s.style.top=e.clientY+'px';s.style.display='block';s.firstChild.style.transform='';try{cv.setPointerCapture(e.pointerId)}catch(_){}});
@@ -1211,16 +1220,22 @@ for(const b of document.querySelectorAll('#ctrl button')){const k=b.dataset.k;
   b.addEventListener('pointerdown',on);b.addEventListener('pointerup',off);b.addEventListener('pointercancel',off);b.addEventListener('lostpointercapture',off);b.addEventListener('contextmenu',e=>e.preventDefault())}
 function pause(){if(!(G.mode==='race'||G.mode==='roam')||(RS&&RS.end))return;G.prevMode=G.mode;G.mode='paused';Snd.engine(0,false);Snd.siren(0,0);const el=$('scr-pause');
   el.innerHTML=`<h2 class="logo"><span class="b" style="font-size:44px">PAUZA</span></h2><button class="btn" id="pRes">POKRAČOVAT</button>${G.prevMode==='race'?`<button class="btn dark" data-lvlgo="${RS.L.id}">ZNOVU</button><button class="btn dark" data-go="city">VZDÁT → MĚSTO</button>`:''}
-  <div class="toggle">Řízení: <button class="btn sm dark" id="pSteer">${SAVE.steer==='drag'?'TAH PRSTEM':'ŠIPKY'}</button></div><div class="toggle">Auto-plyn (mobil): <button class="btn sm dark" id="pAuto">${SAVE.autoGas?'ZAP':'VYP'}</button></div><button class="btn sm dark" id="pMute">${SAVE.mute?'🔇 Zvuk vyp':'🔊 Zvuk zap'}</button><button class="btn pink" data-go="menu">MENU</button>`;
+  <div class="toggle">Řízení: <button class="btn sm dark" id="pSteer">${SAVE.steer==='drag'?'TAH PRSTEM':'ŠIPKY'}</button></div><div class="toggle">Auto-plyn (mobil): <button class="btn sm dark" id="pAuto">${SAVE.autoGas?'ZAP':'VYP'}</button></div><button class="btn sm dark" id="pRadio">📻 ${STY[Snd.style]?STY[Snd.style].name:'RÁDIO'}</button><button class="btn sm dark" id="pMute">${SAVE.mute?'🔇 Zvuk vyp':'🔊 Zvuk zap'}</button><button class="btn pink" data-go="menu">MENU</button>`;
   $('ctrl').classList.remove('on');el.classList.add('on');
   $('pRes').onclick=()=>{el.classList.remove('on');if(isTouch)$('ctrl').classList.add('on');G.mode=G.prevMode;G.keys={}};
   $('pAuto').onclick=()=>{SAVE.autoGas=!SAVE.autoGas;save();$('pAuto').textContent=SAVE.autoGas?'ZAP':'VYP';$('kU').style.display=SAVE.autoGas?'none':'block'};
   $('pSteer').onclick=()=>{SAVE.steer=SAVE.steer==='drag'?'buttons':'drag';save();applySteerMode();$('pSteer').textContent=SAVE.steer==='drag'?'TAH PRSTEM':'ŠIPKY'};
+  $('pRadio').onclick=()=>nextRadio();
   $('pMute').onclick=()=>{Snd.setMute(!SAVE.mute);$('pMute').textContent=SAVE.mute?'🔇 Zvuk vyp':'🔊 Zvuk zap'}}
 $('pauseB').addEventListener('click',pause);
-function radioList(){const L=G.mode==='race'&&G.level?[G.level.type==='chase'?'chase':'race']:[];return L.concat(RADIO)}
-function nextRadio(){const L=radioList();let i=L.indexOf(Snd.style);const n=L[(i+1)%L.length];Snd.setStyle(n);if(G.mode==='roam'){SAVE.radio=n;save()}const a=$('area');a.textContent='📻 '+STY[n].name;a.classList.add('on');areaT=2.5}
-$('radioB').addEventListener('click',nextRadio);
+function radioList(){const md=G.mode==='paused'?G.prevMode:G.mode;const L=md==='race'&&G.level?[G.level.type==='chase'?'chase':'race']:[];return L.concat(RADIO)}
+function nextRadio(){const L=radioList();let i=L.indexOf(Snd.style);const n=L[(i+1)%L.length];Snd.setStyle(n);{const md=G.mode==='paused'?G.prevMode:G.mode;if(n==='labe')Snd.lead=md!=='race'&&md!=='roam';if(md!=='race'){SAVE.radio=n;save()}}if($('mRadio'))$('mRadio').textContent='📻 '+STY[n].name;if($('pRadio'))$('pRadio').textContent='📻 '+STY[n].name;const a=$('area');a.textContent='📻 '+STY[n].name;a.classList.add('on');areaT=2.5}
+$('radioB').addEventListener('click',nextRadio);$('mRadio').addEventListener('click',()=>{Snd.unlock();nextRadio()});
+function toast(t){const a=$('area');a.textContent=t;a.classList.add('on');areaT=2.2}
+function toggleEngine(){if(G.mode!=='roam')return;G.engineOff=!G.engineOff;$('keyB').classList.toggle('off',G.engineOff);if(G.engineOff){toast('🔑 MOTOR VYPNUTÝ');Snd.engine(0,false)}else{toast('🔑 NASTARTOVÁNO');Snd.nz(.5,'lowpass',300,.4);Snd.tone(50,90,.6,'sawtooth',.2)}}
+$('keyB').addEventListener('click',toggleEngine);
+addEventListener('keydown',e=>{if(e.code==='KeyE')toggleEngine()});
+setInterval(()=>{$('radioB').classList.toggle('on',!!Snd.style&&Snd.style!=='off'&&Snd.ctx&&!SAVE.mute)},300);
 addEventListener('keydown',e=>{if(e.code==='KeyR'&&(G.mode==='race'||G.mode==='roam'))nextRadio()});
 
 document.addEventListener('click',e=>{const t=e.target.closest('button,[data-lvl],[data-comic]');if(!t)return;
