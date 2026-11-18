@@ -77,6 +77,10 @@ h1,h2,h3{margin:0}
 #skip{position:fixed;right:14px;top:max(14px,env(safe-area-inset-top));z-index:7;display:none}
 .bars:before,.bars:after{content:"";position:fixed;left:0;right:0;height:7vh;background:#000;z-index:5}
 .bars:before{top:0}.bars:after{bottom:0}
+#pv{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#000}
+.startui{position:relative;width:100%;display:flex;flex-direction:column;align-items:center;padding:24px 16px max(22px,env(safe-area-inset-bottom));background:linear-gradient(180deg,rgba(0,0,0,0),rgba(0,0,0,.85) 35%)}
+.startui .logo .a{font-size:clamp(40px,11vw,80px)}.startui .logo .b{font-size:clamp(18px,4.6vw,30px)}
+#scr-start.full .startui{opacity:0;pointer-events:none;transition:opacity .4s}
 /* cinematic promo */
 #cine{position:fixed;inset:0;z-index:3;pointer-events:none;overflow:hidden;display:none}
 #cine .ci{position:absolute;inset:-6%;background-size:cover;background-position:center;opacity:0;transition:opacity .45s}
@@ -152,12 +156,14 @@ body.rec #skip{display:none!important}
 <body>
 <canvas id="c"></canvas>
 
-<div id="scr-start" class="scr on" style="justify-content:center">
-  <div class="tag">ZORYX studio uvádí</div>
-  <div class="logo"><span class="a">ÚSTÍ</span><span class="b">MĚSTO ANDĚLŮ</span></div>
-  <p class="tag" style="max-width:420px;margin:10px 0 22px">Noc. Déšť. Policajti. Respekt se tu nekupuje — vyjíždí se.</p>
-  <button class="btn" id="bStart">KLEPNI A JEĎ</button>
-  <p class="note">Se zvukem • na mobilu nejlíp na výšku • na PC šipky + mezerník</p>
+<div id="scr-start" class="scr on" style="justify-content:flex-end;padding:0">
+  <video id="pv" muted autoplay playsinline loop preload="auto"></video>
+  <div class="startui">
+    <div class="logo"><span class="a">ÚSTÍ</span><span class="b">MĚSTO ANDĚLŮ</span></div>
+    <button class="btn" id="bStart">HRÁT</button>
+    <button class="btn sm dark" id="bSound">🔊 Promo se zvukem</button>
+    <p class="note">Na mobilu nejlíp na výšku • na PC šipky + mezerník</p>
+  </div>
 </div>
 
 <div id="cine"><div class="ci" id="ciA"></div><div class="ci" id="ciB"></div><div class="shade"></div><div id="card"></div><div id="titlecard"><div class="tag" style="color:#fff">ZORYX studio</div><div class="logo"><span class="a">ÚSTÍ</span><span class="b">MĚSTO ANDĚLŮ</span></div><div class="tag" style="color:#ffcc1a;margin-top:10px">Brzy na mobilu i na PC</div></div><div id="grain"></div><div id="flash"></div></div>
@@ -989,7 +995,13 @@ document.addEventListener('click',e=>{const t=e.target.closest('button,[data-lvl
   if(t.dataset.pick){SAVE.car=t.dataset.pick;save();renderGarage();return}
   if(t.dataset.buy){const c=CARS.find(x=>x.id===t.dataset.buy);if(SAVE.resp>=c.price){SAVE.resp-=c.price;SAVE.owned.push(c.id);SAVE.car=c.id;save();renderGarage()}return}
 });
-$('bStart').onclick=()=>{Snd.init();startPromo()};preloadArt();
+const pv=$('pv');
+if(!location.search.includes('rec')){const v=innerWidth<innerHeight?'vertical':'landscape';pv.poster='promo/'+v+'.jpg';pv.src='promo/'+v+'.mp4';pv.play&&pv.play().catch(()=>{})}
+$('bStart').onclick=()=>{Snd.init();pv.pause();Snd.startMusic(true);showMenu()};
+$('bSound').onclick=()=>{pv.loop=false;pv.muted=false;pv.currentTime=0;pv.play().catch(()=>{});$('scr-start').classList.add('full')};
+pv.addEventListener('timeupdate',()=>{if(pv.muted&&pv.currentTime<4.5)pv.currentTime=4.7});
+pv.addEventListener('ended',()=>{$('scr-start').classList.remove('full');pv.muted=true;pv.loop=true;pv.play().catch(()=>{})});
+pv.addEventListener('click',()=>{if($('scr-start').classList.contains('full')){pv.pause();pv.muted=true;$('scr-start').classList.remove('full')}});preloadArt();
 $('skip').onclick=()=>{Snd.click();endPromo()};
 $('bMute').onclick=()=>{Snd.setMute(!SAVE.mute);$('bMute').textContent=SAVE.mute?'🔇 Zvuk':'🔊 Zvuk'};
 document.addEventListener('visibilitychange',()=>{if(document.hidden){if(G.mode==='race')pause();if(Snd.ctx)Snd.ctx.suspend()}else if(Snd.ctx)Snd.ctx.resume()});
