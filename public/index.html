@@ -500,7 +500,9 @@ const WHO_NAME={pepa:'PEPA',denis:'DENIS',lucie:'LUCIE',marek:'MAREK',kaja:'KÁJ
 const STY={
  labe:{name:'LABE FM',bpm:92},
  synth:{name:'NOČNÍ ÚSTÍ',bpm:108,kick:[0,4,8,12],snare:[4,12],hat:'off',bass:'8',pad:1,lead:'arp16',ch:[[57,60,64],[53,57,60],[48,52,55],[55,59,62]]},
- dnb:{name:'CHEMIČKA DnB',bpm:172,kick:[0,10],snare:[4,12],hat:1,bass:'reese',bcut:400,pad:1,pcut:700,ch:[[50,53,57],[50,53,57],[46,50,53],[48,52,55]]},
+ dnb:{name:'CHEMIČKA DnB',bpm:174,kick:[0,10],snare:[4,12],ghost:[7,15],hat:1,bass:'reese',bcut:750,harm:1,stab:[6],so:12,sw:'sawtooth',pad:1,pcut:700,ch:[[50,53,57],[50,53,57],[46,50,53],[48,52,55]],vol:.42},
+ liquid:{name:'LIQUID LABE',bpm:174,kick:[0,10],snare:[4,12],ghost:[7,14],hat:1,bass:'sub',harm:1,keys:[0,8],pad:1,pcut:1400,ch:[[57,60,64,67],[53,57,60,64],[55,59,62,65],[52,55,59,62]],vol:.4},
+ jungle:{name:'JUNGLE STŘEKOV',bpm:168,kick:[0,2,10,11],snare:[4,7,12,15],ghost:[6,9,13],hat:1,bass:'reese',bcut:600,harm:1,scratch:1,ch:[[45,48,52],[45,48,52],[43,46,50],[41,45,48]],vol:.42},
  polka:{name:'RÁDIO DECHOVKA',bpm:118,kick:[0,8],snare:[],hat:0,bass:'tuba',bcut:900,stab:[4,12],so:0,sw:'square',lead:'polka',ch:[[60,64,67],[65,69,72],[67,71,74],[60,64,67]],vol:.3},
  chase:{name:'HONIČKA',bpm:146,kick:[0,3,6,8,11,14],snare:[4,12],hat:1,bass:'16',bcut:900,stab:[0,6,12],so:12,sw:'sawtooth',lead:'alarm',ch:[[52,55,59],[53,57,60],[52,55,59],[50,53,57]],vol:.36},
  race:{name:'ZÁVOD',bpm:132,kick:[0,4,8,12],snare:[4,12],hat:'off',bass:'off',pad:1,lead:'arp16',stab:[14],ch:[[57,60,64],[55,59,62],[53,57,60],[52,56,59]],vol:.36},
@@ -509,7 +511,7 @@ const STY={
  oldschool:{name:'OLDSCHOOL HIP-HOP',bpm:96,kick:[0,6,8],snare:[4,12],hat:2,bass:'funk',harm:1,stab:[14],so:0,sw:'sawtooth',scratch:1,ch:[[55,58,62],[53,57,60],[51,55,58],[53,57,60]],vol:.38},
  classic:{name:'KLASIKA FM',bpm:66,classic:1,vol:.5},
  off:{name:'VYPNUTO',bpm:92}};
-const RADIO=['labe','rap','trap','oldschool','synth','dnb','classic','polka','off'];
+const RADIO=['labe','rap','trap','oldschool','synth','dnb','liquid','jungle','classic','polka','off'];
 const BACH=[[48,52,55,60,64],[48,50,57,62,65],[47,50,55,62,65],[48,52,55,60,64],[48,52,57,64,69],[48,50,54,57,62],[47,50,55,62,67],[47,48,52,55,60],[45,48,52,55,60],[38,45,50,54,60],[43,47,50,55,59],[43,46,52,55,61],[41,45,50,57,62],[41,44,50,53,59],[40,43,48,55,60],[40,41,45,48,53]];
 const Snd={ctx:null,
  init(oc){if(this.ctx){this.ctx.resume&&this.ctx.resume();return}
@@ -556,6 +558,7 @@ const Snd={ctx:null,
  setStyle(n){this.style=n;const S=STY[n];this.spb=60/(S?S.bpm:92)/4;if(n!=='labe')this.lead=false;if(this.mus&&this.ctx)this.mus.gain.setTargetAtTime(n==='off'?0:(S&&S.vol)||.34,this.ctx.currentTime,.2)},
  play2(s,t){const S=STY[this.style];if(S&&S.classic){this.playClassic(s,t);return}if(!S||!S.ch)return;const st=s%16,bar=Math.floor(s/16)%4,ch=S.ch[bar],M=this.mus,c=this.ctx,m=this.mtof,root=ch[0];
   if(S.kick&&S.kick.includes(st)){this.tone(S.kf||140,40,.28,'sine',.95,M,t);this.tone(180,60,.05,'square',.12,M,t)}
+  if(S.ghost&&S.ghost.includes(st))this.nz(.07,'bandpass',2300,.14,t);
   if(S.snare&&S.snare.includes(st)){this.nz(.17,'bandpass',S.sf||2000,.5,t);this.tone(200,130,.07,'triangle',.25,M,t)}
   if(S.hat==='roll'){const roll=(bar%2===1&&st>=12);const n=roll?3:1;for(let k=0;k<n;k++){const tt=t+k*this.spb/n,b=c.createBufferSource();b.buffer=this.noise;const f=c.createBiquadFilter();f.type='highpass';f.frequency.value=8500;const g=c.createGain();g.gain.setValueAtTime(st%2?.05:.09,tt);g.gain.exponentialRampToValueAtTime(.001,tt+.035);b.connect(f);f.connect(g);g.connect(M);b.start(tt,Math.random());b.stop(tt+.05)}}
   if(S.vinyl&&Math.random()<.5)this.nz(.02,'highpass',3000,.03,t+Math.random()*this.spb);
@@ -1290,7 +1293,9 @@ const DJL={
  trap:['Bass Ústí. Basy tak hluboký, že se třese i Spolchemie.','Bass Ústí. Zesilte to, ať to slyší i na Střekově.'],
  oldschool:['Oldschool hip hop. Pro všechny, co ještě pamatujou kazety a tepláky.','Tohle je oldschool. Žádnej autotune, jenom poctivý beaty.'],
  synth:['Noční Ústí. Pro ty, co nemůžou spát. Nebo nesmějí.','Noční Ústí. Světla města, déšť a neon.'],
- dnb:['Chemička DnB. Rychlý jak policejní honička, smrdí jak chemička.'],
+ dnb:['Chemička DnB. Rychlý jak policejní honička, smrdí jak chemička.','Drum and bass z Ústí. Sto sedmdesát čtyři úderů za minutu, jako srdce při útěku.'],
+ liquid:['Liquid Labe. Drum and bass hladkej jak Labe v noci.','Liquid Labe. Pro noční jízdy po nábřeží.'],
+ jungle:['Jungle Střekov. Rozsekaný breaky a basy jak z hradu.','Jungle Střekov. Pro všechny, co zabloudili v lese nad Labem.'],
  classic:['Klasika FM. Johann Sebastian Bach. Ani on by se v Ústí neztratil.','Dobrý večer, ctění posluchači. Prosíme řidiče, aby nepřejížděli chodce. Děkujeme.'],
  polka:['Rádio Dechovka! Pro babičky, dědečky a všechny, co jedou po Teplický sedmdesátkou.','Dechovka hraje, Ústí tančí. A kdo netančí, ten platí rundu.'],
  chase:['Všem hlídkám: černý vůz, ujíždí směr Neštěmice. Opakuji, černý vůz.','Centrála, tady hlídka tři. Střílejí po nás! Potřebujeme posily!','Uzavřete Benešův most. Opakuji, uzavřete most.','Podezřelí jsou dva. Žena řídí, muž je ozbrojen. Buďte opatrní.'],
