@@ -604,6 +604,7 @@ function randWalkTile(w,minD,maxD){for(let k=0;k<30;k++){const a=R()*6.28,d=rr(m
 function spawnPed(w,minD,maxD){const q=randWalkTile(w,minD,maxD);if(!q)return;const k=R();
  if(k<.1){const a=makePed('fight',q.x,q.y),b=makePed('fight',q.x+16,q.y);a.mate=b;b.mate=a;a.a=0;b.a=Math.PI;w.peds.push(a,b)}
  else w.peds.push(makePed(k<.45?'walker':k<.63?'drunk':k<.75?'worker':k<.87?'girl':'smoker',q.x,q.y))}
+function pmove(p,dx,dy){const nx=p.x+dx,ny=p.y+dy,r=5;for(const[ox,oy]of[[r,0],[-r,0],[0,r],[0,-r]])if(isSolid(tileAt(Math.floor((nx+ox)/T),Math.floor((ny+oy)/T))))return false;p.x=nx;p.y=ny;return true}
 function say(p,arr,t){p.say=pick(arr);p.sayL=t||2.2}
 
 /* ---- particles ---- */
@@ -693,19 +694,20 @@ function updateWorld(w,dt,pctl){
   if(w.peds.length<w.pedMax&&R()<.3)spawnPed(w,560,900);
   for(let i=w.peds.length-1;i>=0;i--){const p=w.peds[i];p.sayT-=dt;if(p.say){p.sayL-=dt;if(p.sayL<=0)p.say=null}
     if(Math.hypot(p.x-w.cam.x,p.y-w.cam.y)>1250){w.peds.splice(i,1);if(p.mate)p.mate.mate=null;continue}
+    if(isSolid(tileAt(Math.floor(p.x/T),Math.floor(p.y/T)))){w.peds.splice(i,1);continue}
     if(p.down>0){p.down-=dt;if(p.down<=0){say(p,LINES.hit)}continue}
     // danger
     for(const c of w.cars){const sp=Math.hypot(c.vx,c.vy);if(sp<50)continue;const dx=p.x-c.x,dy=p.y-c.y,d=Math.hypot(dx,dy);
-      if(d<c.L*.5+5&&sp>70){p.down=2.2;p.a=Math.atan2(c.vy,c.vx);p.x+=c.vx*.06;p.y+=c.vy*.06;if(c===w.player){c.v*=.96}say(p,['Au!','Ty kreténe!','Kurva!'],1.4);if(p.mate){p.mate.mate=null;p.mate=null}break}
+      if(d<c.L*.5+5&&sp>70){p.down=2.2;p.a=Math.atan2(c.vy,c.vx);pmove(p,c.vx*.06,c.vy*.06);if(c===w.player){c.v*=.96}say(p,['Au!','Ty kreténe!','Kurva!'],1.4);if(p.mate){p.mate.mate=null;p.mate=null}break}
       if(d<100&&p.flee<=0){const vx=c.vx/sp,vy=c.vy/sp;if((dx*vx+dy*vy)/d>.55){const side=(-vy*dx+vx*dy)>0?1:-1;p.fdx=-vy*side;p.fdy=vx*side;p.flee=.6;if(R()<.4&&!p.say)say(p,LINES.hit,1.6)}}}
-    if(p.flee>0){p.flee-=dt;p.x+=p.fdx*110*dt;p.y+=p.fdy*110*dt;p.a=Math.atan2(p.fdy,p.fdx);p.walk+=dt*16;continue}
+    if(p.flee>0){p.flee-=dt;if(!pmove(p,p.fdx*110*dt,p.fdy*110*dt))p.flee=0;p.a=Math.atan2(p.fdy,p.fdx);p.walk+=dt*16;continue}
     if(p.type==='fight'){if(p.mate){p.a=Math.atan2(p.mate.y-p.y,p.mate.x-p.x);p.punch=(Math.sin(w.t*7+(p.x%7))>.6)?1:0;p.walk+=dt*3;if(p.sayT<0){p.sayT=rr(2.5,5);say(p,LINES.fight,1.8)}}else{p.type='walker';p.sp=34}continue}
     if(p.type==='girl'||p.type==='smoker'||p.type==='party'){p.walk+=dt*1.2;if(p.type==='party'){p.wob+=dt;p.a+=Math.sin(p.wob*2)*dt*.6}if(p.sayT<0){p.sayT=w.chatty?rr(3,7):rr(5,10);if(R()<.7)say(p,p.type==='girl'?LINES.girl:p.type==='party'?LINES.pub:LINES.walker,2.4)}continue}
     let sp=p.sp;if(p.type==='drunk'){p.wob+=dt*2.2;sp*=.7+.3*Math.sin(p.wob*1.7)}
     const nx=p.x+p.dx*12,ny=p.y+p.dy*12;
     if(!isWalk(tileAt(Math.floor(nx/T),Math.floor(ny/T)))||R()<.002){const opts=[[1,0],[-1,0],[0,1],[0,-1]].filter(d=>isWalk(tileAt(Math.floor((p.x+d[0]*14)/T),Math.floor((p.y+d[1]*14)/T))));const nr=opts.filter(d=>!(d[0]===-p.dx&&d[1]===-p.dy));const q=pick(nr.length?nr:opts.length?opts:[[-p.dx,-p.dy]]);p.dx=q[0];p.dy=q[1]}
     const wob=p.type==='drunk'?Math.sin(p.wob*3)*.6:0;
-    p.x+=(p.dx*sp+(p.dy?wob*sp:0))*dt;p.y+=(p.dy*sp+(p.dx?wob*sp:0))*dt;p.a=Math.atan2(p.dy,p.dx)+wob*.5;p.walk+=dt*sp*.25;
+    if(!pmove(p,(p.dx*sp+(p.dy?wob*sp:0))*dt,(p.dy*sp+(p.dx?wob*sp:0))*dt)){p.dx=-p.dx;p.dy=-p.dy}p.a=Math.atan2(p.dy,p.dx)+wob*.5;p.walk+=dt*sp*.25;
     if(p.sayT<0){p.sayT=w.chatty?rr(2.5,6):rr(5,12);if(R()<(w.chatty?.8:.5))say(p,LINES[p.type]||LINES.walker,w.chatty?3:2.2)}}
   if(R()<.05)for(const sg of signs){if(!/HOSPODA|BAR|PIVO|HERNA/.test(sg.text))continue;const d=Math.hypot(sg.x-w.cam.x,sg.y-w.cam.y);if(d>900)continue;if(sg.popW===w&&w.t-sg.popT<25)continue;sg.popT=w.t;sg.popW=w;
     for(const yy of[sg.y+T*.5,sg.y+T*3.5]){if(!isWalk(tileAt(Math.floor(sg.x/T),Math.floor(yy/T))))continue;const n=2+Math.floor(R()*2);for(let k=0;k<n;k++){const q=makePed('party',sg.x+(k-n/2)*16+rr(-4,4),yy+rr(-5,5));q.a=k%2?Math.PI/2:-Math.PI/2;q.sayT=rr(.5,5);w.peds.push(q)}}}
