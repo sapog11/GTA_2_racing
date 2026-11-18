@@ -909,7 +909,7 @@ function render(c2,w,vw,vh,cam,Z,opts){
   }
   if(opts.arrow&&w.route){const F=w.route[w.route.length-1];const g=c2.createRadialGradient(F.x,F.y,0,F.x,F.y,140);g.addColorStop(0,'rgba(255,230,120,.45)');g.addColorStop(1,'rgba(0,0,0,0)');c2.fillStyle=g;c2.fillRect(F.x-140,F.y-140,280,280)}
   for(const q of w.parts)if(q.type==='fire'){const a=q.life/q.max;c2.fillStyle=`rgba(255,${120+a*100|0},40,${a*.8})`;c2.beginPath();c2.arc(q.x,q.y,q.size*(1.4-a*.4),0,7);c2.fill()}
-  if(w.player&&(G.mode==='roam'||G.mode==='race')&&Snd.style&&Snd.style!=='off'&&!G.engineOff&&!SAVE.mute){const p=w.player,ph=(t*1.6)%1;for(const o of[0,.5]){const q=(ph+o)%1;c2.strokeStyle=`rgba(255,204,26,${.35*(1-q)})`;c2.lineWidth=2;c2.beginPath();c2.arc(p.x,p.y,14+q*46,0,7);c2.stroke()}}
+  if(false){const p=w.player,ph=(t*1.6)%1;for(const o of[0,.5]){const q=(ph+o)%1;c2.strokeStyle=`rgba(255,204,26,${.35*(1-q)})`;c2.lineWidth=2;c2.beginPath();c2.arc(p.x,p.y,14+q*46,0,7);c2.stroke()}}
   if(w.muzzle>0&&w.player){const p=w.player,ca=Math.cos(p.a),sa=Math.sin(p.a);c2.fillStyle='rgba(255,220,120,.9)';c2.beginPath();c2.arc(p.x+ca*(p.L*.5+8)-sa*6,p.y+sa*(p.L*.5+8)+ca*6,5+R()*5,0,7);c2.fill()}
   c2.restore();
   c2.save();c2.translate(vw/2+sx,vh/2+sy);c2.scale(Z,Z);c2.translate(-cam.x,-cam.y);c2.textAlign='center';c2.textBaseline='middle';c2.font='700 12px Oswald, sans-serif';c2.fillStyle='rgba(235,235,225,.42)';
@@ -1257,7 +1257,7 @@ function toast(t){const a=$('area');a.textContent=t;a.classList.add('on');areaT=
 function toggleEngine(){if(G.mode!=='roam')return;G.engineOff=!G.engineOff;$('keyB').classList.toggle('off',G.engineOff);if(G.engineOff){toast('🔑 MOTOR VYPNUTÝ');Snd.engine(0,false)}else{toast('🔑 NASTARTOVÁNO');Snd.nz(.5,'lowpass',300,.4);Snd.tone(50,90,.6,'sawtooth',.2)}}
 $('keyB').addEventListener('click',toggleEngine);
 addEventListener('keydown',e=>{if(e.code==='KeyE')toggleEngine()});
-setInterval(()=>{$('radioB').classList.toggle('on',!!Snd.style&&Snd.style!=='off'&&Snd.ctx&&!SAVE.mute)},300);
+
 addEventListener('keydown',e=>{if(e.code==='KeyR'&&(G.mode==='race'||G.mode==='roam'))nextRadio()});
 
 document.addEventListener('click',e=>{const t=e.target.closest('button,[data-lvl],[data-comic]');if(!t)return;
