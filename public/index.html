@@ -1334,10 +1334,10 @@ const AN={on:false,q:[],
  host:/(\.web\.app|\.firebaseapp\.com)$/.test(location.hostname),
  init(){if(!this.host)return;if(SAVE.consent===undefined||SAVE.consent===null){$('consent').classList.add('on');return}if(SAVE.consent)this.load()},
  answer(yes){SAVE.consent=!!yes;save();$('consent').classList.remove('on');{const k=document.createElement('div');k.className='kingmsg';k.textContent=yes?'👑 KRÁL! VÍTEJ V ÚSTÍ':'TAK JO, K*KOTE 😏';document.body.appendChild(k);setTimeout(()=>k.remove(),2200)}if(yes)this.load();else this.q=[]},
- load(){if(this.loading)return;this.loading=1;fetch('/__/firebase/init.json').then(r=>r.json()).then(cfg=>{if(!cfg||!cfg.measurementId){console.warn('Analytics: chybí measurementId (zapni Google Analytics a přidej webovou aplikaci ve Firebase)');return}
-   const add=src=>new Promise((ok,ko)=>{const e=document.createElement('script');e.src=src;e.onload=ok;e.onerror=ko;document.head.appendChild(e)});
-   const V='10.12.2';return add('https://www.gstatic.com/firebasejs/'+V+'/firebase-app-compat.js').then(()=>add('https://www.gstatic.com/firebasejs/'+V+'/firebase-analytics-compat.js')).then(()=>{firebase.initializeApp(cfg);this.fa=firebase.analytics();this.on=true;for(const e of this.q)this.fa.logEvent(e[0],e[1]);this.q=[]})}).catch(e=>console.warn('Analytics off',e))},
- ev(n,p){if(!this.host||SAVE.consent===false)return;p=p||{};if(this.on){try{this.fa.logEvent(n,p)}catch(e){}}else if(this.q.length<50)this.q.push([n,p])}};
+ load(){if(this.loading)return;this.loading=1;const ID='G-YRJ7GVJ567';window.dataLayer=window.dataLayer||[];window.gtag=function(){dataLayer.push(arguments)};
+   gtag('js',new Date());gtag('config',ID,{anonymize_ip:true});const e=document.createElement('script');e.async=true;e.src='https://www.googletagmanager.com/gtag/js?id='+ID;
+   e.onload=()=>{this.on=true;for(const q of this.q)gtag('event',q[0],q[1]);this.q=[]};e.onerror=()=>console.warn('Analytics blocked');document.head.appendChild(e)},
+ ev(n,p){if(!this.host||SAVE.consent===false)return;p=p||{};if(this.on){try{gtag('event',n,p)}catch(e){}}else if(this.q.length<50)this.q.push([n,p])}};
 $('cYes').onclick=()=>AN.answer(true);$('cNo').onclick=()=>AN.answer(false);
 AN.init();
 setInterval(()=>{if(document.hidden)return;if(G.mode==='roam'||G.mode==='race')AN.ev('play_minute',{mode:G.mode,mission:G.mode==='race'&&G.level?G.level.id:'roam'})},60000);
