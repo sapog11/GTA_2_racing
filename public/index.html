@@ -1332,10 +1332,10 @@ DJ.init();
 /* ---------------- ANALYTICS (Firebase / Google Analytics 4) ---------------- */
 const AN={on:false,q:[],
  host:/(\.web\.app|\.firebaseapp\.com)$/.test(location.hostname),
- init(){if(!this.host)return;if(SAVE.consent===undefined||SAVE.consent===null){$('consent').classList.add('on');return}if(SAVE.consent)this.load()},
+ init(){if(!this.host)return;if(/souhlas/.test(location.search)){SAVE.consent=null;save()}if(SAVE.consent===undefined||SAVE.consent===null){$('consent').classList.add('on');return}if(SAVE.consent)this.load()},
  answer(yes){SAVE.consent=!!yes;save();$('consent').classList.remove('on');{const k=document.createElement('div');k.className='kingmsg';k.textContent=yes?'👑 KRÁL! VÍTEJ V ÚSTÍ':'TAK JO, K*KOTE 😏';document.body.appendChild(k);setTimeout(()=>k.remove(),2200)}if(yes)this.load();else this.q=[]},
  load(){if(this.loading)return;this.loading=1;const ID='G-YRJ7GVJ567';window.dataLayer=window.dataLayer||[];window.gtag=function(){dataLayer.push(arguments)};
-   gtag('js',new Date());gtag('config',ID,{anonymize_ip:true});const e=document.createElement('script');e.async=true;e.src='https://www.googletagmanager.com/gtag/js?id='+ID;
+   gtag('js',new Date());gtag('config',ID,Object.assign({anonymize_ip:true},/ga=debug/.test(location.search)?{debug_mode:true}:{}));const e=document.createElement('script');e.async=true;e.src='https://www.googletagmanager.com/gtag/js?id='+ID;
    e.onload=()=>{this.on=true;for(const q of this.q)gtag('event',q[0],q[1]);this.q=[]};e.onerror=()=>console.warn('Analytics blocked');document.head.appendChild(e)},
  ev(n,p){if(!this.host||SAVE.consent===false)return;p=p||{};if(this.on){try{gtag('event',n,p)}catch(e){}}else if(this.q.length<50)this.q.push([n,p])}};
 $('cYes').onclick=()=>AN.answer(true);$('cNo').onclick=()=>AN.answer(false);
