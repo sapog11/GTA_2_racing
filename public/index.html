@@ -184,6 +184,8 @@ body.drag #spd,#ctrl.on~#hud #spd{}
 #stick{position:fixed;width:120px;height:120px;margin:-60px 0 0 -60px;border-radius:50%;border:3px solid rgba(255,255,255,.35);background:rgba(10,12,20,.25);display:none;z-index:8;pointer-events:none}
 #stick i{position:absolute;left:50%;top:50%;width:46px;height:46px;margin:-23px 0 0 -23px;border-radius:50%;background:rgba(255,204,26,.75);border:2px solid #111}
 body.drag #kL,body.drag #kR{display:none}
+#drift{position:absolute;left:0;right:0;top:calc(max(10px,env(safe-area-inset-top)) + 150px);text-align:center;font-family:Audiowide,Bangers,sans-serif;color:#fff;text-shadow:0 0 12px #ff2e88,2px 2px 0 #000;opacity:0;transition:opacity .25s;pointer-events:none}
+#drift.on{opacity:1}#drift b{display:block;font-size:clamp(28px,8vw,46px);letter-spacing:2px}#drift i{font-style:normal;font-size:16px;color:#ffcc1a;letter-spacing:3px}#drift.lost b{color:#ff4466}
 #street{position:absolute;left:10px;top:calc(max(10px,env(safe-area-inset-top)) + 108px);display:flex;gap:6px;flex-wrap:wrap}
 #street span{background:#1d4ea8;color:#fff;border:2px solid #fff;outline:2px solid #1d4ea8;border-radius:3px;padding:2px 8px;font-weight:700;font-size:14px;letter-spacing:.5px;box-shadow:0 2px 6px rgba(0,0,0,.5)}
 /* controls */
@@ -243,7 +245,7 @@ body.drag #kL,body.drag #kR{display:none}
   </div>
   <div class="row"><button class="btn sm dark" id="mRadio">📻 LABE FM</button><button class="btn sm dark" id="mTod">🌙 NOC</button></div>
   <div id="zoomB"><button class="btn sm dark" id="zIn">＋</button><button class="btn sm dark" id="zOut">−</button></div>
-  <p class="note">Verze 0.1 — prototyp. Názvy aut a postavy jsou smyšlené.</p>
+  <p class="note">Verze 0.2 — prototyp. Názvy aut a postavy jsou smyšlené. Koncept Z: model „Car Concept“ © Khronos Group, CC BY 4.0 (na základě CC0 modelu od Unity Fan). Chodci: Mixamo. Obloha: Poly Haven CC0.</p>
 </div>
 
 <div id="scr-heroes" class="scr dim"></div>
@@ -261,7 +263,7 @@ body.drag #kL,body.drag #kR{display:none}
     <div style="display:flex;flex-direction:column;align-items:flex-end"><div style="display:flex;gap:4px"><button id="keyB" title="Motor (E)">🔑</button><button id="radioB" title="Rádio (R)">📻</button><button id="pauseB">II</button></div><canvas id="mm" width="192" height="192"></canvas></div>
   </div>
   <div id="bust"><b>POLICIE TĚ MÁ!</b><div class="hp"><i id="hBust"></i></div></div>
-  <div id="center"></div><div id="area"></div><div id="obj"></div><div id="street"></div>
+  <div id="center"></div><div id="area"></div><div id="obj"></div><div id="street"></div><div id="drift"></div>
   <div id="spd"><svg viewBox="0 0 200 110"><defs><linearGradient id="sg" x1="0" x2="1"><stop offset="0" stop-color="#7a2cff"/><stop offset=".6" stop-color="#ff2e88"/><stop offset="1" stop-color="#ffb02e"/></linearGradient></defs><path d="M20 100 A80 80 0 0 1 180 100" fill="none" stroke="rgba(255,255,255,.12)" stroke-width="12" stroke-linecap="round"/><path id="spArc" d="M20 100 A80 80 0 0 1 180 100" fill="none" stroke="url(#sg)" stroke-width="12" stroke-linecap="round" pathLength="100" stroke-dasharray="0 100"/></svg><b id="spN">0</b><i>km/h</i></div>
   <div id="hint"></div>
 </div>
@@ -293,6 +295,7 @@ const $=id=>document.getElementById(id);
 const SAVEKEY='usti_mesto_andelu_v1';
 let SAVE={steer:'drag',resp:0,cash:0,hero:null,car:'civka',owned:['civka'],done:{},seenIntro:false,comics:['intro'],mute:false,autoGas:null};
 try{const s=JSON.parse(localStorage.getItem(SAVEKEY)||'null');if(s)SAVE=Object.assign(SAVE,s)}catch(e){}
+if(!SAVE.owned.includes('koncept'))SAVE.owned.push('koncept');
 function save(){try{localStorage.setItem(SAVEKEY,JSON.stringify(SAVE))}catch(e){}}
 const isTouch=('ontouchstart' in window)||matchMedia('(pointer:coarse)').matches;
 if(SAVE.autoGas===null)SAVE.autoGas=isTouch;
@@ -420,6 +423,7 @@ const CARS=[
  {id:'golfik',name:'Golfík IV GTI',desc:'Každej druhej na Klíši ho má. Ty budeš ten rychlejší.',col:'#c8ccd2',max:278,acc:220,turn:3.0,grip:6.5,hp:110,price:500,L:39,Wd:20},
  {id:'bavorak',name:'Bavorák E46',desc:'Zadokolka. Bokem do každý zatáčky.',col:'#1d3f8a',max:300,acc:235,turn:2.9,grip:5.3,hp:120,price:900,L:44,Wd:20},
  {id:'imprezka',name:'Imprezka WRX',desc:'Čtyřkolka z rallye. Na mokru král.',col:'#2448c8',max:318,acc:260,turn:3.2,grip:7.4,hp:115,price:1500,L:43,Wd:20,spoiler:1},
+ {id:'koncept',name:'Koncept Z',desc:'Prototyp z budoucnosti. Nikdo neví, kde se v Ústí vzal. Dárek od ZORYX.',col:'#c8102e',max:362,acc:295,turn:3.15,grip:7.2,hp:120,price:0,L:46,Wd:21},
  {id:'supka',name:'Toyda Supka',desc:'Legenda nočních závodů. Kdo ji má, ten je někdo.',col:'#e8a21a',max:345,acc:270,turn:3.0,grip:6,hp:110,price:2500,L:44,Wd:21,spoiler:1},
 ];
 const POLICE={col:'#e9ecef',max:236,acc:235,turn:2.8,grip:6,hp:60,L:44,Wd:20,police:1};
@@ -542,6 +546,7 @@ const Snd={ctx:null,
   const o1=c.createOscillator();o1.type='sawtooth';const o2=c.createOscillator();o2.type='square';o2.detune.value=-1200;
   o1.connect(lp);o2.connect(lp);lp.connect(eg);eg.connect(this.sfx);o1.start();o2.start();this.eng={g:eg,o1,o2};
   const so=c.createOscillator();so.type='triangle';const sg=c.createGain();sg.gain.value=0;so.connect(sg);sg.connect(this.sfx);so.start();this.sir={o:so,g:sg};
+  {const sb=c.createBufferSource();sb.buffer=nb;sb.loop=true;const bp=c.createBiquadFilter();bp.type='bandpass';bp.frequency.value=1400;bp.Q.value=4;const sg2=c.createGain();sg2.gain.value=0;sb.connect(bp);bp.connect(sg2);sg2.connect(this.sfx);sb.start();this.scr=sg2}
   const rs=c.createBufferSource();rs.buffer=nb;rs.loop=true;const rf=c.createBiquadFilter();rf.type='bandpass';rf.frequency.value=2500;rf.Q.value=.4;const rg=c.createGain();rg.gain.value=0;rs.connect(rf);rf.connect(rg);rg.connect(this.sfx);rs.start();this.rainG=rg;
   // music delay
   this.dl=c.createDelay();this.dl.delayTime.value=.33;const fb=c.createGain();fb.gain.value=.35;this.dl.connect(fb);fb.connect(this.dl);this.dl.connect(this.mus);
@@ -556,7 +561,7 @@ const Snd={ctx:null,
     const a=new Audio(URL.createObjectURL(new Blob([ab],{type:'audio/wav'})));a.loop=true;a.setAttribute('playsinline','');a.volume=.01;a.play().then(()=>{this.keep=a}).catch(()=>{})}catch(e){}}
  },
  setMute(m){if(m)DJ.stop();SAVE.mute=m;save();if(this.master)this.master.gain.value=m?0:.8},
- engine(v,on,boost){if(!this.ctx)return;const t=this.ctx.currentTime,f=38+Math.abs(v)*.33+(boost?40:0);this.eng.o1.frequency.setTargetAtTime(f,t,.05);this.eng.o2.frequency.setTargetAtTime(f,t,.05);this.eng.g.gain.setTargetAtTime(on?.05+Math.min(.05,Math.abs(v)/5000):0,t,.1)},
+ engine(v,on,boost){if(!this.ctx)return;const p=G.world&&G.world.player,t=this.ctx.currentTime,gear=p&&p.gear||1,rpm=clamp(p&&p.rpm||0,0,1);if(p&&this.lg&&gear>this.lg&&on){this.nz(.35,'highpass',1800,.18);this.tone(900,300,.25,'sine',.04)}this.lg=gear;const f=(on?42:0)+rpm*150+gear*14+(boost?35:0);if(this.scr)this.scr.gain.setTargetAtTime(p&&p.drift&&on?.12:0,t,.05);this.eng.o1.frequency.setTargetAtTime(f,t,.05);this.eng.o2.frequency.setTargetAtTime(f,t,.05);this.eng.g.gain.setTargetAtTime(on?.05+Math.min(.05,Math.abs(v)/5000):0,t,.1)},
  siren(level,tt){if(!this.ctx)return;const t=this.ctx.currentTime;this.sir.o.frequency.setTargetAtTime(Math.floor(tt/.42)%2?960:720,t,.02);this.sir.g.gain.setTargetAtTime(level*.045,t,.1)},
  rain(on){if(this.ctx)this.rainG.gain.setTargetAtTime(on?.07:0,this.ctx.currentTime,.4)},
  nz(dur,type,freq,vol,t0){const c=this.ctx;if(!c)return;const t=t0||c.currentTime;const s=c.createBufferSource();s.buffer=this.noise;const f=c.createBiquadFilter();f.type=type;f.frequency.value=freq;const g=c.createGain();g.gain.setValueAtTime(vol,t);g.gain.exponentialRampToValueAtTime(.001,t+dur);s.connect(f);f.connect(g);g.connect(this.sfx);s.start(t,Math.random()*1.5);s.stop(t+dur+.05)},
@@ -669,11 +674,14 @@ function explode(w,x,y){Snd.boom();for(let i=0;i<26;i++){const a=R()*6.28,s=rr(3
 
 /* ---------------- PHYSICS ---------------- */
 function carPhysics(w,c,ctl,dt){
-  const st=c.st;let maxV=st.max*(c.speedMul||1);let acc=st.acc,turn=st.turn,grip=st.grip;
+  const st=c.st,SPK=1.22;let maxV=st.max*SPK*(c.speedMul||1);let acc=st.acc*SPK,turn=st.turn,grip=st.grip;
   if(c.handMul){turn*=c.handMul;grip*=c.handMul}
   const tl=tileAt(Math.floor(c.x/T),Math.floor(c.y/T));if(tl===GRASS){maxV*=.6;grip*=.6}
   if(c.boost){maxV*=1.42;acc*=1.7}
-  const thr=ctl.thr||0;c.brake=false;
+  let thr=ctl.thr||0;c.brake=false;const sp0=Math.abs(c.v);
+  const f=clamp(c.v/maxV,0,1),gear=f<.2?1:f<.38?2:f<.56?3:f<.75?4:5;c.gear=gear;c.rpm=gear===5?(f-.75)/.25:(f-[0,0,.2,.38,.56][gear])/([0,.2,.38,.56,.75][gear]-[0,0,.2,.38,.56][gear]);acc*=[0,1.4,1.18,1,.86,.72][gear];
+  const hb=!!ctl.hb||(c===w.player&&thr<0&&Math.abs(ctl.steer||0)>.4&&c.v>120);c.drift=hb&&sp0>60;
+  if(c.drift){grip*=.2;turn*=1.5;thr=Math.max(thr,0);c.v*=1-.32*dt}
   if(thr>0){if(c.v<0)c.v+=st.acc*2.2*dt;else c.v+=acc*thr*dt*(1-Math.max(0,c.v)/maxV*.55)}
   else if(thr<0){if(c.v>5){c.v-=st.acc*1.9*dt*Math.min(1,-thr);c.brake=-thr>.5}else if(thr>-.5){c.v=Math.max(0,c.v-st.acc*dt)}else c.v=Math.max(-90,c.v-st.acc*.6*dt)}
   else c.v*=1-.7*dt;
@@ -681,6 +689,7 @@ function carPhysics(w,c,ctl,dt){
   const sp=Math.abs(c.v);c.steer=lerp(c.steer,ctl.steer||0,Math.min(1,dt*10));
   c.a=wrapA(c.a+c.steer*turn*dt*clamp(sp/110,0,1)*(c.v<0?-1:1)*(1-clamp((sp-200)/600,0,.25)));
   const hx=Math.cos(c.a),hy=Math.sin(c.a),tvx=hx*c.v,tvy=hy*c.v;
+  if(c.drift&&R()<.7&&w.parts.length<400){for(const sd of[-1,1])part(w,{x:c.x-hx*c.L*.38-hy*sd*c.Wd*.45,y:c.y-hy*c.L*.38+hx*sd*c.Wd*.45,vx:rr(-15,15)-c.vx*.1,vy:rr(-15,15)-c.vy*.1,life:rr(.6,1.2),max:1.2,type:'smoke',size:rr(6,10),z:0,col:1})}
   const g=Math.min(1,grip*dt*(c.brake&&sp>150?.55:1));c.vx+=(tvx-c.vx)*g;c.vy+=(tvy-c.vy)*g;
   const slip=Math.abs(-hy*c.vx+hx*c.vy);
   if((slip>70||(c.brake&&sp>140))&&w.skids.length<600){const ox=-hx*c.L*.32,oy=-hy*c.L*.32,px=-hy*c.Wd*.4,py=hx*c.Wd*.4;
@@ -695,7 +704,7 @@ function walls(w,c){const ca=Math.cos(c.a),sa=Math.sin(c.a),off=c.L*.28;let hit=
       let d=Math.sqrt(d2),nx,ny,pen;
       if(d<.001){const e=[px-rx,rx+T-px,py-ry,ry+T-py],m=Math.min(...e),ix=e.indexOf(m);nx=ix===0?-1:ix===1?1:0;ny=ix===2?-1:ix===3?1:0;pen=r+m}else{nx=dx/d;ny=dy/d;pen=r-d}
       c.x+=nx*pen;c.y+=ny*pen;px+=nx*pen;py+=ny*pen;const vn=c.vx*nx+c.vy*ny;if(vn<0){c.vx-=vn*nx*1.35;c.vy-=vn*ny*1.35;if(-vn>hit){hit=-vn;hx=px-nx*r;hy=py-ny*r}}}}
-  if(hit>45){c.v*=hit>150?.45:.7;const dmg=(hit-45)*.045*(c.kind==='police'?1.3:c.kind==='player'?.45:1);c.hp-=dmg;sparks(w,hx,hy,Math.min(14,hit/15|0));if(c===w.player&&hit>70){Snd.crash(hit/600);shake(hit/60)}}}
+  if(hit>45){if(c===w.player)c.crashT=w.t;c.v*=hit>150?.45:.7;const dmg=(hit-45)*.045*(c.kind==='police'?1.3:c.kind==='player'?.45:1);c.hp-=dmg;sparks(w,hx,hy,Math.min(14,hit/15|0));if(c===w.player&&hit>70){Snd.crash(hit/600);shake(hit/60)}}}
 function carCollide(w){const C=w.cars;for(let i=0;i<C.length;i++)for(let j=i+1;j<C.length;j++){const a=C[i],b=C[j];if(Math.abs(a.x-b.x)>70||Math.abs(a.y-b.y)>70)continue;
   for(const ka of[-1,1])for(const kb of[-1,1]){const ax=a.x+Math.cos(a.a)*a.L*.25*ka,ay=a.y+Math.sin(a.a)*a.L*.25*ka,bx=b.x+Math.cos(b.a)*b.L*.25*kb,by=b.y+Math.sin(b.a)*b.L*.25*kb;
     const ra=a.Wd*.55,rb=b.Wd*.55;let dx=bx-ax,dy=by-ay,d=Math.hypot(dx,dy);if(d>=ra+rb||d<.01)continue;const nx=dx/d,ny=dy/d,pen=ra+rb-d;
@@ -1093,13 +1102,13 @@ function startRoam(at,target){AN.ev('roam_start');hideAll();G.engineOff=false;$(
   RS={roam:true,nitro:.6,nitroFill:SAVE.hero==='lucie'?.098:.07,target:target||null,enterCD:2.5};G.roamDist='';
   $('hud').classList.add('on');if(isTouch)$('ctrl').classList.add('on');$('kU').style.display=SAVE.autoGas?'none':'block';$('kAt').textContent='NITRO';$('kA').classList.remove('hot');
   $('hMainL').textContent='ČTVRŤ';$('hMain').classList.add('small');$('bust').style.display='none';$('center').textContent='';$('obj').classList.add('on');
-  $('hint').textContent=isTouch?'':'←→ řízení • ↑ plyn • ↓ brzda • MEZERNÍK nitro • R rádio • P pauza';if(isTouch&&SAVE.steer==='drag'&&!SAVE.dragTip){SAVE.dragTip=1;save();floatMsg('👆 TÁHNI PRSTEM',3);}
+  $('hint').textContent=isTouch?'':'←→ řízení • ↑ plyn • ↓ brzda • MEZERNÍK nitro • SHIFT smyk • R rádio • P pauza';if(isTouch&&SAVE.steer==='drag'&&!SAVE.dragTip){SAVE.dragTip=1;save();floatMsg('👆 TÁHNI PRSTEM',3);}
   Snd.startMusic(false);Snd.setStyle(SAVE.radio||'labe');Snd.rain(w.rain);drawMinimapBg();setTimeout(()=>{const a=$('area');if(G.mode==='roam'){a.textContent='📻 '+STY[Snd.style].name;a.classList.add('on');areaT=2.2}},2600)}
 let areaT=0;
 function updateRoam(dt){const w=G.world,p=w.player;
   const ctl=playerCtl();const act=G.keys.a;
   RS.nitro=Math.min(1,RS.nitro+RS.nitroFill*dt);if(act&&RS.nitro>.02){if(!p.boost)Snd.nitro();p.boost=true;RS.nitro=Math.max(0,RS.nitro-.42*dt)}else p.boost=false;$('kA').style.setProperty('--p',(RS.nitro*100)+'%');
-  updateWorld(w,dt,ctl);if(p.hp<p.maxhp)p.hp=Math.min(p.maxhp,p.hp+dt*3);if(p.hp<=5)p.hp=5;
+  updateWorld(w,dt,ctl);driftUpdate(p,w,dt,true);if(p.hp<p.maxhp)p.hp=Math.min(p.maxhp,p.hp+dt*3);if(p.hp<=5)p.hp=5;
   const sp=Math.hypot(p.vx,p.vy);w.cam.x=lerp(w.cam.x,p.x+p.vx*.42,Math.min(1,dt*4));w.cam.y=lerp(w.cam.y,p.y+p.vy*.42,Math.min(1,dt*4));
   w.zoom=lerp(w.zoom||baseZoom(),baseZoom()*(1-clamp(sp/p.st.max,0,1.3)*.2),Math.min(1,dt*2));shakeA=Math.max(0,shakeA-dt*30);
   Snd.engine(p.v,!G.engineOff,p.boost);Snd.siren(0,0);
@@ -1144,7 +1153,7 @@ function beginRace(L){hideAll();const w=newWorld({rain:L.rain,dark:L.dark,civMax
   $('hud').classList.add('on');if(isTouch)$('ctrl').classList.add('on');
   $('kU').style.display=SAVE.autoGas?'none':'block';
   $('kAt').textContent=L.type==='race'?'NITRO':'PAL';
-  $('hint').textContent=isTouch?'':(L.type==='race'?'←→ řízení • ↑ plyn • ↓ brzda • MEZERNÍK nitro • R rádio • P pauza':'←→ řízení • ↑ plyn • ↓ brzda • MEZERNÍK střelba • P pauza');
+  $('hint').textContent=isTouch?'':(L.type==='race'?'←→ řízení • ↑ plyn • ↓ brzda • MEZERNÍK nitro • SHIFT smyk • R rádio • P pauza':'←→ řízení • ↑ plyn • ↓ brzda • MEZERNÍK střelba • P pauza');
   $('keyB').style.display='none';G.engineOff=false;
   $('hMainL').textContent=L.type==='race'?'POZICE':'DO CÍLE';$('hMain').classList.remove('small');$('obj').classList.remove('on');$('area').classList.remove('on');
   Snd.startMusic(false);Snd.setStyle(L.type==='chase'?'chase':'race');DJ.stop();DJ.t=L.type==='chase'?6:12;Snd.rain(L.rain);drawMinimapBg();
@@ -1155,6 +1164,15 @@ function streetAt(x,y){const tx=Math.floor(x/T),ty=Math.floor(y/T),t0=tileAt(tx,
   if(mx<2){const J=Math.floor((ty-1)/8);for(const st of STREETS)if(st.v===i&&J>=st.a&&J<st.b){out.push(st.n);break}}
   if(my<2){const I=Math.floor((tx-1)/8);for(const st of STREETS)if(st.h===j&&I>=st.a&&I<st.b){out.push(st.n);break}}return out}
 let lastStreet='';function streetHud(p){const a=p?streetAt(p.x,p.y):[];const k=a.join('|');if(k===lastStreet)return;lastStreet=k;$('street').innerHTML=a.map(n=>'<span>'+n+'</span>').join('')}
+const DR={score:0,time:0,idle:0,nm:0,msg:'',msgT:0};
+function driftUpdate(p,w,dt,bank){const sp=Math.hypot(p.vx,p.vy),lat=Math.abs(-Math.sin(p.a)*p.vx+Math.cos(p.a)*p.vy),ang=sp>1?Math.asin(clamp(lat/sp,0,1)):0,el=$('drift');
+  if(p.crashT&&w.t-p.crashT<.05&&DR.score>0){DR.score=0;DR.time=0;el.className='on lost';el.innerHTML='<b>ZTRATIL!</b><i>náraz</i>';DR.msgT=1.2;return}
+  if(ang>.24&&sp>80){DR.score+=ang*sp*dt*1.4;DR.time+=dt;DR.idle=0}else if(DR.score>0){DR.idle+=dt}
+  if(sp>170)for(const c of w.cars){if(c.kind!=='civ'&&c.kind!=='rival')continue;const d=Math.hypot(c.x-p.x,c.y-p.y);if(d<40&&c.nmT!==Math.floor(w.t/3)){c.nmT=Math.floor(w.t/3);DR.score+=120;DR.time+=.5;DR.idle=0;DR.nm=1.2;Snd.nz(.25,'highpass',2500,.2)}}
+  const mult=1+Math.floor(DR.time/2);DR.nm=Math.max(0,DR.nm-dt);
+  if(DR.score>0&&DR.idle<1){el.className='on';el.innerHTML='<b>'+(DR.nm>0?'NEAR MISS! ':'DRIFT ')+'×'+mult+'</b><i>'+Math.floor(DR.score*mult)+'</i>'}
+  else if(DR.score>0){const tot=Math.floor(DR.score*mult),rp=bank?Math.floor(tot/400):0;if(rp>0){SAVE.resp+=rp;save()}el.className='on';el.innerHTML='<b>+'+tot+'</b><i>'+(rp>0?'+'+rp+' RESPEKT':'BODY')+'</i>';DR.msgT=1.6;DR.score=0;DR.time=0;AN.ev('drift',{points:tot})}
+  else if(DR.msgT>0){DR.msgT-=dt;if(DR.msgT<=0)el.className=''}}
 function spdSet(k){$('spN').textContent=k;$('spArc').setAttribute('stroke-dasharray',Math.min(100,k/1.6)+' 100')}
 let msgT=0;function floatMsg(t,dur){$('center').textContent=t;msgT=dur||1.1}
 const STK={id:null,x:0,y:0,dx:0,dy:0};
@@ -1167,7 +1185,7 @@ function playerCtl(){const k=G.keys;const p=G.world&&G.world.player;
   if(STK.id!==null&&p&&chaseCam){const dx=STK.dx,dy=STK.dy;if(Math.hypot(dx,dy)>10){steer=clamp(dx/55,-1,1);if(!k.d)thr=dy<-8?clamp(-dy/55,.4,1):dy>30?-1:.55}}
   else if(STK.id!==null&&p){const L=Math.hypot(STK.dx,STK.dy);if(L>14){const want=Math.atan2(STK.dy,STK.dx);const d=wrapA(want-p.a);steer=clamp(d*2.4,-1,1);if(!k.d)thr=Math.max(thr,clamp(L/60,.35,1))}}
   else if(drag&&!k.d&&!k.u)thr=-.3;
-  return{thr,steer}}
+  return{thr,steer,hb:!!k.h}}
 function stickOn(){return SAVE.steer==='drag'&&isTouch&&(G.mode==='race'||G.mode==='roam')}
 cv.addEventListener('pointerdown',e=>{if(!stickOn()||STK.id!==null)return;STK.id=e.pointerId;STK.x=e.clientX;STK.y=e.clientY;STK.dx=STK.dy=0;const s=$('stick');s.style.left=e.clientX+'px';s.style.top=e.clientY+'px';s.style.display='block';s.firstChild.style.transform='';try{cv.setPointerCapture(e.pointerId)}catch(_){}});
 cv.addEventListener('pointermove',e=>{if(e.pointerId!==STK.id)return;let dx=e.clientX-STK.x,dy=e.clientY-STK.y;const L=Math.hypot(dx,dy);if(L>90){STK.x+=dx*(1-90/L);STK.y+=dy*(1-90/L);dx=e.clientX-STK.x;dy=e.clientY-STK.y;const s=$('stick');s.style.left=STK.x+'px';s.style.top=STK.y+'px'}
@@ -1197,7 +1215,7 @@ function updateRace(dt){const w=G.world,p=w.player,L=RS.L;RS.t+=dt;
     w.muzzle=Math.max(0,(w.muzzle||0)-dt);
     $('kA').style.setProperty('--p',((1-RS.heat)*100)+'%');$('kA').classList.toggle('hot',RS.over);
   }else{RS.nitro=Math.min(1,RS.nitro+RS.nitroFill*dt);if(act&&RS.nitro>.02){if(!p.boost)Snd.nitro();p.boost=true;RS.nitro=Math.max(0,RS.nitro-.42*dt)}else p.boost=false;$('kA').style.setProperty('--p',(RS.nitro*100)+'%')}
-  updateWorld(w,dt,ctl);
+  updateWorld(w,dt,ctl);if(!RS.end&&RS.count<=0)driftUpdate(p,w,dt,false);
   for(const c of w.cars)if(w.route&&(c.kind!=='civ'))progress(w,c);
   // camera
   const sp=Math.hypot(p.vx,p.vy);w.cam.x=lerp(w.cam.x,p.x+p.vx*.42,Math.min(1,dt*4));w.cam.y=lerp(w.cam.y,p.y+p.vy*.42,Math.min(1,dt*4));
@@ -1260,7 +1278,7 @@ function drawMinimap(){const g=$('mm').getContext('2d'),w=G.world,p=w.player||w.
   if(w.player){g.save();g.translate(W/2,W/2);g.rotate(w.player.a);g.fillStyle='#fff';g.strokeStyle='#000';g.lineWidth=2;g.beginPath();g.moveTo(10,0);g.lineTo(-7,-7);g.lineTo(-4,0);g.lineTo(-7,7);g.closePath();g.fill();g.stroke();g.restore()}}
 
 /* ---------------- INPUT ---------------- */
-const KEYMAP={ArrowLeft:'l',KeyA:'l',ArrowRight:'r',KeyD:'r',ArrowUp:'u',KeyW:'u',ArrowDown:'d',KeyS:'d',Space:'a',ShiftLeft:'a',KeyJ:'a'};
+const KEYMAP={ArrowLeft:'l',KeyA:'l',ArrowRight:'r',KeyD:'r',ArrowUp:'u',KeyW:'u',ArrowDown:'d',KeyS:'d',Space:'a',ShiftLeft:'h',ShiftRight:'h',KeyX:'h',KeyJ:'a'};
 addEventListener('keydown',e=>{const k=KEYMAP[e.code];if(k){G.keys[k]=true;if(G.mode==='race'||G.mode==='roam')e.preventDefault()}if((e.code==='KeyP'||e.code==='Escape')&&(G.mode==='race'||G.mode==='roam'))pause()});
 addEventListener('keyup',e=>{const k=KEYMAP[e.code];if(k)G.keys[k]=false});
 for(const b of document.querySelectorAll('#ctrl button')){const k=b.dataset.k;
@@ -1404,9 +1422,11 @@ import {UnrealBloomPass} from './vendor/jsm/postprocessing/UnrealBloomPass.js';
 import {OutputPass} from './vendor/jsm/postprocessing/OutputPass.js';
 import {GLTFLoader} from './vendor/jsm/loaders/GLTFLoader.js';
 import {RGBELoader} from './vendor/jsm/loaders/RGBELoader.js';
+import {DRACOLoader} from './vendor/jsm/loaders/DRACOLoader.js';
+import {KTX2Loader} from './vendor/jsm/loaders/KTX2Loader.js';
 import * as SkeletonUtils from './vendor/jsm/utils/SkeletonUtils.js';
-window.THREE=THREE;window.TADD={EffectComposer,RenderPass,UnrealBloomPass,OutputPass,GLTFLoader,RGBELoader,SkeletonUtils};
-const s=document.createElement('script');s.src='r3.js?v=6';document.body.appendChild(s);
+window.THREE=THREE;window.TADD={EffectComposer,RenderPass,UnrealBloomPass,OutputPass,GLTFLoader,RGBELoader,SkeletonUtils,DRACOLoader,KTX2Loader};
+const s=document.createElement('script');s.src='r3.js?v=8';document.body.appendChild(s);
 </script>
 </body>
 </html>
