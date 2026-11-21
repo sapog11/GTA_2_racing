@@ -3,3 +3,5 @@ models/xbot.glb — from three.js examples (Mixamo character/animations)
 hdr/golden.hdr (venice_sunset), hdr/day.hdr (spruit_sunrise) — Poly Haven, CC0
 models/koncept — "Car Concept" glTF sample model, Khronos Group (CC-BY 4.0), based on the public-domain (CC0) "Free Concept Car 004" by Unity Fan. Khronos logos hidden/not used.
 three.js addons: DRACOLoader, KTX2Loader, Draco & Basis transcoders (Apache-2.0 / MIT) from three.js examples.
+models/cars/*.glb — Kenney Car Kit (kenney.nl), CC0 1.0; optimized copies from npm @netforge/asset-library-files.
+three.js meshopt decoder (MIT).

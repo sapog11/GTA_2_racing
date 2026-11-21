@@ -253,7 +253,7 @@ body.two.driving #twHint{display:flex}
   </div>
   <div class="row"><button class="btn sm dark" id="mRadio">📻 LABE FM</button><button class="btn sm dark" id="mTod">🌙 NOC</button></div>
   <div id="zoomB"><button class="btn sm dark" id="zIn">＋</button><button class="btn sm dark" id="zOut">−</button></div>
-  <p class="note">Verze 0.2 — prototyp. Názvy aut a postavy jsou smyšlené. Koncept Z: model „Car Concept“ © Khronos Group, CC BY 4.0 (na základě CC0 modelu od Unity Fan). Chodci: Mixamo. Obloha: Poly Haven CC0.</p>
+  <p class="note">Verze 0.2 — prototyp. Názvy aut a postavy jsou smyšlené. Koncept Z: model „Car Concept“ © Khronos Group, CC BY 4.0 (na základě CC0 modelu od Unity Fan). Auta: Kenney Car Kit (CC0). Chodci: Mixamo. Obloha: Poly Haven CC0.</p>
 </div>
 
 <div id="scr-heroes" class="scr dim"></div>
@@ -1443,9 +1443,10 @@ import {GLTFLoader} from './vendor/jsm/loaders/GLTFLoader.js';
 import {RGBELoader} from './vendor/jsm/loaders/RGBELoader.js';
 import {DRACOLoader} from './vendor/jsm/loaders/DRACOLoader.js';
 import {KTX2Loader} from './vendor/jsm/loaders/KTX2Loader.js';
+import {MeshoptDecoder} from './vendor/jsm/libs/meshopt_decoder.module.js';
 import * as SkeletonUtils from './vendor/jsm/utils/SkeletonUtils.js';
-window.THREE=THREE;window.TADD={EffectComposer,RenderPass,UnrealBloomPass,OutputPass,GLTFLoader,RGBELoader,SkeletonUtils,DRACOLoader,KTX2Loader};
-const s=document.createElement('script');s.src='r3.js?v=9';document.body.appendChild(s);
+window.THREE=THREE;window.TADD={EffectComposer,RenderPass,UnrealBloomPass,OutputPass,GLTFLoader,RGBELoader,SkeletonUtils,DRACOLoader,KTX2Loader,MeshoptDecoder};
+const s=document.createElement('script');s.src='r3.js?v=10';document.body.appendChild(s);
 </script>
 </body>
 </html>

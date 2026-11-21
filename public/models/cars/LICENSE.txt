@@ -1,0 +1,2 @@
+Kenney Car Kit (https://www.kenney.nl/assets/car-kit) — CC0 1.0 (public domain).
+Optimized copies from npm package @netforge/asset-library-files (meshopt).
