@@ -185,6 +185,13 @@ body.drag #spd,#ctrl.on~#hud #spd{}
 #stick{position:fixed;width:120px;height:120px;margin:-60px 0 0 -60px;border-radius:50%;border:3px solid rgba(255,255,255,.35);background:rgba(10,12,20,.25);display:none;z-index:8;pointer-events:none}
 #stick i{position:absolute;left:50%;top:50%;width:46px;height:46px;margin:-23px 0 0 -23px;border-radius:50%;background:rgba(255,204,26,.75);border:2px solid #111}
 body.drag #kL,body.drag #kR{display:none}
+body.two #kL,body.two #kR,body.two #kU,body.two #kD{display:none!important}
+.tw{position:fixed;width:120px;height:120px;margin:-60px 0 0 -60px;border-radius:50%;border:3px solid rgba(255,255,255,.3);background:rgba(10,12,20,.25);display:none;z-index:8;pointer-events:none}
+#stickL{border-radius:60px;height:70px;margin-top:-35px}#stickR{width:70px;margin-left:-35px;border-radius:60px}
+.tw i{position:absolute;left:50%;top:50%;width:44px;height:44px;margin:-22px 0 0 -22px;border-radius:50%;background:rgba(255,204,26,.75);border:2px solid #111}
+.tw span{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;color:rgba(255,255,255,.45);font-size:12px;line-height:1.6;pointer-events:none}
+#twHint{position:fixed;left:0;right:0;bottom:calc(120px + env(safe-area-inset-bottom));display:none;justify-content:space-between;padding:0 18px;z-index:7;pointer-events:none;color:rgba(255,255,255,.55);font-weight:700;font-size:12px;letter-spacing:1px}
+body.two.driving #twHint{display:flex}
 #drift{position:absolute;left:0;right:0;top:calc(max(10px,env(safe-area-inset-top)) + 150px);text-align:center;font-family:Audiowide,Bangers,sans-serif;color:#fff;text-shadow:0 0 12px #ff2e88,2px 2px 0 #000;opacity:0;transition:opacity .25s;pointer-events:none}
 #drift.on{opacity:1}#drift b{display:block;font-size:clamp(28px,8vw,46px);letter-spacing:2px}#drift i{font-style:normal;font-size:16px;color:#ffcc1a;letter-spacing:3px}#drift.lost b{color:#ff4466}
 #street{position:absolute;left:10px;top:calc(max(10px,env(safe-area-inset-top)) + 108px);display:flex;gap:6px;flex-wrap:wrap}
@@ -269,7 +276,8 @@ body.drag #kL,body.drag #kR{display:none}
   <div id="hint"></div>
 </div>
 
-<div id="stick"><i></i></div>
+<div id="stick"><i></i></div><div id="stickL" class="tw"><i></i><span>◀ ▶</span></div><div id="stickR" class="tw"><i></i><span>▲<br>▼</span></div>
+<div id="twHint"><span>◀ LEVÝ PRST: ZATÁČENÍ ▶</span><span>PRAVÝ: ▲ PLYN / ▼ BRZDA</span></div>
 <div id="ctrl">
   <button id="kL" data-k="l">◀</button>
   <button id="kR" data-k="r">▶</button>
@@ -297,6 +305,7 @@ const SAVEKEY='usti_mesto_andelu_v1';
 let SAVE={steer:'drag',resp:0,cash:0,hero:null,car:'civka',owned:['civka'],done:{},seenIntro:false,comics:['intro'],mute:false,autoGas:null};
 try{const s=JSON.parse(localStorage.getItem(SAVEKEY)||'null');if(s)SAVE=Object.assign(SAVE,s)}catch(e){}
 if(!SAVE.owned.includes('koncept'))SAVE.owned.push('koncept');
+if((('ontouchstart' in window)||matchMedia('(pointer:coarse)').matches)&&!SAVE.steer2){SAVE.steer2=1;SAVE.steer='two'}
 function save(){try{localStorage.setItem(SAVEKEY,JSON.stringify(SAVE))}catch(e){}}
 const isTouch=('ontouchstart' in window)||matchMedia('(pointer:coarse)').matches;
 if(SAVE.autoGas===null)SAVE.autoGas=isTouch;
@@ -424,7 +433,7 @@ const CARS=[
  {id:'golfik',name:'Golfík IV GTI',desc:'Každej druhej na Klíši ho má. Ty budeš ten rychlejší.',col:'#c8ccd2',max:278,acc:220,turn:3.0,grip:6.5,hp:110,price:500,L:39,Wd:20},
  {id:'bavorak',name:'Bavorák E46',desc:'Zadokolka. Bokem do každý zatáčky.',col:'#1d3f8a',max:300,acc:235,turn:2.9,grip:5.3,hp:120,price:900,L:44,Wd:20},
  {id:'imprezka',name:'Imprezka WRX',desc:'Čtyřkolka z rallye. Na mokru král.',col:'#2448c8',max:318,acc:260,turn:3.2,grip:7.4,hp:115,price:1500,L:43,Wd:20,spoiler:1},
- {id:'koncept',name:'Koncept Z',desc:'Prototyp z budoucnosti. Nikdo neví, kde se v Ústí vzal. Dárek od ZORYX.',col:'#c8102e',max:362,acc:295,turn:3.15,grip:7.2,hp:120,price:0,L:46,Wd:21},
+ {id:'koncept',name:'Koncept Z',desc:'Prototyp z budoucnosti. Nikdo neví, kde se v Ústí vzal. Dárek od ZORYX.',col:'#c8102e',max:300,acc:236,turn:3.1,grip:7.4,hp:120,price:0,L:46,Wd:21},
  {id:'supka',name:'Toyda Supka',desc:'Legenda nočních závodů. Kdo ji má, ten je někdo.',col:'#e8a21a',max:345,acc:270,turn:3.0,grip:6,hp:110,price:2500,L:44,Wd:21,spoiler:1},
 ];
 const POLICE={col:'#e9ecef',max:236,acc:235,turn:2.8,grip:6,hp:60,L:44,Wd:20,police:1};
@@ -1103,7 +1112,7 @@ function startRoam(at,target){AN.ev('roam_start');hideAll();G.engineOff=false;$(
   RS={roam:true,nitro:.6,nitroFill:SAVE.hero==='lucie'?.098:.07,target:target||null,enterCD:2.5};G.roamDist='';
   $('hud').classList.add('on');if(isTouch)$('ctrl').classList.add('on');$('kU').style.display=SAVE.autoGas?'none':'block';$('kAt').textContent='NITRO';$('kA').classList.remove('hot');
   $('hMainL').textContent='ČTVRŤ';$('hMain').classList.add('small');$('bust').style.display='none';$('center').textContent='';$('obj').classList.add('on');
-  $('hint').textContent=isTouch?'':'←→ řízení • ↑ plyn • ↓ brzda • MEZERNÍK nitro • SHIFT smyk • C kamera • R rádio • P pauza';if(isTouch&&SAVE.steer==='drag'&&!SAVE.dragTip){SAVE.dragTip=1;save();floatMsg('👆 TÁHNI PRSTEM',3);}
+  $('hint').textContent=isTouch?'':'←→ řízení • ↑ plyn • ↓ brzda • MEZERNÍK nitro • SHIFT smyk • C kamera • R rádio • P pauza';if(isTouch&&SAVE.steer==='two'&&!SAVE.twoTip){SAVE.twoTip=1;save();floatMsg('✌️ DVA PRSTY',3);}
   Snd.startMusic(false);Snd.setStyle(SAVE.radio||'labe');Snd.rain(w.rain);drawMinimapBg();setTimeout(()=>{const a=$('area');if(G.mode==='roam'){a.textContent='📻 '+STY[Snd.style].name;a.classList.add('on');areaT=2.2}},2600)}
 let areaT=0;
 function updateRoam(dt){const w=G.world,p=w.player;
@@ -1176,11 +1185,12 @@ function driftUpdate(p,w,dt,bank){const sp=Math.hypot(p.vx,p.vy),lat=Math.abs(-M
   else if(DR.msgT>0){DR.msgT-=dt;if(DR.msgT<=0)el.className=''}}
 function spdSet(k){$('spN').textContent=k;$('spArc').setAttribute('stroke-dasharray',Math.min(100,k/1.6)+' 100')}
 let msgT=0;function floatMsg(t,dur){$('center').textContent=t;msgT=dur||1.1}
-const STK={id:null,x:0,y:0,dx:0,dy:0};
+const STK={id:null,x:0,y:0,dx:0,dy:0},TW={L:{id:null,x:0,y:0,dx:0,dy:0},R:{id:null,x:0,y:0,dx:0,dy:0}};
 function playerCtl(){const k=G.keys;const p=G.world&&G.world.player;
   if(G.engineOff)return{thr:p&&p.v>3?-1:0,steer:0};
   let thr=(k.u?1:0)+(k.d?-1:0);let steer=(k.r?1:0)-(k.l?1:0);
-  const drag=SAVE.steer==='drag'&&isTouch;
+  const drag=SAVE.steer==='drag'&&isTouch,two=SAVE.steer==='two'&&isTouch;
+  if(two&&p){if(TW.L.id!==null)steer=clamp(TW.L.dx/50,-1,1);if(TW.R.id!==null){const dy=TW.R.dy;thr=dy<-6?clamp(-dy/50,.35,1):dy>18?-1:0}else if(!k.u&&!k.d)thr=-.3;if(k.d)thr=-1;return{thr,steer,hb:!!k.h}}
   if(SAVE.autoGas&&!k.d&&isTouch&&!drag)thr=1;
   const chaseCam=typeof R3!=='undefined'&&R3.ok&&(SAVE.cam||'chase')!=='top';
   if(STK.id!==null&&p&&chaseCam){const dx=STK.dx,dy=STK.dy;if(Math.hypot(dx,dy)>10){steer=clamp(dx/55,-1,1);if(!k.d)thr=dy<-8?clamp(-dy/55,.4,1):dy>30?-1:.55}}
@@ -1188,6 +1198,13 @@ function playerCtl(){const k=G.keys;const p=G.world&&G.world.player;
   else if(drag&&!k.d&&!k.u)thr=-.3;
   return{thr,steer,hb:!!k.h}}
 function stickOn(){return SAVE.steer==='drag'&&isTouch&&(G.mode==='race'||G.mode==='roam')}
+function twoOn(){return SAVE.steer==='two'&&isTouch&&(G.mode==='race'||G.mode==='roam')}
+const twEl=k=>$(k==='L'?'stickL':'stickR');
+cv.addEventListener('pointerdown',e=>{if(!twoOn())return;const k=e.clientX<VW/2?'L':'R',S=TW[k];if(S.id!==null)return;S.id=e.pointerId;S.x=e.clientX;S.y=e.clientY;S.dx=S.dy=0;const el=twEl(k);el.style.left=e.clientX+'px';el.style.top=e.clientY+'px';el.style.display='block';el.firstChild.style.transform='';try{cv.setPointerCapture(e.pointerId)}catch(_){}});
+cv.addEventListener('pointermove',e=>{for(const k of['L','R']){const S=TW[k];if(e.pointerId!==S.id)continue;let dx=e.clientX-S.x,dy=e.clientY-S.y;if(k==='L')dy=0;else dx=0;const lim=70;S.dx=clamp(dx,-lim,lim);S.dy=clamp(dy,-lim,lim);twEl(k).firstChild.style.transform=`translate(${S.dx*.7}px,${S.dy*.7}px)`}});
+const twEnd=e=>{for(const k of['L','R']){const S=TW[k];if(e.pointerId!==S.id)continue;S.id=null;S.dx=S.dy=0;twEl(k).style.display='none'}};
+cv.addEventListener('pointerup',twEnd);cv.addEventListener('pointercancel',twEnd);cv.addEventListener('lostpointercapture',twEnd);
+const twTouch=e=>{const left=[...e.touches].some(t=>t.clientX<VW/2),right=[...e.touches].some(t=>t.clientX>=VW/2);for(const[k,keep]of[['L',left],['R',right]]){const S=TW[k];if(S.id!==null&&!keep){S.id=null;S.dx=S.dy=0;twEl(k).style.display='none'}}};addEventListener('touchend',twTouch);addEventListener('touchcancel',twTouch);
 cv.addEventListener('pointerdown',e=>{if(!stickOn()||STK.id!==null)return;STK.id=e.pointerId;STK.x=e.clientX;STK.y=e.clientY;STK.dx=STK.dy=0;const s=$('stick');s.style.left=e.clientX+'px';s.style.top=e.clientY+'px';s.style.display='block';s.firstChild.style.transform='';try{cv.setPointerCapture(e.pointerId)}catch(_){}});
 cv.addEventListener('pointermove',e=>{if(e.pointerId!==STK.id)return;let dx=e.clientX-STK.x,dy=e.clientY-STK.y;const L=Math.hypot(dx,dy);if(L>90){STK.x+=dx*(1-90/L);STK.y+=dy*(1-90/L);dx=e.clientX-STK.x;dy=e.clientY-STK.y;const s=$('stick');s.style.left=STK.x+'px';s.style.top=STK.y+'px'}
   STK.dx=dx;STK.dy=dy;const k=Math.min(1,45/Math.max(1,Math.hypot(dx,dy)));$('stick').firstChild.style.transform=`translate(${dx*k}px,${dy*k}px)`});
@@ -1202,7 +1219,7 @@ const panEnd=e=>{PTS.delete(e.pointerId);pinchD=0;if(e.pointerId===PAN.id){PAN.i
 cv.addEventListener('wheel',e=>{if(!menuOn())return;e.preventDefault();mzoom(e.deltaY>0?.9:1.1)},{passive:false});
 $('zIn').onclick=()=>mzoom(1.25);$('zOut').onclick=()=>mzoom(.8);
 cv.style.cursor='';setInterval(()=>{cv.style.cursor=menuOn()?(PAN.id!==null?'grabbing':'grab'):''},300);
-function applySteerMode(){document.body.classList.toggle('drag',SAVE.steer==='drag'&&isTouch)}applySteerMode();
+function applySteerMode(){document.body.classList.toggle('drag',SAVE.steer==='drag'&&isTouch);document.body.classList.toggle('two',SAVE.steer==='two'&&isTouch)}applySteerMode();
 function updateRace(dt){const w=G.world,p=w.player,L=RS.L;RS.t+=dt;
   if(RS.count>0){RS.count-=dt;const n=Math.ceil(RS.count-.4);$('center').textContent=RS.count>.4?(L.type==='race'?String(n):'JEĎ!'):'JEĎ!';if(RS.count<=0){for(const c of w.cars)c.frozen=false;floatMsg('JEĎ!',.8)}}
   else if(msgT>0){msgT-=dt;if(msgT<=0)$('center').textContent=''}
@@ -1288,12 +1305,12 @@ for(const b of document.querySelectorAll('#ctrl button')){const k=b.dataset.k;
   b.addEventListener('pointerdown',on);b.addEventListener('pointerup',off);b.addEventListener('pointercancel',off);b.addEventListener('lostpointercapture',off);b.addEventListener('contextmenu',e=>e.preventDefault())}
 function pause(){if(!(G.mode==='race'||G.mode==='roam')||(RS&&RS.end))return;DJ.stop();G.prevMode=G.mode;G.mode='paused';Snd.engine(0,false);Snd.siren(0,0);const el=$('scr-pause');
   el.innerHTML=`<h2 class="logo"><span class="b" style="font-size:44px">PAUZA</span></h2><button class="btn" id="pRes">POKRAČOVAT</button>${G.prevMode==='race'?`<button class="btn dark" data-lvlgo="${RS.L.id}">ZNOVU</button><button class="btn dark" data-go="city">VZDÁT → MĚSTO</button>`:''}
-  <div class="toggle">Grafika: <button class="btn sm dark" id="pGfx">${typeof R3!=='undefined'&&R3.q==='high'?'VYSOKÁ':'NÍZKÁ'}</button></div><div class="toggle">Řízení: <button class="btn sm dark" id="pSteer">${SAVE.steer==='drag'?'TAH PRSTEM':'ŠIPKY'}</button></div><div class="toggle">Auto-plyn (mobil): <button class="btn sm dark" id="pAuto">${SAVE.autoGas?'ZAP':'VYP'}</button></div><button class="btn sm dark" id="pTod">${TODN[SAVE.tod||'night']}</button><button class="btn sm dark" id="pRadio">📻 ${STY[Snd.style]?STY[Snd.style].name:'RÁDIO'}</button><button class="btn sm dark" id="pMute">${SAVE.mute?'🔇 Zvuk vyp':'🔊 Zvuk zap'}</button><button class="btn pink" data-go="menu">MENU</button>`;
+  <div class="toggle">Grafika: <button class="btn sm dark" id="pGfx">${typeof R3!=='undefined'&&R3.q==='high'?'VYSOKÁ':'NÍZKÁ'}</button></div><div class="toggle">Řízení: <button class="btn sm dark" id="pSteer">${{two:'DVA PRSTY',drag:'JEDEN PRST',buttons:'TLAČÍTKA'}[SAVE.steer]||'TLAČÍTKA'}</button></div><div class="toggle">Auto-plyn (mobil): <button class="btn sm dark" id="pAuto">${SAVE.autoGas?'ZAP':'VYP'}</button></div><button class="btn sm dark" id="pTod">${TODN[SAVE.tod||'night']}</button><button class="btn sm dark" id="pRadio">📻 ${STY[Snd.style]?STY[Snd.style].name:'RÁDIO'}</button><button class="btn sm dark" id="pMute">${SAVE.mute?'🔇 Zvuk vyp':'🔊 Zvuk zap'}</button><button class="btn pink" data-go="menu">MENU</button>`;
   $('ctrl').classList.remove('on');el.classList.add('on');
   $('pRes').onclick=()=>{el.classList.remove('on');if(isTouch)$('ctrl').classList.add('on');G.mode=G.prevMode;G.keys={}};
   $('pAuto').onclick=()=>{SAVE.autoGas=!SAVE.autoGas;save();$('pAuto').textContent=SAVE.autoGas?'ZAP':'VYP';$('kU').style.display=SAVE.autoGas?'none':'block'};
   $('pGfx').onclick=()=>{if(typeof R3==='undefined'||!R3.ok)return;R3.q=R3.q==='high'?'low':'high';SAVE.gfx=R3.q;save();R3.renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,R3.q==='high'?(isTouch?1.5:2):1));R3.renderer.setSize(VW,VH,false);R3.setupComposer();$('pGfx').textContent=R3.q==='high'?'VYSOKÁ':'NÍZKÁ'};
-  $('pSteer').onclick=()=>{SAVE.steer=SAVE.steer==='drag'?'buttons':'drag';save();applySteerMode();$('pSteer').textContent=SAVE.steer==='drag'?'TAH PRSTEM':'ŠIPKY'};
+  $('pSteer').onclick=()=>{const L=['two','drag','buttons'];SAVE.steer=L[(L.indexOf(SAVE.steer)+1)%3];save();applySteerMode();$('pSteer').textContent={two:'DVA PRSTY',drag:'JEDEN PRST',buttons:'TLAČÍTKA'}[SAVE.steer]};
   $('pRadio').onclick=()=>nextRadio();$('pTod').onclick=nextTod;
   $('pMute').onclick=()=>{Snd.setMute(!SAVE.mute);$('pMute').textContent=SAVE.mute?'🔇 Zvuk vyp':'🔊 Zvuk zap'}}
 $('pauseB').addEventListener('click',pause);
@@ -1410,7 +1427,7 @@ function frame(now){const dt=Math.min(REC?.1:.033,(now-last)/1000);last=now;
       if(!amb.tgt||!w.cars.includes(amb.tgt)){amb.tgt=w.cars.find(c=>c.kind==='civ')||null}
       const Zm=baseZoom()*1.15*(G.menuZoom||1);if($('scr-menu').classList.contains('on')&&w.userPan){}else if($('scr-menu').classList.contains('on')&&w.stage){const tx=w.stage.x-VW*.17/Zm+Math.sin(w.t*.15)*30,ty=w.stage.y-VH*.14/Zm;if(Math.hypot(w.cam.x-tx,w.cam.y-ty)>900){w.cam.x=tx;w.cam.y=ty}w.cam.x=lerp(w.cam.x,tx,dt*1.5);w.cam.y=lerp(w.cam.y,ty,dt*1.5)}else if(amb.tgt){w.cam.x=lerp(w.cam.x,amb.tgt.x,dt*.8);w.cam.y=lerp(w.cam.y,amb.tgt.y,dt*.8)}w.zoom=Zm}}}
   const w=G.world;const O3={labels:menuOn()&&(G.menuZoom||1)<.8,arrow:G.mode==='race',arrowTo:G.mode==='roam'&&RS?RS.arrowTo:null,markers:G.mode==='roam'?MARKERS():null};
-  if(w&&typeof R3!=='undefined'&&R3.ok){R3.camMode=(G.mode==='roam'||G.mode==='race')?(SAVE.cam||'chase'):'top';document.body.classList.toggle('cock',R3.camMode==='cockpit'&&!!(w.player&&w.player.st&&w.player.st.id==='koncept'));R3.render(w,O3,dt);overlay3D(ctx,w,VW,VH,O3)}else if(w)render(ctx,w,VW,VH,w.cam,w.zoom||baseZoom(),{labels:menuOn()&&(G.menuZoom||1)<.8,arrow:G.mode==='race',arrowTo:G.mode==='roam'&&RS?RS.arrowTo:null,markers:G.mode==='roam'?MARKERS():null});
+  if(w&&typeof R3!=='undefined'&&R3.ok){R3.camMode=(G.mode==='roam'||G.mode==='race')?(SAVE.cam||'chase'):'top';document.body.classList.toggle('driving',G.mode==='roam'||G.mode==='race');document.body.classList.toggle('cock',R3.camMode==='cockpit'&&!!(w.player&&w.player.st&&w.player.st.id==='koncept'));R3.render(w,O3,dt);overlay3D(ctx,w,VW,VH,O3)}else if(w)render(ctx,w,VW,VH,w.cam,w.zoom||baseZoom(),{labels:menuOn()&&(G.menuZoom||1)<.8,arrow:G.mode==='race',arrowTo:G.mode==='roam'&&RS?RS.arrowTo:null,markers:G.mode==='roam'?MARKERS():null});
   }catch(err){console.error(err)}
   requestAnimationFrame(frame)}
 requestAnimationFrame(frame);
