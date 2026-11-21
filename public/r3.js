@@ -14,9 +14,9 @@ const R3={ok:false,off:/[?&]2d/.test(location.search),chunks:new Map(),CH:16,PX:
    r.useLegacyLights=true;r.outputColorSpace=T3.SRGBColorSpace;r.toneMapping=T3.ACESFilmicToneMapping;r.toneMappingExposure=.85;r.setPixelRatio(Math.min(window.devicePixelRatio||1,isTouch?1.5:2));r.setSize(VW,VH,false);
   }catch(e){console.warn('WebGL off',e);return}
   const S=this.scene=new T3.Scene();S.background=new T3.Color(0x1a0b2a);S.fog=new T3.FogExp2(0x2a1238,.00045);
-  {const sg=new T3.SphereGeometry(4000,24,16),sm=new T3.ShaderMaterial({side:T3.BackSide,depthWrite:false,fog:false,uniforms:{},
+  {const sg=new T3.SphereGeometry(4000,24,16),sm=new T3.ShaderMaterial({side:T3.BackSide,depthWrite:false,fog:false,uniforms:{uTop:{value:new T3.Color(.05,.02,.12)},uMid:{value:new T3.Color(.28,.06,.32)},uHor:{value:new T3.Color(1,.32,.45)},uSun:{value:new T3.Color(1,.62,.3)}},
     vertexShader:'varying vec3 vP;void main(){vP=normalize(position);gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',
-    fragmentShader:'varying vec3 vP;void main(){float h=vP.y;vec3 top=vec3(.05,.02,.12),mid=vec3(.28,.06,.32),hor=vec3(1.,.32,.45),sun=vec3(1.,.62,.3);vec3 c=mix(mid,top,smoothstep(.05,.6,h));c=mix(hor,c,smoothstep(-.02,.16,h));c+=sun*.55*exp(-pow((h-.02)*14.,2.));gl_FragColor=vec4(c,1.);}'});
+    fragmentShader:'uniform vec3 uTop,uMid,uHor,uSun;varying vec3 vP;void main(){float h=vP.y;vec3 top=uTop,mid=uMid,hor=uHor,sun=uSun;vec3 c=mix(mid,top,smoothstep(.05,.6,h));c=mix(hor,c,smoothstep(-.02,.16,h));c+=sun*.55*exp(-pow((h-.02)*14.,2.));gl_FragColor=vec4(c,1.);}'});
    this.sky=new T3.Mesh(sg,sm);this.sky.renderOrder=-1;S.add(this.sky)}
   this.cam=new T3.PerspectiveCamera(50,VW/VH,8,5200);
   // neon environment map for glossy reflections
@@ -27,7 +27,7 @@ const R3={ok:false,off:/[?&]2d/.test(location.search),chunks:new Map(),CH:16,PX:
   // post-processing: bloom (adaptive)
   this.q=SAVE.gfx||'high';this.setupComposer();
   this.hemi=new T3.HemisphereLight(0x7f90d0,0x141626,.6);S.add(this.hemi);
-  const moon=new T3.DirectionalLight(0x9fb0ff,.35);moon.position.set(-400,900,-300);S.add(moon);
+  const moon=this.sun=new T3.DirectionalLight(0x9fb0ff,.35);moon.position.set(-400,900,-300);S.add(moon);
   // player headlights
   this.head=new T3.SpotLight(0xfff1c8,1.5,560,.5,.6,1.4);S.add(this.head);S.add(this.head.target);
   // nearest street lamps (fixed count to avoid shader recompiles)
@@ -36,6 +36,9 @@ const R3={ok:false,off:/[?&]2d/.test(location.search),chunks:new Map(),CH:16,PX:
   // shared materials & textures
   this.mkTex();
   this.wallMat=new T3.MeshLambertMaterial({map:this.winTex,emissiveMap:this.winEm,emissive:0xffffff,emissiveIntensity:1.6,vertexColors:true});
+  {const TL=new T3.TextureLoader(),ld=f=>{const t=TL.load('art/tex/'+f+'.jpg');t.wrapS=t.wrapT=T3.RepeatWrapping;t.colorSpace=T3.SRGBColorSpace;t.anisotropy=4;return t};this.facMats={};
+   for(const k of['plaster','brick','panel','shops'])this.facMats[k]=new T3.MeshLambertMaterial({map:ld('fac_'+k),emissiveMap:ld('fac_'+k+'_em'),emissive:0xffffff,emissiveIntensity:1.2,vertexColors:true});
+   this.facMats.plain=new T3.MeshLambertMaterial({color:0xffffff,vertexColors:true})}
   this.roofMats={};for(const k of['roof_tar','roof_tiles','roof_metal','plain'])this.roofMats[k]=new T3.MeshLambertMaterial({vertexColors:true,map:this.imgTex(k)});
   this.groundGeo=new T3.PlaneGeometry(this.CH*T,this.CH*T);
   this.carBox=new T3.BoxGeometry(1,1,1);
@@ -49,8 +52,16 @@ const R3={ok:false,off:/[?&]2d/.test(location.search),chunks:new Map(),CH:16,PX:
   this.staticObjs();
   // dynamic buffers
   this.mkParticles();this.mkSkids();this.mkArrow();
-  this.ok=true;document.body.classList.add('r3on');
+  this.ok=true;document.body.classList.add('r3on');this.setTOD(SAVE.tod||'night');
  },
+ TODS:{night:{sky:[[.05,.02,.12],[.28,.06,.32],[1,.32,.45],[1,.62,.3]],fog:0x2a1238,fd:1,hemi:[0x7f90d0,0x141626,.6],sun:[0x9fb0ff,.35,-400,900,-300],em:1.2,neon:2.2,pool:1,exp:.85,bloom:.7,lamp:1},
+  golden:{sky:[[.16,.3,.6],[.95,.62,.42],[1,.82,.55],[1,.92,.6]],fog:0xd49a78,fd:.75,hemi:[0xffdcb8,0x5a4030,1.05],sun:[0xffb070,1.4,900,380,-200],em:.15,neon:1.1,pool:0,exp:1,bloom:.35,lamp:0},
+  day:{sky:[[.2,.45,.85],[.55,.75,.95],[.88,.93,.98],[1,1,1]],fog:0xa9c4dd,fd:.7,hemi:[0xe8f2ff,0x6b6455,1.25],sun:[0xffffff,1.35,400,1200,300],em:0,neon:.5,pool:0,exp:1.05,bloom:.2,lamp:0}},
+ setTOD(k){const D=this.TODS[k]||this.TODS.night;this.tod=k;const U=this.sky.material.uniforms;['uTop','uMid','uHor','uSun'].forEach((n,i)=>U[n].value.setRGB(...D.sky[i]));
+  this.scene.fog.color.set(D.fog);this.scene.background.set(D.fog);this.fogMul=D.fd;this.hemi.color.set(D.hemi[0]);this.hemi.groundColor.set(D.hemi[1]);this.hemiBase=D.hemi[2];
+  this.sun.color.set(D.sun[0]);this.sun.intensity=D.sun[1];this.sun.position.set(D.sun[2],D.sun[3],D.sun[4]);for(const k2 in this.facMats)this.facMats[k2].emissiveIntensity=D.em;this.wallMat.emissiveIntensity=D.em*1.3;
+  if(this.neonM){this.neonM.pink.color.set(0xff2e88).multiplyScalar(D.neon);this.neonM.orange.color.set(0xff8a2e).multiplyScalar(D.neon)}this.neonMul=D.neon;
+  this.pool.visible=!!D.pool;this.lbar.material.color.set(0xff6a3a).multiplyScalar(D.neon*1.2);this.renderer.toneMappingExposure=D.exp;if(this.bloom)this.bloom.strength=D.bloom;this.lampOn=D.lamp;this.beamMat.opacity=D.pool?.22:.06},
  resize(){if(!this.ok)return;this.renderer.setSize(VW,VH,false);this.cam.aspect=VW/VH;this.cam.updateProjectionMatrix();if(this.comp){this.comp.setSize(VW,VH);this.bloom.setSize(VW*.5,VH*.5)}},
  setupComposer(){const A=window.TADD,T3=THREE;this.comp=null;if(!A||this.q!=='high')return;try{const c=new A.EffectComposer(this.renderer);c.setPixelRatio(this.renderer.getPixelRatio());c.setSize(VW,VH);c.addPass(new A.RenderPass(this.scene,this.cam));
    this.bloom=new A.UnrealBloomPass(new T3.Vector2(VW*.5,VH*.5),.7,.45,.92);c.addPass(this.bloom);c.addPass(new A.OutputPass());this.comp=c}catch(e){console.warn('bloom off',e);this.comp=null}},
@@ -70,9 +81,9 @@ const R3={ok:false,off:/[?&]2d/.test(location.search),chunks:new Map(),CH:16,PX:
   // lamps: pole + bulb + ground pool of light
   const n=lamps.length;const pole=new T3.InstancedMesh(new T3.CylinderGeometry(1.4,1.8,46,5),new T3.MeshLambertMaterial({color:0x3a3a42}),n);
   const bulb=new T3.InstancedMesh(new T3.SphereGeometry(4.5,8,6),new T3.MeshBasicMaterial({color:0xffd9a0}),n);
-  const pg=new T3.PlaneGeometry(1,1);pg.rotateX(-Math.PI/2);const pool=new T3.InstancedMesh(pg,new T3.MeshBasicMaterial({map:this.glowTex('rgba(255,160,70,.3)'),transparent:true,blending:T3.AdditiveBlending,depthWrite:false}),n);
+  const pg=new T3.PlaneGeometry(1,1);pg.rotateX(-Math.PI/2);const pool=this.pool=new T3.InstancedMesh(pg,new T3.MeshBasicMaterial({map:this.glowTex('rgba(255,160,70,.3)'),transparent:true,blending:T3.AdditiveBlending,depthWrite:false}),n);
   for(let i=0;i<n;i++){const l=lamps[i];M.makeTranslation(l.x,23,l.y);pole.setMatrixAt(i,M);M.makeTranslation(l.x,47,l.y);bulb.setMatrixAt(i,M);M.compose(V.set(l.x,1.2,l.y),Q.identity(),SC.set(230,1,230));pool.setMatrixAt(i,M)}
-  const bar=new T3.InstancedMesh(new T3.BoxGeometry(30,2.4,3.2),new T3.MeshBasicMaterial({color:new T3.Color(0xff6a3a).multiplyScalar(2.6)}),n);
+  const bar=this.lbar=new T3.InstancedMesh(new T3.BoxGeometry(30,2.4,3.2),new T3.MeshBasicMaterial({color:new T3.Color(0xff6a3a).multiplyScalar(2.6)}),n);
   for(let i=0;i<n;i++){const l=lamps[i];Q.setFromAxisAngle(V.set(0,1,0),(i%2)*Math.PI/2);M.compose(V.set(l.x,46,l.y),Q,SC.set(1,1,1));bar.setMatrixAt(i,M)}
   S.add(pole,bulb,pool,bar);
   // trees
@@ -100,23 +111,28 @@ const R3={ok:false,off:/[?&]2d/.test(location.search),chunks:new Map(),CH:16,PX:
   const tex=new T3.CanvasTexture(cv);tex.colorSpace=T3.SRGBColorSpace;tex.anisotropy=Math.min(4,this.renderer.capabilities.getMaxAnisotropy());
   const grp=new T3.Group();const gm=new T3.Mesh(this.groundGeo,new T3.MeshLambertMaterial({map:tex}));gm.rotation.x=-Math.PI/2;gm.position.set(x0+S/2,0,y0+S/2);grp.add(gm);
   // buildings whose centre lies in this chunk
-  const W={pos:[],nor:[],uv:[],col:[]},RF={};const rk=b=>b.panel?'roof_tar':b.factory?'roof_metal':(b.castle||b.church)?'roof_tiles':(b.chimney||b.pylon||b.tower)?'plain':b.shop?'roof_metal':(((b.x*7+b.y*13)/T|0)%3===0?'roof_tiles':'roof_tar');
+  const W={pos:[],nor:[],uv:[],col:[]},WF={},RF={};const rk=b=>b.panel?'roof_tar':b.factory?'roof_metal':(b.castle||b.church)?'roof_tiles':(b.chimney||b.pylon||b.tower)?'plain':b.shop?'roof_metal':(((b.x*7+b.y*13)/T|0)%3===0?'roof_tiles':'roof_tar');
   const C=new T3.Color();
   for(const b of buildings){const mx=b.x+b.w/2,my=b.y+b.h/2;if(mx<x0||mx>x1||my<y0||my>y1)continue;
    const H=Math.min(b.ht*this.HK,b.pylon?560:900),X0=b.x,X1=b.x+b.w,Z0=b.y,Z1=b.y+b.h;C.set(b.col);const wc=C.clone().lerp(new T3.Color(0xbdb8ae),.35);
    const quad=(o,a,bq,c,d,n,uv)=>{o.pos.push(...a,...bq,...c,...a,...c,...d);for(let q=0;q<6;q++)o.nor.push(...n);o.uv.push(uv[0],uv[1],uv[2],uv[3],uv[4],uv[5],uv[0],uv[1],uv[4],uv[5],uv[6],uv[7])};
-   const wall=(ax,az,bx,bz,n)=>{const L=Math.hypot(bx-ax,bz-az),u0=(ax+az)/384,u1=u0+L/384,v1=H/256;quad(W,[ax,0,az],[bx,0,bz],[bx,H,bz],[ax,H,az],n,[u0,0,u1,0,u1,v1,u0,v1]);for(let q=0;q<6;q++)W.col.push(wc.r,wc.g,wc.b)};
+   const hsh=((b.x*13+b.y*7)/T|0),fk=b.panel?'panel':(b.factory||b.chimney)?'brick':(b.pylon||b.tower)?'plain':(b.castle||b.church||b.hotel)?'plaster':hsh%2?'brick':'plaster',FW=fk==='panel'?160:160,FH=fk==='panel'?150:120;
+   const band=!b.panel&&!b.factory&&!b.chimney&&!b.pylon&&!b.tower&&!b.castle&&!b.church&&H>50&&(b.shop||b.bar||b.hotel||hsh%3!==0)?40:0;
+   const acc=k=>WF[k]||(WF[k]={pos:[],nor:[],uv:[],col:[]}),tc=fk==='plain'?C.clone().lerp(new T3.Color(0xffffff),.7):new T3.Color(0xffffff).lerp(C,.22);
+   const wall=(ax,az,bx,bz,n)=>{const L=Math.hypot(bx-ax,bz-az),u0=((ax+az)%997)/FW,u1=u0+L/FW;
+    if(band){const o=acc('shops'),su0=((ax*3+az)%991)/120,su1=su0+L/120;quad(o,[ax,0,az],[bx,0,bz],[bx,band,bz],[ax,band,az],n,[su0,0,su1,0,su1,1,su0,1]);for(let q=0;q<6;q++)o.col.push(1,1,1)}
+    const o=acc(fk),v1=(H-band)/FH;quad(o,[ax,band,az],[bx,band,bz],[bx,H,bz],[ax,H,az],n,[u0,0,u1,0,u1,v1,u0,v1]);for(let q=0;q<6;q++)o.col.push(tc.r,tc.g,tc.b)};
    wall(X0,Z1,X1,Z1,[0,0,1]);wall(X1,Z1,X1,Z0,[1,0,0]);wall(X1,Z0,X0,Z0,[0,0,-1]);wall(X0,Z0,X0,Z1,[-1,0,0]);
    const key=rk(b),o=RF[key]||(RF[key]={pos:[],nor:[],uv:[],col:[]}),sc=key==='plain'?1:1/192;
    quad(o,[X0,H,Z1],[X1,H,Z1],[X1,H,Z0],[X0,H,Z0],[0,1,0],[X0*sc,Z1*sc,X1*sc,Z1*sc,X1*sc,Z0*sc,X0*sc,Z0*sc]);const rc=key==='roof_tiles'?C.clone().lerp(new T3.Color(0xffffff),.5):C;for(let q=0;q<6;q++)o.col.push(rc.r,rc.g,rc.b);
    if(b.chimney){const sm=new T3.Mesh(new T3.CylinderGeometry(b.w*.3,b.w*.3,4,8),new T3.MeshBasicMaterial({color:0x1a1010}));sm.position.set(mx,H+2,my);grp.add(sm)}}
   const mk=(o,mat)=>{if(!o.pos.length)return;const bg=new T3.BufferGeometry();bg.setAttribute('position',new T3.Float32BufferAttribute(o.pos,3));bg.setAttribute('normal',new T3.Float32BufferAttribute(o.nor,3));bg.setAttribute('uv',new T3.Float32BufferAttribute(o.uv,2));bg.setAttribute('color',new T3.Float32BufferAttribute(o.col,3));grp.add(new T3.Mesh(bg,mat))};
-  mk(W,this.wallMat);for(const k in RF)mk(RF[k],this.roofMats[k]);
+  mk(W,this.wallMat);for(const k in WF)mk(WF[k],this.facMats[k]);for(const k in RF)mk(RF[k],this.roofMats[k]);
   {const NE={pink:{pos:[]},orange:{pos:[]}},box=(o,x0b,z0b,x1b,z1b,h0,h1)=>{const v=[[x0b,h0,z0b],[x1b,h0,z0b],[x1b,h0,z1b],[x0b,h0,z1b],[x0b,h1,z0b],[x1b,h1,z0b],[x1b,h1,z1b],[x0b,h1,z1b]],f=[[4,5,6,7],[0,1,5,4],[1,2,6,5],[2,3,7,6],[3,0,4,7]];for(const q of f){o.pos.push(...v[q[0]],...v[q[1]],...v[q[2]],...v[q[0]],...v[q[2]],...v[q[3]])}};
    const isR=t=>t===ROAD||t===BRIDGE,tx0=Math.floor(x0/T),ty0=Math.floor(y0/T);
    for(let ty=ty0;ty<ty0+CH;ty++)for(let tx=tx0;tx<tx0+CH;tx++){const t0=tileAt(tx,ty);if(!isR(t0))continue;const o=t0===BRIDGE?NE.orange:NE.pink,X=tx*T,Y=ty*T,w=1.6,h1=2.6;
     if(!isR(tileAt(tx,ty-1)))box(o,X,Y,X+T,Y+w,.5,h1);if(!isR(tileAt(tx,ty+1)))box(o,X,Y+T-w,X+T,Y+T,.5,h1);if(!isR(tileAt(tx-1,ty)))box(o,X,Y,X+w,Y+T,.5,h1);if(!isR(tileAt(tx+1,ty)))box(o,X+T-w,Y,X+T,Y+T,.5,h1)}
-   if(!this.neonM){this.neonM={pink:new T3.MeshBasicMaterial({color:new T3.Color(0xff2e88).multiplyScalar(2.2)}),orange:new T3.MeshBasicMaterial({color:new T3.Color(0xff8a2e).multiplyScalar(2.2)})}}
+   if(!this.neonM){const nm=this.neonMul||2.2;this.neonM={pink:new T3.MeshBasicMaterial({color:new T3.Color(0xff2e88).multiplyScalar(nm)}),orange:new T3.MeshBasicMaterial({color:new T3.Color(0xff8a2e).multiplyScalar(nm)})}}
    for(const k in NE){if(!NE[k].pos.length)continue;const bg=new T3.BufferGeometry();bg.setAttribute('position',new T3.Float32BufferAttribute(NE[k].pos,3));grp.add(new T3.Mesh(bg,this.neonM[k]))}}
   // neon signs on facades
   for(const sg of signs){if(sg.x<x0||sg.x>x1||sg.y<y0||sg.y>y1+2)continue;const m=this.signMesh(sg);if(m)grp.add(m)}
@@ -199,7 +215,7 @@ const R3={ok:false,off:/[?&]2d/.test(location.search),chunks:new Map(),CH:16,PX:
  proj(x,y,h){const v=this.tmp||(this.tmp=new THREE.Vector3());v.set(x,h||0,y).project(this.cam);return[(v.x+1)/2*VW,(1-v.y)/2*VH,v.z<1&&v.z>-1]},
  // ---------- per-frame ----------
  render(w,opts,dt){const T3=THREE,t=w.t;this.camFor(w,dt);this.updChunks(this.focus.x,this.focus.y,this.focus.r);
-  this.hemi.intensity=.6+w.flash*1.6;this.scene.fog.density=G.mode==='roam'||G.mode==='race'?(this.camMode==='chase'?.00055:.00035):.0003;
+  this.hemi.intensity=(this.hemiBase||.6)+w.flash*1.6;this.scene.fog.density=(G.mode==='roam'||G.mode==='race'?(this.camMode==='chase'?.00055:.00035):.0003)*(this.fogMul||1);
   // cars
   const seen=new Set();for(const c of w.cars){let g=this.cars.get(c);if(!g){g=this.carMesh(c);this.cars.set(c,g)}seen.add(c);g.position.set(c.x,0,c.y);g.rotation.y=-c.a;
    g.userData.paint.color.set(c.wreck?0x2a2522:(c.st&&c.st.police)?0xe9ecef:c.hitT>0?0xffffff:c.col);g.userData.beam.visible=!c.wreck;for(const wg of g.userData.wheels)wg.rotation.z-=(c.v||0)*dt/5.6;
@@ -231,7 +247,7 @@ const R3={ok:false,off:/[?&]2d/.test(location.search),chunks:new Map(),CH:16,PX:
   // lights
   const p=w.player;if(p&&!p.wreck&&!G.engineOff){const ca=Math.cos(p.a),sa=Math.sin(p.a);this.head.position.set(p.x+ca*p.L*.4,16,p.y+sa*p.L*.4);this.head.target.position.set(p.x+ca*260,0,p.y+sa*260);this.head.intensity=p.boost?2:1.5}else this.head.intensity=0;
   const fx=this.focus.x,fy=this.focus.y,cx=p?p.x:w.cam.x,cy=p?p.y:w.cam.y;const near=[];for(const l of lamps){const d=(l.x-cx)*(l.x-cx)+(l.y-cy)*(l.y-cy);if(d<640000)near.push([d,l])}near.sort((a,b)=>a[0]-b[0]);
-  this.lampL.forEach((L,i)=>{const n=near[i];if(n){L.position.set(n[1].x,44,n[1].y);L.intensity=1}else L.intensity=0});
+  this.lampL.forEach((L,i)=>{const n=near[i];if(n){L.position.set(n[1].x,44,n[1].y);L.intensity=this.lampOn?1:0}else L.intensity=0});
   let pol=null,pd=1e12;for(const c of w.cars)if(c.st&&c.st.police&&!c.wreck){const d=(c.x-cx)**2+(c.y-cy)**2;if(d<pd){pd=d;pol=c}}
   const ph=Math.floor(t*8)%2;if(pol&&pd<700*700){this.polL[0].position.set(pol.x,30,pol.y);this.polL[1].position.set(pol.x,30,pol.y);this.polL[0].intensity=ph?2.2:0;this.polL[1].intensity=ph?0:2.6}else{this.polL[0].intensity=this.polL[1].intensity=0}
   this.sky.position.copy(this.cam.position);this.perf(dt);if(this.comp)this.comp.render();else this.renderer.render(this.scene,this.cam)},
