@@ -72,7 +72,8 @@ const R3={ok:false,off:/[?&]2d/.test(location.search),chunks:new Map(),CH:16,PX:
   let hl=null;root.traverse(o=>{if(o.name==='BodyHeadlights')hl=o});const hp=hl?new T3.Box3().setFromObject(hl).getCenter(new T3.Vector3()):ct.clone().add(new T3.Vector3(alongZ?0:1,0,alongZ?1:0));
   const fwd=alongZ?Math.sign(hp.z-ct.z)||1:Math.sign(hp.x-ct.x)||1;const len=Math.max(sz.x,sz.z),k=46/len;
   const inner=new T3.Group();inner.add(root);root.position.set(-ct.x,-bb.min.y,-ct.z);const piv=new T3.Group();piv.add(inner);inner.scale.setScalar(k);
-  inner.rotation.y=alongZ?(fwd>0?Math.PI/2:-Math.PI/2):(fwd>0?0:Math.PI);this.concept=piv;this.cAxis=alongZ?'x':'z';console.info('Koncept ready',sz,alongZ,fwd)},
+  inner.rotation.y=alongZ?(fwd>0?Math.PI/2:-Math.PI/2):(fwd>0?0:Math.PI);this.concept=piv;
+  piv.updateMatrixWorld(true);let sw=null;root.traverse(o=>{if(!sw&&/InteriorSteeringWheel0?1|InteriorSteeringBase/.test(o.name))sw=o});if(sw){const bx=new T3.Box3().setFromObject(sw);this.swPos=bx.getCenter(new T3.Vector3());this.swTop=bx.max.y}const tb=new T3.Box3().setFromObject(piv);this.cTop=tb.max.y;this.cAxis=alongZ?'x':'z';console.info('Koncept ready',sz,alongZ,fwd)},
  hdrCache:{},envFor(k){const A=window.TADD,T3=THREE;if(k==='night'||!A||!A.RGBELoader){this.scene.environment=this.env;return}
   if(this.hdrCache[k]){this.scene.environment=this.hdrCache[k];return}new A.RGBELoader().load('hdr/'+k+'.hdr',t=>{t.mapping=T3.EquirectangularReflectionMapping;const pm=new T3.PMREMGenerator(this.renderer);this.hdrCache[k]=pm.fromEquirectangular(t).texture;pm.dispose();t.dispose();if(this.tod===k)this.scene.environment=this.hdrCache[k]},undefined,e=>console.warn('hdr',e))},
  ms:{},matS(col){return this.ms[col]||(this.ms[col]=new THREE.MeshStandardMaterial({color:col,roughness:.55,metalness:.15}))},
@@ -236,7 +237,15 @@ const R3={ok:false,off:/[?&]2d/.test(location.search),chunks:new Map(),CH:16,PX:
   this.finBeam=new T3.Mesh(this.beamCyl,this.mkBeamMat);this.finBeam.visible=false;this.scene.add(this.finBeam);
   this.next=new T3.Mesh(this.ringGeo,this.mkMat);this.next.visible=false;this.scene.add(this.next)},
  // ---------- camera ----------
- camFor(w,dt){const C=this.cam,p=w.player,chase=this.camMode==='chase'&&p&&(G.mode==='roam'||G.mode==='race');
+ camFor(w,dt){const C=this.cam,p=w.player,drv=p&&(G.mode==='roam'||G.mode==='race'),chase=this.camMode==='chase'&&drv,cock=this.camMode==='cockpit'&&drv;
+  const g=p&&this.cars.get(p);if(g)g.userData.ch.visible=!(cock&&!g.userData.concept)||true;
+  if(cock){const sp=Math.hypot(p.vx,p.vy),fx=Math.cos(p.a),fz=Math.sin(p.a),lx=fz,lz=-fx,con=g&&g.userData.concept;
+   if(C.near!==1){C.near=1;C.updateProjectionMatrix()}const sk=shakeA*.35;
+   let fo=p.L*.2,so=0,hh=17.5;if(con&&this.swPos){fo=this.swPos.x-6.5;so=-this.swPos.z;hh=Math.min(this.swTop+4.2,(this.cTop||14)-1.4)}this.ca=p.a;this.cp=null;
+   const roll=(p.steer||0)*Math.min(1,sp/260)*.04;C.position.set(p.x+fx*fo+lx*so+rr(-sk,sk),hh+rr(-sk,sk)*.4,p.y+fz*fo+lz*so+rr(-sk,sk));
+   C.up.set(-fz*roll,1,fx*roll).normalize();C.lookAt(p.x+fx*400+lx*so,hh-(con?24:14),p.y+fz*400+lz*so);C.up.set(0,1,0);
+   C.fov=lerp(C.fov,(con?72:66)+Math.min(12,sp/25)+(p.boost?10:0),Math.min(1,dt*3));C.updateProjectionMatrix();this.focus={x:p.x+fx*500,y:p.y+fz*500,r:1500};return}
+  if(C.near!==8){C.near=8;C.updateProjectionMatrix()}
   if(chase){const sp=Math.hypot(p.vx,p.vy);let va=sp>40?Math.atan2(p.vy,p.vx):p.a;if(p.v<-5)va=p.a;
    this.ca=this.ca===undefined?p.a:this.ca+wrapA(va-this.ca)*Math.min(1,dt*3.2);const back=105+sp*.12,hh=44+sp*.03,fx=Math.cos(this.ca),fz=Math.sin(this.ca);
    const tx=p.x-fx*back,tz=p.y-fz*back;this.cp=this.cp||{x:tx,y:hh,z:tz};this.cp.x=lerp(this.cp.x,tx,Math.min(1,dt*6));this.cp.z=lerp(this.cp.z,tz,Math.min(1,dt*6));this.cp.y=lerp(this.cp.y,hh,Math.min(1,dt*3));
@@ -281,7 +290,7 @@ const R3={ok:false,off:/[?&]2d/.test(location.search),chunks:new Map(),CH:16,PX:
   if(rt){const F=w.route[w.route.length-1];this.finish.position.set(F.x,1.5,F.y);this.finBeam.position.set(F.x,0,F.y);const nx=w.route[Math.min(w.player.seg+1,w.route.length-1)];this.next.visible=nx!==F;this.next.position.set(nx.x,2,nx.y);this.next.scale.setScalar(1.25+Math.sin(t*5)*.08)}
   // 3D guide arrow above car
   const tg=opts.arrowTo||(rt?w.route[Math.min(w.player.seg+1,w.route.length-1)]:null);this.arrow.visible=!!(tg&&w.player);
-  if(this.arrow.visible){const p=w.player,a=Math.atan2(tg.y-p.y,tg.x-p.x);this.arrow.position.set(p.x,40+Math.sin(t*4)*2,p.y);this.arrow.rotation.y=-a;const s=this.camMode==='chase'?1:1.5;this.arrow.scale.setScalar(s)}
+  if(this.arrow.visible){const p=w.player,a=Math.atan2(tg.y-p.y,tg.x-p.x);if(this.camMode==='cockpit'&&(G.mode==='roam'||G.mode==='race')){this.arrow.position.set(p.x+Math.cos(p.a)*110,30+Math.sin(t*4)*1.5,p.y+Math.sin(p.a)*110);this.arrow.scale.setScalar(.55);this.arrow.rotation.y=-a;this.arrow.visible=true}else this.arrow.position.set(p.x,40+Math.sin(t*4)*2,p.y);this.arrow.rotation.y=-a;const s=this.camMode==='chase'?1:this.camMode==='cockpit'?.55:1.5;this.arrow.scale.setScalar(s)}
   // lights
   const p=w.player;if(p&&!p.wreck&&!G.engineOff){const ca=Math.cos(p.a),sa=Math.sin(p.a);this.head.position.set(p.x+ca*p.L*.4,16,p.y+sa*p.L*.4);this.head.target.position.set(p.x+ca*260,0,p.y+sa*260);this.head.intensity=p.boost?2:1.5}else this.head.intensity=0;
   const fx=this.focus.x,fy=this.focus.y,cx=p?p.x:w.cam.x,cy=p?p.y:w.cam.y;const near=[];for(const l of lamps){const d=(l.x-cx)*(l.x-cx)+(l.y-cy)*(l.y-cy);if(d<640000)near.push([d,l])}near.sort((a,b)=>a[0]-b[0]);

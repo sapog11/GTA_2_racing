@@ -173,6 +173,7 @@ body.rec #skip{display:none!important}
 #bust{position:absolute;left:50%;top:22%;transform:translateX(-50%);text-align:center;display:none}
 #bust b{font-family:Bangers;font-size:30px;color:#4da3ff;text-shadow:2px 2px 0 #000;letter-spacing:2px}
 #bust .hp{width:180px;margin:4px auto}#bust .hp i{background:#4da3ff}
+body.cock #spd{display:none}
 #spd{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom));width:170px;height:96px;text-align:center;pointer-events:none;filter:drop-shadow(0 0 8px rgba(255,46,136,.5))}#spd svg{position:absolute;inset:0;width:100%;height:100%}#spd b{position:absolute;left:0;right:0;bottom:10px;font-family:Audiowide,Oswald,sans-serif;font-size:34px;color:#fff;text-shadow:0 0 10px #ff2e88}#spd i{position:absolute;left:0;right:0;bottom:-2px;font-style:normal;font-family:Audiowide,sans-serif;font-size:11px;color:#ffb0d0;letter-spacing:2px}
 body.drag #spd,#ctrl.on~#hud #spd{}
 #hint{position:absolute;left:0;right:0;bottom:12px;text-align:center;color:#aab;font-size:13px;letter-spacing:1px}
@@ -260,7 +261,7 @@ body.drag #kL,body.drag #kR{display:none}
   <div class="hrow">
     <div class="hbox"><div id="hLabel">AUTO</div><div class="hp"><i id="hHp"></i></div><div style="margin-top:4px">RESPEKT <span id="hResp" style="color:var(--acc)">0</span></div></div>
     <div class="hbox" style="text-align:center"><div id="hMainL">POZICE</div><div class="big" id="hMain">1/5</div></div>
-    <div style="display:flex;flex-direction:column;align-items:flex-end"><div style="display:flex;gap:4px"><button id="keyB" title="Motor (E)">🔑</button><button id="radioB" title="Rádio (R)">📻</button><button id="pauseB">II</button></div><canvas id="mm" width="192" height="192"></canvas></div>
+    <div style="display:flex;flex-direction:column;align-items:flex-end"><div style="display:flex;gap:4px"><button id="camB" title="Kamera (C)">🎥</button><button id="keyB" title="Motor (E)">🔑</button><button id="radioB" title="Rádio (R)">📻</button><button id="pauseB">II</button></div><canvas id="mm" width="192" height="192"></canvas></div>
   </div>
   <div id="bust"><b>POLICIE TĚ MÁ!</b><div class="hp"><i id="hBust"></i></div></div>
   <div id="center"></div><div id="area"></div><div id="obj"></div><div id="street"></div><div id="drift"></div>
@@ -1102,7 +1103,7 @@ function startRoam(at,target){AN.ev('roam_start');hideAll();G.engineOff=false;$(
   RS={roam:true,nitro:.6,nitroFill:SAVE.hero==='lucie'?.098:.07,target:target||null,enterCD:2.5};G.roamDist='';
   $('hud').classList.add('on');if(isTouch)$('ctrl').classList.add('on');$('kU').style.display=SAVE.autoGas?'none':'block';$('kAt').textContent='NITRO';$('kA').classList.remove('hot');
   $('hMainL').textContent='ČTVRŤ';$('hMain').classList.add('small');$('bust').style.display='none';$('center').textContent='';$('obj').classList.add('on');
-  $('hint').textContent=isTouch?'':'←→ řízení • ↑ plyn • ↓ brzda • MEZERNÍK nitro • SHIFT smyk • R rádio • P pauza';if(isTouch&&SAVE.steer==='drag'&&!SAVE.dragTip){SAVE.dragTip=1;save();floatMsg('👆 TÁHNI PRSTEM',3);}
+  $('hint').textContent=isTouch?'':'←→ řízení • ↑ plyn • ↓ brzda • MEZERNÍK nitro • SHIFT smyk • C kamera • R rádio • P pauza';if(isTouch&&SAVE.steer==='drag'&&!SAVE.dragTip){SAVE.dragTip=1;save();floatMsg('👆 TÁHNI PRSTEM',3);}
   Snd.startMusic(false);Snd.setStyle(SAVE.radio||'labe');Snd.rain(w.rain);drawMinimapBg();setTimeout(()=>{const a=$('area');if(G.mode==='roam'){a.textContent='📻 '+STY[Snd.style].name;a.classList.add('on');areaT=2.2}},2600)}
 let areaT=0;
 function updateRoam(dt){const w=G.world,p=w.player;
@@ -1153,7 +1154,7 @@ function beginRace(L){hideAll();const w=newWorld({rain:L.rain,dark:L.dark,civMax
   $('hud').classList.add('on');if(isTouch)$('ctrl').classList.add('on');
   $('kU').style.display=SAVE.autoGas?'none':'block';
   $('kAt').textContent=L.type==='race'?'NITRO':'PAL';
-  $('hint').textContent=isTouch?'':(L.type==='race'?'←→ řízení • ↑ plyn • ↓ brzda • MEZERNÍK nitro • SHIFT smyk • R rádio • P pauza':'←→ řízení • ↑ plyn • ↓ brzda • MEZERNÍK střelba • P pauza');
+  $('hint').textContent=isTouch?'':(L.type==='race'?'←→ řízení • ↑ plyn • ↓ brzda • MEZERNÍK nitro • SHIFT smyk • C kamera • R rádio • P pauza':'←→ řízení • ↑ plyn • ↓ brzda • MEZERNÍK střelba • P pauza');
   $('keyB').style.display='none';G.engineOff=false;
   $('hMainL').textContent=L.type==='race'?'POZICE':'DO CÍLE';$('hMain').classList.remove('small');$('obj').classList.remove('on');$('area').classList.remove('on');
   Snd.startMusic(false);Snd.setStyle(L.type==='chase'?'chase':'race');DJ.stop();DJ.t=L.type==='chase'?6:12;Snd.rain(L.rain);drawMinimapBg();
@@ -1181,7 +1182,7 @@ function playerCtl(){const k=G.keys;const p=G.world&&G.world.player;
   let thr=(k.u?1:0)+(k.d?-1:0);let steer=(k.r?1:0)-(k.l?1:0);
   const drag=SAVE.steer==='drag'&&isTouch;
   if(SAVE.autoGas&&!k.d&&isTouch&&!drag)thr=1;
-  const chaseCam=typeof R3!=='undefined'&&R3.ok;
+  const chaseCam=typeof R3!=='undefined'&&R3.ok&&(SAVE.cam||'chase')!=='top';
   if(STK.id!==null&&p&&chaseCam){const dx=STK.dx,dy=STK.dy;if(Math.hypot(dx,dy)>10){steer=clamp(dx/55,-1,1);if(!k.d)thr=dy<-8?clamp(-dy/55,.4,1):dy>30?-1:.55}}
   else if(STK.id!==null&&p){const L=Math.hypot(STK.dx,STK.dy);if(L>14){const want=Math.atan2(STK.dy,STK.dx);const d=wrapA(want-p.a);steer=clamp(d*2.4,-1,1);if(!k.d)thr=Math.max(thr,clamp(L/60,.35,1))}}
   else if(drag&&!k.d&&!k.u)thr=-.3;
@@ -1302,7 +1303,8 @@ $('radioB').addEventListener('click',nextRadio);$('mRadio').addEventListener('cl
 function toast(t){const a=$('area');a.textContent=t;a.classList.add('on');areaT=2.2}
 function toggleEngine(){if(G.mode!=='roam')return;G.engineOff=!G.engineOff;$('keyB').classList.toggle('off',G.engineOff);if(G.engineOff){toast('🔑 MOTOR VYPNUTÝ');Snd.engine(0,false)}else{toast('🔑 NASTARTOVÁNO');Snd.nz(.5,'lowpass',300,.4);Snd.tone(50,90,.6,'sawtooth',.2)}}
 $('keyB').addEventListener('click',toggleEngine);
-function toggleCam(){if(typeof R3==='undefined'||!R3.ok)return;SAVE.cam=SAVE.cam==='top'?'chase':'top';save();toast(SAVE.cam==='top'?'🎥 KAMERA: SHORA':'🎥 KAMERA: ZA AUTEM')}
+function toggleCam(){if(typeof R3==='undefined'||!R3.ok)return;const L=['chase','cockpit','top'];SAVE.cam=L[(L.indexOf(SAVE.cam||'chase')+1)%3];save();toast({chase:'🎥 KAMERA: ZVENKU',cockpit:'🎥 KAMERA: Z AUTA',top:'🎥 KAMERA: SHORA'}[SAVE.cam]);AN.ev('cam_change',{cam:SAVE.cam})}
+$('camB').addEventListener('click',toggleCam);addEventListener('keydown',e=>{if(e.code==='KeyC'&&(G.mode==='race'||G.mode==='roam'))toggleCam()});
 
 addEventListener('keydown',e=>{if(e.code==='KeyE')toggleEngine()});
 
@@ -1408,7 +1410,7 @@ function frame(now){const dt=Math.min(REC?.1:.033,(now-last)/1000);last=now;
       if(!amb.tgt||!w.cars.includes(amb.tgt)){amb.tgt=w.cars.find(c=>c.kind==='civ')||null}
       const Zm=baseZoom()*1.15*(G.menuZoom||1);if($('scr-menu').classList.contains('on')&&w.userPan){}else if($('scr-menu').classList.contains('on')&&w.stage){const tx=w.stage.x-VW*.17/Zm+Math.sin(w.t*.15)*30,ty=w.stage.y-VH*.14/Zm;if(Math.hypot(w.cam.x-tx,w.cam.y-ty)>900){w.cam.x=tx;w.cam.y=ty}w.cam.x=lerp(w.cam.x,tx,dt*1.5);w.cam.y=lerp(w.cam.y,ty,dt*1.5)}else if(amb.tgt){w.cam.x=lerp(w.cam.x,amb.tgt.x,dt*.8);w.cam.y=lerp(w.cam.y,amb.tgt.y,dt*.8)}w.zoom=Zm}}}
   const w=G.world;const O3={labels:menuOn()&&(G.menuZoom||1)<.8,arrow:G.mode==='race',arrowTo:G.mode==='roam'&&RS?RS.arrowTo:null,markers:G.mode==='roam'?MARKERS():null};
-  if(w&&typeof R3!=='undefined'&&R3.ok){R3.camMode=(G.mode==='roam'||G.mode==='race')?'chase':'top';R3.render(w,O3,dt);overlay3D(ctx,w,VW,VH,O3)}else if(w)render(ctx,w,VW,VH,w.cam,w.zoom||baseZoom(),{labels:menuOn()&&(G.menuZoom||1)<.8,arrow:G.mode==='race',arrowTo:G.mode==='roam'&&RS?RS.arrowTo:null,markers:G.mode==='roam'?MARKERS():null});
+  if(w&&typeof R3!=='undefined'&&R3.ok){R3.camMode=(G.mode==='roam'||G.mode==='race')?(SAVE.cam||'chase'):'top';document.body.classList.toggle('cock',R3.camMode==='cockpit'&&!!(w.player&&w.player.st&&w.player.st.id==='koncept'));R3.render(w,O3,dt);overlay3D(ctx,w,VW,VH,O3)}else if(w)render(ctx,w,VW,VH,w.cam,w.zoom||baseZoom(),{labels:menuOn()&&(G.menuZoom||1)<.8,arrow:G.mode==='race',arrowTo:G.mode==='roam'&&RS?RS.arrowTo:null,markers:G.mode==='roam'?MARKERS():null});
   }catch(err){console.error(err)}
   requestAnimationFrame(frame)}
 requestAnimationFrame(frame);
@@ -1426,7 +1428,7 @@ import {DRACOLoader} from './vendor/jsm/loaders/DRACOLoader.js';
 import {KTX2Loader} from './vendor/jsm/loaders/KTX2Loader.js';
 import * as SkeletonUtils from './vendor/jsm/utils/SkeletonUtils.js';
 window.THREE=THREE;window.TADD={EffectComposer,RenderPass,UnrealBloomPass,OutputPass,GLTFLoader,RGBELoader,SkeletonUtils,DRACOLoader,KTX2Loader};
-const s=document.createElement('script');s.src='r3.js?v=8';document.body.appendChild(s);
+const s=document.createElement('script');s.src='r3.js?v=9';document.body.appendChild(s);
 </script>
 </body>
 </html>
