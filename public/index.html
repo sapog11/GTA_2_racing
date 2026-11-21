@@ -684,20 +684,20 @@ function explode(w,x,y){Snd.boom();for(let i=0;i<26;i++){const a=R()*6.28,s=rr(3
 
 /* ---------------- PHYSICS ---------------- */
 function carPhysics(w,c,ctl,dt){
-  const st=c.st,SPK=1.22;let maxV=st.max*SPK*(c.speedMul||1);let acc=st.acc*SPK,turn=st.turn,grip=st.grip;
+  const st=c.st,SPK=1.22,PL=c===w.player;let maxV=st.max*SPK*(c.speedMul||1);let acc=st.acc*(PL?.8:1.05),turn=st.turn*(PL?.72:1),grip=st.grip;
   if(c.handMul){turn*=c.handMul;grip*=c.handMul}
   const tl=tileAt(Math.floor(c.x/T),Math.floor(c.y/T));if(tl===GRASS){maxV*=.6;grip*=.6}
   if(c.boost){maxV*=1.42;acc*=1.7}
   let thr=ctl.thr||0;c.brake=false;const sp0=Math.abs(c.v);
-  const f=clamp(c.v/maxV,0,1),gear=f<.2?1:f<.38?2:f<.56?3:f<.75?4:5;c.gear=gear;c.rpm=gear===5?(f-.75)/.25:(f-[0,0,.2,.38,.56][gear])/([0,.2,.38,.56,.75][gear]-[0,0,.2,.38,.56][gear]);acc*=[0,1.4,1.18,1,.86,.72][gear];
+  const f=clamp(c.v/maxV,0,1),gear=f<.2?1:f<.38?2:f<.56?3:f<.75?4:5;c.gear=gear;c.rpm=gear===5?(f-.75)/.25:(f-[0,0,.2,.38,.56][gear])/([0,.2,.38,.56,.75][gear]-[0,0,.2,.38,.56][gear]);acc*=[0,1.2,1.08,.95,.82,.68][gear];
   const hb=!!ctl.hb||(c===w.player&&thr<0&&Math.abs(ctl.steer||0)>.4&&c.v>120);c.drift=hb&&sp0>60;
   if(c.drift){grip*=.2;turn*=1.5;thr=Math.max(thr,0);c.v*=1-.32*dt}
   if(thr>0){if(c.v<0)c.v+=st.acc*2.2*dt;else c.v+=acc*thr*dt*(1-Math.max(0,c.v)/maxV*.55)}
   else if(thr<0){if(c.v>5){c.v-=st.acc*1.9*dt*Math.min(1,-thr);c.brake=-thr>.5}else if(thr>-.5){c.v=Math.max(0,c.v-st.acc*dt)}else c.v=Math.max(-90,c.v-st.acc*.6*dt)}
   else c.v*=1-.7*dt;
   if(c.v>maxV)c.v-=(c.v-maxV)*2.5*dt;
-  const sp=Math.abs(c.v);c.steer=lerp(c.steer,ctl.steer||0,Math.min(1,dt*10));
-  c.a=wrapA(c.a+c.steer*turn*dt*clamp(sp/110,0,1)*(c.v<0?-1:1)*(1-clamp((sp-200)/600,0,.25)));
+  const sp=Math.abs(c.v);c.steer=lerp(c.steer,ctl.steer||0,Math.min(1,dt*(PL?4.5:10)));
+  c.a=wrapA(c.a+c.steer*turn*dt*clamp(sp/110,0,1)*(c.v<0?-1:1)*(1-clamp((sp-150)/420,0,.45)));
   const hx=Math.cos(c.a),hy=Math.sin(c.a),tvx=hx*c.v,tvy=hy*c.v;
   if(c.drift&&R()<.7&&w.parts.length<400){for(const sd of[-1,1])part(w,{x:c.x-hx*c.L*.38-hy*sd*c.Wd*.45,y:c.y-hy*c.L*.38+hx*sd*c.Wd*.45,vx:rr(-15,15)-c.vx*.1,vy:rr(-15,15)-c.vy*.1,life:rr(.6,1.2),max:1.2,type:'smoke',size:rr(6,10),z:0,col:1})}
   const g=Math.min(1,grip*dt*(c.brake&&sp>150?.55:1));c.vx+=(tvx-c.vx)*g;c.vy+=(tvy-c.vy)*g;
@@ -1190,7 +1190,7 @@ function playerCtl(){const k=G.keys;const p=G.world&&G.world.player;
   if(G.engineOff)return{thr:p&&p.v>3?-1:0,steer:0};
   let thr=(k.u?1:0)+(k.d?-1:0);let steer=(k.r?1:0)-(k.l?1:0);
   const drag=SAVE.steer==='drag'&&isTouch,two=SAVE.steer==='two'&&isTouch;
-  if(two&&p){if(TW.L.id!==null)steer=clamp(TW.L.dx/50,-1,1);if(TW.R.id!==null){const dy=TW.R.dy;thr=dy<-6?clamp(-dy/50,.35,1):dy>18?-1:0}else if(!k.u&&!k.d)thr=-.3;if(k.d)thr=-1;return{thr,steer,hb:!!k.h}}
+  if(two&&p){if(TW.L.id!==null){const x=clamp(TW.L.dx/62,-1,1);steer=Math.sign(x)*x*x*.35+x*.65}if(TW.R.id!==null){const dy=TW.R.dy;thr=dy<-6?clamp(-dy/50,.35,1):dy>18?-1:0}else if(!k.u&&!k.d)thr=-.3;if(k.d)thr=-1;return{thr,steer,hb:!!k.h}}
   if(SAVE.autoGas&&!k.d&&isTouch&&!drag)thr=1;
   const chaseCam=typeof R3!=='undefined'&&R3.ok&&(SAVE.cam||'chase')!=='top';
   if(STK.id!==null&&p&&chaseCam){const dx=STK.dx,dy=STK.dy;if(Math.hypot(dx,dy)>10){steer=clamp(dx/55,-1,1);if(!k.d)thr=dy<-8?clamp(-dy/55,.4,1):dy>30?-1:.55}}
