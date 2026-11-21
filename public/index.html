@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-title" content="ÚSTÍ">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Oswald:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Audiowide&family=Bangers&family=Oswald:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#07080c;--ink:#f3efe6;--acc:#ffcc1a;--acc2:#ff2e63;--mut:#9a9eb2;--panel:rgba(12,14,22,.94);--line:#2c3040;--ok:#3ddc84}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#07080c;--ink:#f3efe6}}
@@ -173,7 +173,8 @@ body.rec #skip{display:none!important}
 #bust{position:absolute;left:50%;top:22%;transform:translateX(-50%);text-align:center;display:none}
 #bust b{font-family:Bangers;font-size:30px;color:#4da3ff;text-shadow:2px 2px 0 #000;letter-spacing:2px}
 #bust .hp{width:180px;margin:4px auto}#bust .hp i{background:#4da3ff}
-#spd{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(150px + env(safe-area-inset-bottom));font-family:Bangers;font-size:24px;letter-spacing:1px;color:#fff;text-shadow:2px 2px 0 #000;opacity:.9}
+#spd{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom));width:170px;height:96px;text-align:center;pointer-events:none;filter:drop-shadow(0 0 8px rgba(255,46,136,.5))}#spd svg{position:absolute;inset:0;width:100%;height:100%}#spd b{position:absolute;left:0;right:0;bottom:10px;font-family:Audiowide,Oswald,sans-serif;font-size:34px;color:#fff;text-shadow:0 0 10px #ff2e88}#spd i{position:absolute;left:0;right:0;bottom:-2px;font-style:normal;font-family:Audiowide,sans-serif;font-size:11px;color:#ffb0d0;letter-spacing:2px}
+body.drag #spd,#ctrl.on~#hud #spd{}
 #hint{position:absolute;left:0;right:0;bottom:12px;text-align:center;color:#aab;font-size:13px;letter-spacing:1px}
 #area{position:absolute;left:14px;top:calc(max(10px,env(safe-area-inset-top)) + 96px);font-family:Bangers;font-size:clamp(26px,7vw,40px);letter-spacing:2px;color:#fff;text-shadow:3px 3px 0 #000;opacity:0;transition:opacity .6s}
 #area.on{opacity:1}
@@ -259,7 +260,7 @@ body.drag #kL,body.drag #kR{display:none}
   </div>
   <div id="bust"><b>POLICIE TĚ MÁ!</b><div class="hp"><i id="hBust"></i></div></div>
   <div id="center"></div><div id="area"></div><div id="obj"></div>
-  <div id="spd">0 km/h</div>
+  <div id="spd"><svg viewBox="0 0 200 110"><defs><linearGradient id="sg" x1="0" x2="1"><stop offset="0" stop-color="#7a2cff"/><stop offset=".6" stop-color="#ff2e88"/><stop offset="1" stop-color="#ffb02e"/></linearGradient></defs><path d="M20 100 A80 80 0 0 1 180 100" fill="none" stroke="rgba(255,255,255,.12)" stroke-width="12" stroke-linecap="round"/><path id="spArc" d="M20 100 A80 80 0 0 1 180 100" fill="none" stroke="url(#sg)" stroke-width="12" stroke-linecap="round" pathLength="100" stroke-dasharray="0 100"/></svg><b id="spN">0</b><i>km/h</i></div>
   <div id="hint"></div>
 </div>
 
@@ -1111,7 +1112,7 @@ function updateRoam(dt){const w=G.world,p=w.player;
   RS.arrowTo=best;
   $('obj').textContent=best?`⭐ ${best.L.name} — jeď na žlutou značku (${(bd/1000).toFixed(1)} km)`:'Volná jízda — mise brzy';
   if(msgT>0){msgT-=dt;if(msgT<=0)$('center').textContent=''}
-  $('hHp').style.width=clamp(p.hp/p.maxhp*100,0,100)+'%';$('hResp').textContent=SAVE.resp;$('spd').textContent=Math.round(sp*.42)+' km/h';
+  $('hHp').style.width=clamp(p.hp/p.maxhp*100,0,100)+'%';$('hResp').textContent=SAVE.resp;spdSet(Math.round(sp*.42));
   drawMinimap()}
 function enterMission(L){G.mode='entering';Snd.engine(0,false);$('obj').classList.remove('on');$('area').classList.remove('on');$('hMain').classList.remove('small');startLevel(L.id)}
 
@@ -1146,6 +1147,7 @@ function beginRace(L){hideAll();const w=newWorld({rain:L.rain,dark:L.dark,civMax
   $('hMainL').textContent=L.type==='race'?'POZICE':'DO CÍLE';$('hMain').classList.remove('small');$('obj').classList.remove('on');$('area').classList.remove('on');
   Snd.startMusic(false);Snd.setStyle(L.type==='chase'?'chase':'race');DJ.stop();DJ.t=L.type==='chase'?6:12;Snd.rain(L.rain);drawMinimapBg();
 }
+function spdSet(k){$('spN').textContent=k;$('spArc').setAttribute('stroke-dasharray',Math.min(100,k/1.6)+' 100')}
 let msgT=0;function floatMsg(t,dur){$('center').textContent=t;msgT=dur||1.1}
 const STK={id:null,x:0,y:0,dx:0,dy:0};
 function playerCtl(){const k=G.keys;const p=G.world&&G.world.player;
@@ -1206,7 +1208,7 @@ function updateRace(dt){const w=G.world,p=w.player,L=RS.L;RS.t+=dt;
   }
   Snd.siren(nearP<700?clamp(1-nearP/700,0,1):0,w.t);
   // HUD
-  $('hHp').style.width=clamp(p.hp/p.maxhp*100,0,100)+'%';$('hResp').textContent=SAVE.resp;$('spd').textContent=Math.round(sp*.42)+' km/h';
+  $('hHp').style.width=clamp(p.hp/p.maxhp*100,0,100)+'%';$('hResp').textContent=SAVE.resp;spdSet(Math.round(sp*.42));
   if(L.type==='chase'){$('hMain').textContent=((w.total-p.s)/1000).toFixed(1)+' km'}
   else{let rank=1;for(const c of w.cars)if(c.kind==='rival'&&(c.finished||(c.s>p.s&&!p.finished)))rank++;RS.rank=rank;$('hMain').textContent=rank+'/5'}
   drawMinimap();
@@ -1259,10 +1261,11 @@ for(const b of document.querySelectorAll('#ctrl button')){const k=b.dataset.k;
   b.addEventListener('pointerdown',on);b.addEventListener('pointerup',off);b.addEventListener('pointercancel',off);b.addEventListener('lostpointercapture',off);b.addEventListener('contextmenu',e=>e.preventDefault())}
 function pause(){if(!(G.mode==='race'||G.mode==='roam')||(RS&&RS.end))return;DJ.stop();G.prevMode=G.mode;G.mode='paused';Snd.engine(0,false);Snd.siren(0,0);const el=$('scr-pause');
   el.innerHTML=`<h2 class="logo"><span class="b" style="font-size:44px">PAUZA</span></h2><button class="btn" id="pRes">POKRAČOVAT</button>${G.prevMode==='race'?`<button class="btn dark" data-lvlgo="${RS.L.id}">ZNOVU</button><button class="btn dark" data-go="city">VZDÁT → MĚSTO</button>`:''}
-  <div class="toggle">Řízení: <button class="btn sm dark" id="pSteer">${SAVE.steer==='drag'?'TAH PRSTEM':'ŠIPKY'}</button></div><div class="toggle">Auto-plyn (mobil): <button class="btn sm dark" id="pAuto">${SAVE.autoGas?'ZAP':'VYP'}</button></div><button class="btn sm dark" id="pRadio">📻 ${STY[Snd.style]?STY[Snd.style].name:'RÁDIO'}</button><button class="btn sm dark" id="pMute">${SAVE.mute?'🔇 Zvuk vyp':'🔊 Zvuk zap'}</button><button class="btn pink" data-go="menu">MENU</button>`;
+  <div class="toggle">Grafika: <button class="btn sm dark" id="pGfx">${typeof R3!=='undefined'&&R3.q==='high'?'VYSOKÁ':'NÍZKÁ'}</button></div><div class="toggle">Řízení: <button class="btn sm dark" id="pSteer">${SAVE.steer==='drag'?'TAH PRSTEM':'ŠIPKY'}</button></div><div class="toggle">Auto-plyn (mobil): <button class="btn sm dark" id="pAuto">${SAVE.autoGas?'ZAP':'VYP'}</button></div><button class="btn sm dark" id="pRadio">📻 ${STY[Snd.style]?STY[Snd.style].name:'RÁDIO'}</button><button class="btn sm dark" id="pMute">${SAVE.mute?'🔇 Zvuk vyp':'🔊 Zvuk zap'}</button><button class="btn pink" data-go="menu">MENU</button>`;
   $('ctrl').classList.remove('on');el.classList.add('on');
   $('pRes').onclick=()=>{el.classList.remove('on');if(isTouch)$('ctrl').classList.add('on');G.mode=G.prevMode;G.keys={}};
   $('pAuto').onclick=()=>{SAVE.autoGas=!SAVE.autoGas;save();$('pAuto').textContent=SAVE.autoGas?'ZAP':'VYP';$('kU').style.display=SAVE.autoGas?'none':'block'};
+  $('pGfx').onclick=()=>{if(typeof R3==='undefined'||!R3.ok)return;R3.q=R3.q==='high'?'low':'high';SAVE.gfx=R3.q;save();R3.renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,R3.q==='high'?(isTouch?1.5:2):1));R3.renderer.setSize(VW,VH,false);R3.setupComposer();$('pGfx').textContent=R3.q==='high'?'VYSOKÁ':'NÍZKÁ'};
   $('pSteer').onclick=()=>{SAVE.steer=SAVE.steer==='drag'?'buttons':'drag';save();applySteerMode();$('pSteer').textContent=SAVE.steer==='drag'?'TAH PRSTEM':'ŠIPKY'};
   $('pRadio').onclick=()=>nextRadio();
   $('pMute').onclick=()=>{Snd.setMute(!SAVE.mute);$('pMute').textContent=SAVE.mute?'🔇 Zvuk vyp':'🔊 Zvuk zap'}}
@@ -1384,7 +1387,15 @@ function frame(now){const dt=Math.min(REC?.1:.033,(now-last)/1000);last=now;
   requestAnimationFrame(frame)}
 requestAnimationFrame(frame);
 </script>
-<script src="vendor/three.min.js"></script>
-<script src="r3.js"></script>
+<script type="importmap">{"imports":{"three":"./vendor/three.module.min.js"}}</script>
+<script type="module">
+import * as THREE from 'three';
+import {EffectComposer} from './vendor/jsm/postprocessing/EffectComposer.js';
+import {RenderPass} from './vendor/jsm/postprocessing/RenderPass.js';
+import {UnrealBloomPass} from './vendor/jsm/postprocessing/UnrealBloomPass.js';
+import {OutputPass} from './vendor/jsm/postprocessing/OutputPass.js';
+window.THREE=THREE;window.TADD={EffectComposer,RenderPass,UnrealBloomPass,OutputPass};
+const s=document.createElement('script');s.src='r3.js?v=4';document.body.appendChild(s);
+</script>
 </body>
 </html>
