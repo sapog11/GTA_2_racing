@@ -347,8 +347,8 @@ const R3={ok:false,off:/[?&]2d/.test(location.search),chunks:new Map(),CH:16,PX:
    if(C.near!==1){C.near=1;C.updateProjectionMatrix()}const sk=shakeA*.35;
    let fo=p.L*.2,so=0,hh=17.5;if(con&&this.swPos){const zs=g.userData.zs||1,zw=g.userData.zw||1,lo=g.userData.lo||0;fo=(this.swPos.x-6.5)*zs;so=-this.swPos.z*zs*zw;hh=Math.min(this.swTop*zs+4.2,(this.cTop||14)*zs-1.4)-lo}this.ca=p.a;this.cp=null;
    const roll=(p.steer||0)*Math.min(1,sp/260)*.04;C.position.set(p.x+fx*fo+lx*so+rr(-sk,sk),hh+rr(-sk,sk)*.4,p.y+fz*fo+lz*so+rr(-sk,sk));
-   C.up.set(-fz*roll,1,fx*roll).normalize();C.lookAt(p.x+fx*400+lx*so,hh-(con?24:14),p.y+fz*400+lz*so);C.up.set(0,1,0);
-   C.fov=lerp(C.fov,(con?72:66)+Math.min(12,sp/25)+(p.boost?10:0),Math.min(1,dt*3));C.updateProjectionMatrix();this.focus={x:p.x+fx*500,y:p.y+fz*500,r:1500};return}
+   const port=VH>VW*1.1;C.up.set(-fz*roll,1,fx*roll).normalize();C.lookAt(p.x+fx*400+lx*so,hh-(con?(port?17:24):14),p.y+fz*400+lz*so);C.up.set(0,1,0);
+   C.fov=lerp(C.fov,(con?(port?63:72):66)+Math.min(12,sp/25)+(p.boost?10:0),Math.min(1,dt*3));C.updateProjectionMatrix();this.focus={x:p.x+fx*500,y:p.y+fz*500,r:1500};return}
   if(C.near!==8){C.near=8;C.updateProjectionMatrix()}
   if(chase){const sp=Math.hypot(p.vx,p.vy);let va=sp>40?Math.atan2(p.vy,p.vx):p.a;if(p.v<-5)va=p.a;
    this.ca=this.ca===undefined?p.a:this.ca+wrapA(va-this.ca)*Math.min(1,dt*3.2);const back=105+sp*.12,hh=44+sp*.03,fx=Math.cos(this.ca),fz=Math.sin(this.ca);
