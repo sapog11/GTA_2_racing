@@ -698,18 +698,20 @@ function carPhysics(w,c,ctl,dt){
   if(c.boost){maxV*=1.42;acc*=1.7}
   let thr=ctl.thr||0;c.brake=false;const sp0=Math.abs(c.v);
   const f=clamp(c.v/maxV,0,1),gear=f<.2?1:f<.38?2:f<.56?3:f<.75?4:5;c.gear=gear;c.rpm=gear===5?(f-.75)/.25:(f-[0,0,.2,.38,.56][gear])/([0,.2,.38,.56,.75][gear]-[0,0,.2,.38,.56][gear]);acc*=[0,1.2,1.08,.95,.82,.68][gear];
-  const hb=!!ctl.hb||(c===w.player&&thr<0&&Math.abs(ctl.steer||0)>.4&&c.v>120);c.drift=hb&&sp0>60;
+  const hb=!!ctl.hb||(c===w.player&&!isTouch&&thr<0&&Math.abs(ctl.steer||0)>.75&&c.v>200)||(c===w.player&&isTouch&&thr<0&&Math.abs(ctl.steer||0)>.9&&c.v>260);c.drift=hb&&sp0>60;
   if(c.drift){grip*=.2;turn*=1.5;thr=Math.max(thr,0);c.v*=1-.32*dt}
   if(thr>0){if(c.v<0)c.v+=st.acc*2.2*dt;else c.v+=acc*thr*dt*(1-Math.max(0,c.v)/maxV*.55)}
   else if(thr<0){if(c.v>5){c.v-=st.acc*1.9*dt*Math.min(1,-thr);c.brake=-thr>.5}else if(thr>-.5){c.v=Math.max(0,c.v-st.acc*dt)}else c.v=Math.max(-90,c.v-st.acc*.6*dt)}
   else c.v*=1-.7*dt;
   if(c.v>maxV)c.v-=(c.v-maxV)*2.5*dt;
-  const sp=Math.abs(c.v);c.steer=lerp(c.steer,ctl.steer||0,Math.min(1,dt*(PL?4.5:10)));
-  c.a=wrapA(c.a+c.steer*turn*dt*clamp(sp/110,0,1)*(c.v<0?-1:1)*(1-clamp((sp-150)/420,0,.45)));
+  const sp=Math.abs(c.v);let tgt=ctl.steer||0;if(PL&&!c.drift)tgt*=1-.5*clamp((sp-110)/400,0,1);
+  c.steer=lerp(c.steer,tgt,Math.min(1,dt*(PL?(Math.abs(tgt)<Math.abs(c.steer)?10:6.5):10)));
+  let yaw=c.steer*turn*clamp(sp/100,0,1);if(PL&&!c.drift&&sp>40){const latMax=430+grip*45;yaw=clamp(yaw,-latMax/sp,latMax/sp);yaw*=1-clamp(((c.slip||0)-40)/300,0,.5)}
+  c.a=wrapA(c.a+yaw*dt*(c.v<0?-1:1));
   const hx=Math.cos(c.a),hy=Math.sin(c.a),tvx=hx*c.v,tvy=hy*c.v;
   if(c.drift&&R()<.7&&w.parts.length<400){for(const sd of[-1,1])part(w,{x:c.x-hx*c.L*.38-hy*sd*c.Wd*.45,y:c.y-hy*c.L*.38+hx*sd*c.Wd*.45,vx:rr(-15,15)-c.vx*.1,vy:rr(-15,15)-c.vy*.1,life:rr(.6,1.2),max:1.2,type:'smoke',size:rr(6,10),z:0,col:1})}
-  const g=Math.min(1,grip*dt*(c.brake&&sp>150?.55:1));c.vx+=(tvx-c.vx)*g;c.vy+=(tvy-c.vy)*g;
-  const slip=Math.abs(-hy*c.vx+hx*c.vy);
+  const g=Math.min(1,grip*(PL&&!c.drift?1.3:1)*dt*(c.brake&&sp>150?.7:1));c.vx+=(tvx-c.vx)*g;c.vy+=(tvy-c.vy)*g;
+  const slip=c.slip=Math.abs(-hy*c.vx+hx*c.vy);
   if((slip>70||(c.brake&&sp>140))&&w.skids.length<600){const ox=-hx*c.L*.32,oy=-hy*c.L*.32,px=-hy*c.Wd*.4,py=hx*c.Wd*.4;
     if(c.lsk){w.skids.push([c.lsk[0],c.lsk[1],c.x+ox+px,c.y+oy+py],[c.lsk[2],c.lsk[3],c.x+ox-px,c.y+oy-py])}c.lsk=[c.x+ox+px,c.y+oy+py,c.x+ox-px,c.y+oy-py]}else c.lsk=null;
   const n=2;for(let k=0;k<n;k++){c.x+=c.vx*dt/n;c.y+=c.vy*dt/n;walls(w,c)}
@@ -721,13 +723,14 @@ function walls(w,c){const ca=Math.cos(c.a),sa=Math.sin(c.a),off=c.L*.28;let hit=
       const rx=tx*T,ry=ty*T,qx=clamp(px,rx,rx+T),qy=clamp(py,ry,ry+T);let dx=px-qx,dy=py-qy,d2=dx*dx+dy*dy;if(d2>=r*r)continue;
       let d=Math.sqrt(d2),nx,ny,pen;
       if(d<.001){const e=[px-rx,rx+T-px,py-ry,ry+T-py],m=Math.min(...e),ix=e.indexOf(m);nx=ix===0?-1:ix===1?1:0;ny=ix===2?-1:ix===3?1:0;pen=r+m}else{nx=dx/d;ny=dy/d;pen=r-d}
-      c.x+=nx*pen;c.y+=ny*pen;px+=nx*pen;py+=ny*pen;const vn=c.vx*nx+c.vy*ny;if(vn<0){c.vx-=vn*nx*1.35;c.vy-=vn*ny*1.35;if(-vn>hit){hit=-vn;hx=px-nx*r;hy=py-ny*r}}}}
+      c.x+=nx*pen;c.y+=ny*pen;px+=nx*pen;py+=ny*pen;const vn=c.vx*nx+c.vy*ny;if(vn<0){c.vx-=vn*nx*1.08;c.vy-=vn*ny*1.08;if(-vn>hit){hit=-vn;hx=px-nx*r;hy=py-ny*r}}}}
+  if(hit>8&&c===w.player&&Math.abs(c.v)>30){const ta=Math.atan2(c.vy,c.vx),d=wrapA(ta-c.a);if(Math.abs(d)<1.2&&c.v>0)c.a=wrapA(c.a+d*.35);c.v=Math.sign(c.v)*Math.min(Math.abs(c.v),Math.hypot(c.vx,c.vy)*1.02)}
   if(hit>45){if(c===w.player)c.crashT=w.t;c.v*=hit>150?.45:.7;const dmg=(hit-45)*.045*(c.kind==='police'?1.3:c.kind==='player'?.45:1);c.hp-=dmg;sparks(w,hx,hy,Math.min(14,hit/15|0));if(c===w.player&&hit>70){Snd.crash(hit/600);shake(hit/60)}}}
 function carCollide(w){const C=w.cars;for(let i=0;i<C.length;i++)for(let j=i+1;j<C.length;j++){const a=C[i],b=C[j];if(Math.abs(a.x-b.x)>70||Math.abs(a.y-b.y)>70)continue;
   for(const ka of[-1,1])for(const kb of[-1,1]){const ax=a.x+Math.cos(a.a)*a.L*.25*ka,ay=a.y+Math.sin(a.a)*a.L*.25*ka,bx=b.x+Math.cos(b.a)*b.L*.25*kb,by=b.y+Math.sin(b.a)*b.L*.25*kb;
     const ra=a.Wd*.55,rb=b.Wd*.55;let dx=bx-ax,dy=by-ay,d=Math.hypot(dx,dy);if(d>=ra+rb||d<.01)continue;const nx=dx/d,ny=dy/d,pen=ra+rb-d;
     const ma=(a.parked||a.wreck)?6:1,mb=(b.parked||b.wreck)?6:1,sm=ma+mb;a.x-=nx*pen*mb/sm;a.y-=ny*pen*mb/sm;b.x+=nx*pen*ma/sm;b.y+=ny*pen*ma/sm;
-    const vn=(b.vx-a.vx)*nx+(b.vy-a.vy)*ny;if(vn<0){const J=-(1.3)*vn/(1/ma+1/mb);a.vx-=J/ma*nx;a.vy-=J/ma*ny;b.vx+=J/mb*nx;b.vy+=J/mb*ny;
+    const vn=(b.vx-a.vx)*nx+(b.vy-a.vy)*ny;if(vn<0){const J=-(1.12)*vn/(1/ma+1/mb);a.vx-=J/ma*nx;a.vy-=J/ma*ny;b.vx+=J/mb*nx;b.vy+=J/mb*ny;
       if(-vn>60){const dmg=-vn*.05;a.hp-=dmg*(a===w.player?.35:1);b.hp-=dmg*(b===w.player?.35:1);a.v*=.85;b.v*=.85;sparks(w,(ax+bx)/2,(ay+by)/2,6);if(a===w.player||b===w.player){Snd.crash(-vn/500);shake(-vn/70);const o=a===w.player?b:a;if(!o.say&&!o.wreck){o.say=pick(LINES[o.kind==='police'?'police':o.kind==='rival'?'rival':'car']);o.sayL=2;if(o.kind==='civ')Snd.honk()}}}}}}}
 
 /* ---------------- AI ---------------- */
@@ -1470,7 +1473,7 @@ import {KTX2Loader} from './vendor/jsm/loaders/KTX2Loader.js';
 import {MeshoptDecoder} from './vendor/jsm/libs/meshopt_decoder.module.js';
 import * as SkeletonUtils from './vendor/jsm/utils/SkeletonUtils.js';
 window.THREE=THREE;window.TADD={EffectComposer,RenderPass,UnrealBloomPass,OutputPass,GLTFLoader,RGBELoader,SkeletonUtils,DRACOLoader,KTX2Loader,MeshoptDecoder};
-const s=document.createElement('script');s.src='r3.js?v=13';document.body.appendChild(s);
+const s=document.createElement('script');s.src='r3.js?v=14';document.body.appendChild(s);
 </script>
 </body>
 </html>
