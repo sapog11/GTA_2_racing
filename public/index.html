@@ -343,7 +343,7 @@ const $=id=>document.getElementById(id);
 const SAVEKEY='usti_mesto_andelu_v1';
 let SAVE={steer:'drag',resp:0,cash:0,hero:null,car:'civka',owned:['civka'],done:{},seenIntro:false,comics:['intro'],mute:false,autoGas:null};
 try{const s=JSON.parse(localStorage.getItem(SAVEKEY)||'null');if(s)SAVE=Object.assign(SAVE,s)}catch(e){}
-if(!SAVE.owned.includes('koncept'))SAVE.owned.push('koncept');if(!SAVE.kcMig){SAVE.kcMig=1;SAVE.cash=(SAVE.cash||0)+(SAVE.resp||0)*50}if(!SAVE.tune)SAVE.tune={};if(!SAVE.tuned)SAVE.tuned=[];if(!SAVE.unl){SAVE.unl={};for(const id of SAVE.tuned)SAVE.unl[id]=['*']}
+if(!SAVE.owned.includes('koncept'))SAVE.owned.push('koncept');if(!SAVE.kcMig){SAVE.kcMig=1;SAVE.cash=(SAVE.cash||0)+(SAVE.resp||0)*50}if(!SAVE.camCk){SAVE.camCk=1;SAVE.cam='cockpit'}if(!SAVE.tune)SAVE.tune={};if(!SAVE.tuned)SAVE.tuned=[];if(!SAVE.unl){SAVE.unl={};for(const id of SAVE.tuned)SAVE.unl[id]=['*']}
 if((('ontouchstart' in window)||matchMedia('(pointer:coarse)').matches)&&!SAVE.steer3){SAVE.steer2=SAVE.steer3=1;SAVE.steer='wheel'}if(SAVE.steer==='two')SAVE.steer='wheel';
 function save(){try{localStorage.setItem(SAVEKEY,JSON.stringify(SAVE))}catch(e){}}
 const isTouch=('ontouchstart' in window)||matchMedia('(pointer:coarse)').matches;
@@ -1299,7 +1299,7 @@ function playerCtl(){const k=G.keys;const p=G.world&&G.world.player;
   if(effSteer()==='wheel'&&isTouch&&p){wheelUI();steer=WH.ang/WMAX;return{thr,steer,hb:!!k.h}}
   if(two&&p){if(TW.L.id!==null){const x=clamp(TW.L.dx/62,-1,1);steer=Math.sign(x)*x*x*.35+x*.65}if(TW.R.id!==null){const dy=TW.R.dy;thr=dy<-6?clamp(-dy/50,.35,1):dy>18?-1:0}else if(!k.u&&!k.d)thr=-.3;if(k.d)thr=-1;return{thr,steer,hb:!!k.h}}
   if(SAVE.autoGas&&!k.d&&isTouch&&!drag)thr=1;
-  const chaseCam=typeof R3!=='undefined'&&R3.ok&&(SAVE.cam||'chase')!=='top';
+  const chaseCam=typeof R3!=='undefined'&&R3.ok&&(SAVE.cam||'cockpit')!=='top';
   if(STK.id!==null&&p&&chaseCam){const dx=STK.dx,dy=STK.dy;if(Math.hypot(dx,dy)>10){steer=clamp(dx/55,-1,1);if(!k.d)thr=dy<-8?clamp(-dy/55,.4,1):dy>30?-1:.55}}
   else if(STK.id!==null&&p){const L=Math.hypot(STK.dx,STK.dy);if(L>14){const want=Math.atan2(STK.dy,STK.dx);const d=wrapA(want-p.a);steer=clamp(d*2.4,-1,1);if(!k.d)thr=Math.max(thr,clamp(L/60,.35,1))}}
   else if(drag&&!k.d&&!k.u)thr=-.3;
@@ -1356,7 +1356,7 @@ const WH={id:null,ang:0,last:0,cx:0,cy:0,lx:0},WMAX=1.7;
  pd.addEventListener('pointerdown',e=>{e.preventDefault();pid=e.pointerId;zone=null;try{pd.setPointerCapture(pid)}catch(_){}enter(zoneOf(e))});
  pd.addEventListener('pointermove',e=>{if(e.pointerId===pid)enter(zoneOf(e))});
  pd.addEventListener('pointerup',off);pd.addEventListener('pointercancel',off);pd.addEventListener('lostpointercapture',off);pd.addEventListener('contextmenu',e=>e.preventDefault())}
-function effSteer(){if(SAVE.steer!=='wheel')return SAVE.steer;return(SAVE.cam==='cockpit'&&typeof R3!=='undefined'&&R3.ok)?'wheel':'drag'}
+function effSteer(){if(SAVE.steer!=='wheel')return SAVE.steer;return((SAVE.cam||'cockpit')==='cockpit'&&typeof R3!=='undefined'&&R3.ok)?'wheel':'drag'}
 function pedUI(){$('pG').classList.toggle('on',!!G.keys.u);$('pB').classList.toggle('on',!!G.keys.d)}
 function wheelOn(){return effSteer()==='wheel'&&isTouch&&(G.mode==='race'||G.mode==='roam')}
 function wheelCenter(){if(document.body.classList.contains('cock')&&typeof R3!=='undefined'&&R3.swScr)return R3.swScr;const r=$('wheel').getBoundingClientRect();return{x:r.left+r.width/2,y:r.top+r.height/2}}
@@ -1489,7 +1489,7 @@ $('radioB').addEventListener('click',nextRadio);$('mRadio').addEventListener('cl
 function toast(t){const a=$('area');a.textContent=t;a.classList.add('on');areaT=2.2}
 function toggleEngine(){if(G.mode!=='roam')return;G.engineOff=!G.engineOff;$('keyB').classList.toggle('off',G.engineOff);if(G.engineOff){toast('🔑 MOTOR VYPNUTÝ');Snd.engine(0,false)}else{toast('🔑 NASTARTOVÁNO');Snd.nz(.5,'lowpass',300,.4);Snd.tone(50,90,.6,'sawtooth',.2)}}
 $('keyB').addEventListener('click',toggleEngine);
-function toggleCam(){if(typeof R3==='undefined'||!R3.ok)return;const L=['chase','cockpit','top'];SAVE.cam=L[(L.indexOf(SAVE.cam||'chase')+1)%3];save();toast({chase:'🎥 KAMERA: ZVENKU',cockpit:'🎥 KAMERA: Z AUTA',top:'🎥 KAMERA: SHORA'}[SAVE.cam]);AN.ev('cam_change',{cam:SAVE.cam})}
+function toggleCam(){if(typeof R3==='undefined'||!R3.ok)return;const L=['cockpit','chase','top'];SAVE.cam=L[(L.indexOf(SAVE.cam||'cockpit')+1)%3];save();toast({chase:'🎥 KAMERA: ZVENKU',cockpit:'🎥 KAMERA: Z AUTA',top:'🎥 KAMERA: SHORA'}[SAVE.cam]);AN.ev('cam_change',{cam:SAVE.cam})}
 $('camB').addEventListener('click',toggleCam);addEventListener('keydown',e=>{if(e.code==='KeyC'&&(G.mode==='race'||G.mode==='roam'))toggleCam()});
 
 addEventListener('keydown',e=>{if(e.code==='KeyE')toggleEngine()});
@@ -1600,7 +1600,7 @@ function frame(now){const dt=Math.min(REC?.1:.033,(now-last)/1000);last=now;
       const Zm=baseZoom()*1.15*(G.menuZoom||1);if($('scr-menu').classList.contains('on')&&w.userPan){}else if($('scr-menu').classList.contains('on')&&w.stage){const tx=w.stage.x-VW*.17/Zm+Math.sin(w.t*.15)*30,ty=w.stage.y-VH*.14/Zm;if(Math.hypot(w.cam.x-tx,w.cam.y-ty)>900){w.cam.x=tx;w.cam.y=ty}w.cam.x=lerp(w.cam.x,tx,dt*1.5);w.cam.y=lerp(w.cam.y,ty,dt*1.5)}else if(amb.tgt){w.cam.x=lerp(w.cam.x,amb.tgt.x,dt*.8);w.cam.y=lerp(w.cam.y,amb.tgt.y,dt*.8)}w.zoom=Zm}}}
   if($('scr-garage').classList.contains('on')&&typeof R3!=='undefined'&&R3.ok){if(R3.concept&&(!R3.gCar||G.g3!==CARS[gIdx].id+R3.tuneKey(CARS[gIdx].id))){garage3D();if(!$('gstage'))renderGarage()}{const r=$('gstage')&&$('gstage').getBoundingClientRect();R3.gView=r&&r.width?{x:r.left+r.width/2,y:r.top+r.height/2,w:r.width,h:r.height}:null}if(R3.garageRender(dt)){ctx.clearRect(0,0,VW,VH);requestAnimationFrame(frame);return}}
   const w=G.world;const O3={labels:menuOn()&&(G.menuZoom||1)<.8,arrow:G.mode==='race',arrowTo:G.mode==='roam'&&RS?RS.arrowTo:null,markers:G.mode==='roam'?MARKERS():null};
-  if(w&&typeof R3!=='undefined'&&R3.ok){R3.camMode=(G.mode==='roam'||G.mode==='race')?(SAVE.cam||'chase'):'top';document.body.classList.toggle('driving',G.mode==='roam'||G.mode==='race');document.body.classList.toggle('cock',R3.camMode==='cockpit'&&!!(w.player&&R3.cars.get(w.player)&&R3.cars.get(w.player).userData.concept));R3.render(w,O3,dt);overlay3D(ctx,w,VW,VH,O3)}else if(w)render(ctx,w,VW,VH,w.cam,w.zoom||baseZoom(),{labels:menuOn()&&(G.menuZoom||1)<.8,arrow:G.mode==='race',arrowTo:G.mode==='roam'&&RS?RS.arrowTo:null,markers:G.mode==='roam'?MARKERS():null});
+  if(w&&typeof R3!=='undefined'&&R3.ok){R3.camMode=(G.mode==='roam'||G.mode==='race')?(SAVE.cam||'cockpit'):'top';document.body.classList.toggle('driving',G.mode==='roam'||G.mode==='race');document.body.classList.toggle('cock',R3.camMode==='cockpit'&&!!(w.player&&R3.cars.get(w.player)&&R3.cars.get(w.player).userData.concept));R3.render(w,O3,dt);overlay3D(ctx,w,VW,VH,O3)}else if(w)render(ctx,w,VW,VH,w.cam,w.zoom||baseZoom(),{labels:menuOn()&&(G.menuZoom||1)<.8,arrow:G.mode==='race',arrowTo:G.mode==='roam'&&RS?RS.arrowTo:null,markers:G.mode==='roam'?MARKERS():null});
   }catch(err){console.error(err)}
   requestAnimationFrame(frame)}
 requestAnimationFrame(frame);
@@ -1619,7 +1619,7 @@ import {KTX2Loader} from './vendor/jsm/loaders/KTX2Loader.js';
 import {MeshoptDecoder} from './vendor/jsm/libs/meshopt_decoder.module.js';
 import * as SkeletonUtils from './vendor/jsm/utils/SkeletonUtils.js';
 window.THREE=THREE;window.TADD={EffectComposer,RenderPass,UnrealBloomPass,OutputPass,GLTFLoader,RGBELoader,SkeletonUtils,DRACOLoader,KTX2Loader,MeshoptDecoder};
-const s=document.createElement('script');s.src='r3.js?v=29';document.body.appendChild(s);
+const s=document.createElement('script');s.src='r3.js?v=30';document.body.appendChild(s);
 </script>
 </body>
 </html>

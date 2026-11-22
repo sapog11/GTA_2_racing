@@ -152,6 +152,19 @@ const R3={ok:false,off:/[?&]2d/.test(location.search),chunks:new Map(),CH:16,PX:
    if(b.chimney){const sm=new T3.Mesh(new T3.CylinderGeometry(b.w*.3,b.w*.3,4,8),new T3.MeshBasicMaterial({color:0x1a1010}));sm.position.set(mx,H+2,my);grp.add(sm)}}
   const mk=(o,mat)=>{if(!o.pos.length)return;const bg=new T3.BufferGeometry();bg.setAttribute('position',new T3.Float32BufferAttribute(o.pos,3));bg.setAttribute('normal',new T3.Float32BufferAttribute(o.nor,3));bg.setAttribute('uv',new T3.Float32BufferAttribute(o.uv,2));bg.setAttribute('color',new T3.Float32BufferAttribute(o.col,3));grp.add(new T3.Mesh(bg,mat))};
   mk(W,this.wallMat);for(const k in WF)mk(WF[k],this.facMats[k]);for(const k in RF)mk(RF[k],this.roofMats[k]);
+  {const WP=[],RL={pos:[]},PO={pos:[]},tx0=Math.floor(x0/T),ty0=Math.floor(y0/T),isW=t=>t===WATER,bx=(o,a0,b0,a1,b1,h0,h1)=>{const v=[[a0,h0,b0],[a1,h0,b0],[a1,h0,b1],[a0,h0,b1],[a0,h1,b0],[a1,h1,b0],[a1,h1,b1],[a0,h1,b1]],f=[[4,5,6,7],[0,1,5,4],[1,2,6,5],[2,3,7,6],[3,0,4,7]];for(const q of f)o.pos.push(...v[q[0]],...v[q[1]],...v[q[2]],...v[q[0]],...v[q[2]],...v[q[3]])};
+   const rail=(a0,b0,a1,b1,horiz)=>{const r=.7;if(horiz){bx(RL,a0,b0-r,a1,b0+r,11,13);bx(RL,a0,b0-.4,a1,b0+.4,6,7);for(let x=a0;x<a1;x+=12)bx(PO,x-.8,b0-.8,x+.8,b0+.8,0,13)}else{bx(RL,a0-r,b0,a0+r,b1,11,13);bx(RL,a0-.4,b0,a0+.4,b1,6,7);for(let z=b0;z<b1;z+=12)bx(PO,a0-.8,z-.8,a0+.8,z+.8,0,13)}};
+   for(let ty=ty0;ty<ty0+CH;ty++)for(let tx=tx0;tx<tx0+CH;tx++){const t0=tileAt(tx,ty),X=tx*T,Y=ty*T;
+    if(isW(t0)){WP.push(X,Y);continue}
+    if(t0===BRIDGE||t0===WALK||t0===ROAD||t0===PLAZA||t0===GRASS){const e=t0===BRIDGE?1.5:3;
+     if(isW(tileAt(tx,ty-1)))rail(X,Y+e,X+T,Y+e,1);if(isW(tileAt(tx,ty+1)))rail(X,Y+T-e,X+T,Y+T-e,1);if(isW(tileAt(tx-1,ty)))rail(X+e,Y,X+e,Y+T,0);if(isW(tileAt(tx+1,ty)))rail(X+T-e,Y,X+T-e,Y+T,0)}}
+   if(WP.length){const pos=[],uv=[];for(let i=0;i<WP.length;i+=2){const X=WP[i],Y=WP[i+1],h=.6;pos.push(X,h,Y,X+T,h,Y+T,X+T,h,Y,X,h,Y,X,h,Y+T,X+T,h,Y+T);uv.push(X,Y,X+T,Y+T,X+T,Y,X,Y,X,Y+T,X+T,Y+T)}
+    const g=new T3.BufferGeometry();g.setAttribute('position',new T3.Float32BufferAttribute(pos,3));g.setAttribute('uv',new T3.Float32BufferAttribute(uv.map(v=>v/T),2));g.computeVertexNormals();grp.add(new T3.Mesh(g,this.waterMat()));
+    // sunken ground under water so the river reads as lower than the road
+   }
+   const mkR=(o,mat)=>{if(!o.pos.length)return;const g=new T3.BufferGeometry();g.setAttribute('position',new T3.Float32BufferAttribute(o.pos,3));g.computeVertexNormals();grp.add(new T3.Mesh(g,mat))};
+   if(!this.railM){this.railM=new T3.MeshStandardMaterial({color:0xb8bcc4,metalness:.8,roughness:.35,emissive:0x202226});this.postM=new T3.MeshStandardMaterial({color:0x50545c,metalness:.6,roughness:.5,emissive:0x101114})}
+   mkR(RL,this.railM);mkR(PO,this.postM)}
   {const NE={pink:{pos:[]},orange:{pos:[]}},box=(o,x0b,z0b,x1b,z1b,h0,h1)=>{const v=[[x0b,h0,z0b],[x1b,h0,z0b],[x1b,h0,z1b],[x0b,h0,z1b],[x0b,h1,z0b],[x1b,h1,z0b],[x1b,h1,z1b],[x0b,h1,z1b]],f=[[4,5,6,7],[0,1,5,4],[1,2,6,5],[2,3,7,6],[3,0,4,7]];for(const q of f){o.pos.push(...v[q[0]],...v[q[1]],...v[q[2]],...v[q[0]],...v[q[2]],...v[q[3]])}};
    const isR=t=>t===ROAD||t===BRIDGE,tx0=Math.floor(x0/T),ty0=Math.floor(y0/T);
    for(let ty=ty0;ty<ty0+CH;ty++)for(let tx=tx0;tx<tx0+CH;tx++){const t0=tileAt(tx,ty);if(!isR(t0))continue;const o=t0===BRIDGE?NE.orange:NE.pink,X=tx*T,Y=ty*T,w=1.6,h1=2.6;
@@ -372,6 +385,15 @@ const R3={ok:false,off:/[?&]2d/.test(location.search),chunks:new Map(),CH:16,PX:
    if(ch){box(14,2,2,0,8,0,0,0,.1);box(2,12,1.2,9,10,0,0,0,-.6);box(1,1,10,6,16,0);box(8,1.6,4,-3,9.5,0);box(6,3,4.6,-9,11,0)}
    else{box(16,6,3.4,0,9,0,0,0,-.15);box(7,4,3.6,7,11,0,0,0,.5);box(8,2,3.6,-6,11.6,0);box(1,1,7,8,13.5,0);box(3,1.6,3,-11,9.6,0)}return g}
   return null},
+ waterMat(){if(this.wMat)return this.wMat;const T3=THREE,cv=document.createElement('canvas');cv.width=cv.height=256;const x=cv.getContext('2d');x.fillStyle='#808080';x.fillRect(0,0,256,256);
+  for(let i=0;i<900;i++){const px=Math.random()*256,py=Math.random()*256,l=Math.random();x.strokeStyle=`rgba(${l>.5?255:0},${l>.5?255:0},${l>.5?255:0},${.08+Math.random()*.15})`;x.lineWidth=1+Math.random()*2;x.beginPath();x.moveTo(px,py);x.quadraticCurveTo(px+8,py-3,px+18+Math.random()*14,py);x.stroke()}
+  const t=new T3.CanvasTexture(cv);t.wrapS=t.wrapT=T3.RepeatWrapping;this.wTexW=t;
+  const m=this.wMat=new T3.MeshStandardMaterial({color:0x2f6d8c,metalness:.6,roughness:.12,transparent:true,opacity:.92,emissive:0x0a2a3a,envMapIntensity:1.6});
+  this.wU={uT:{value:0},uR:{value:t}};m.onBeforeCompile=sh=>{Object.assign(sh.uniforms,this.wU);sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vWW;').replace('#include <begin_vertex>','#include <begin_vertex>\nvWW=(modelMatrix*vec4(position,1.)).xyz;');
+   sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform float uT;uniform sampler2D uR;varying vec3 vWW;')
+    .replace('#include <normal_fragment_maps>','#include <normal_fragment_maps>\n{vec2 q=vWW.xz;float a=texture2D(uR,q/180.+vec2(uT*.02,uT*.013)).r,b=texture2D(uR,q/97.-vec2(uT*.017,-uT*.024)).r;vec3 pn=normalize(vec3((a-.5)*.9,1.,(b-.5)*.9));normal=normalize((viewMatrix*vec4(pn,0.)).xyz);}')
+    .replace('#include <emissivemap_fragment>','#include <emissivemap_fragment>\n{vec2 q=vWW.xz;float s=texture2D(uR,q/60.+vec2(uT*.05,0.)).r;totalEmissiveRadiance+=vec3(.35,.55,.7)*smoothstep(.72,.95,s)*.6;}')};
+  m.customProgramCacheKey=()=>'water';return m},
  tuneKey(id){const t=typeof SAVE!=='undefined'&&SAVE.tune&&SAVE.tune[id];return t?JSON.stringify(t):''},
  zSpec(id,tune){const b=this.ZB[id]||this.ZB.koncept,t=tune||{},o=Object.assign({},b,t);let kit=b.kit.slice();if(t.wing===1&&!kit.includes('wing'))kit=kit.filter(k=>k!=='duck').concat('wing');if(t.wing===0)kit=kit.filter(k=>k!=='wing');o.kit=kit;return o},
  zMesh(c,sp,noAdd){const T3=THREE,L=c.L,bx=sp.sx||1,by=sp.sy||1,zs=L/(46*bx),zw=sp.w||1,g=new T3.Group(),m=this.concept.clone(true),B=this.zB;
@@ -552,7 +574,7 @@ const R3={ok:false,off:/[?&]2d/.test(location.search),chunks:new Map(),CH:16,PX:
   const tg=opts.arrowTo||(rt?w.route[Math.min(w.player.seg+1,w.route.length-1)]:null);this.arrow.visible=!!(tg&&w.player);
   if(this.arrow.visible){const p=w.player,a=Math.atan2(tg.y-p.y,tg.x-p.x);if(this.camMode==='cockpit'&&(G.mode==='roam'||G.mode==='race')){this.arrow.position.set(p.x+Math.cos(p.a)*110,30+Math.sin(t*4)*1.5,p.y+Math.sin(p.a)*110);this.arrow.scale.setScalar(.55);this.arrow.rotation.y=-a;this.arrow.visible=true}else this.arrow.position.set(p.x,40+Math.sin(t*4)*2,p.y);this.arrow.rotation.y=-a;const s=this.camMode==='chase'?1:this.camMode==='cockpit'?.55:1.5;this.arrow.scale.setScalar(s)}
   if(this.navTex)this.navTex.offset.x=-(t*1.6%1);
-  this.parkedKenney();
+  this.parkedKenney();if(this.wU)this.wU.uT.value=t;
   // lights
   const p=w.player;if(p&&!p.wreck&&!G.engineOff){const ca=Math.cos(p.a),sa=Math.sin(p.a);this.head.position.set(p.x+ca*p.L*.4,16,p.y+sa*p.L*.4);this.head.target.position.set(p.x+ca*260,0,p.y+sa*260);this.head.intensity=p.boost?2:1.5}else this.head.intensity=0;
   const fx=this.focus.x,fy=this.focus.y,cx=p?p.x:w.cam.x,cy=p?p.y:w.cam.y;const near=[];for(const l of lamps){const d=(l.x-cx)*(l.x-cx)+(l.y-cy)*(l.y-cy);if(d<640000)near.push([d,l])}near.sort((a,b)=>a[0]-b[0]);
