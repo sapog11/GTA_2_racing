@@ -41,7 +41,8 @@ const R3={ok:false,off:/[?&]2d/.test(location.search),chunks:new Map(),CH:16,PX:
   this.mkTex();
   this.wallMat=new T3.MeshLambertMaterial({map:this.winTex,emissiveMap:this.winEm,emissive:0xffffff,emissiveIntensity:1.6,vertexColors:true});
   {const TL=new T3.TextureLoader(),ld=f=>{const t=TL.load('art/tex/'+f+'.jpg');t.wrapS=t.wrapT=T3.RepeatWrapping;t.colorSpace=T3.SRGBColorSpace;t.anisotropy=4;return t};this.facMats={};
-   for(const k of['plaster','brick','panel','shops'])this.facMats[k]=new T3.MeshLambertMaterial({map:ld('fac_'+k),emissiveMap:ld('fac_'+k+'_em'),emissive:0xffffff,emissiveIntensity:1.2,vertexColors:true});
+   this.facBase={value:.22};for(const k of['plaster','brick','panel','shops','modern','industrial','stone','baroque']){const m=this.facMats[k]=new T3.MeshLambertMaterial({map:ld('fac_'+k),emissiveMap:ld('fac_'+k+'_em'),emissive:0xffffff,emissiveIntensity:1.2,vertexColors:true});
+    m.onBeforeCompile=sh=>{sh.uniforms.uBase=this.facBase;sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform float uBase;').replace('#include <emissivemap_fragment>','#include <emissivemap_fragment>\ntotalEmissiveRadiance+=diffuseColor.rgb*uBase;')};m.customProgramCacheKey=()=>'fac'}
    this.facMats.plain=new T3.MeshLambertMaterial({color:0xffffff,vertexColors:true})}
   this.roofMats={};for(const k of['roof_tar','roof_tiles','roof_metal','plain'])this.roofMats[k]=new T3.MeshLambertMaterial({vertexColors:true,map:this.imgTex(k)});
   this.groundGeo=new T3.PlaneGeometry(this.CH*T,this.CH*T);
@@ -64,7 +65,7 @@ const R3={ok:false,off:/[?&]2d/.test(location.search),chunks:new Map(),CH:16,PX:
   day:{sky:[[.2,.45,.85],[.55,.75,.95],[.88,.93,.98],[1,1,1]],fog:0xa9c4dd,fd:.7,hemi:[0xe8f2ff,0x6b6455,1.25],sun:[0xffffff,1.35,400,1200,300],em:0,neon:.5,pool:0,exp:1.05,bloom:.2,lamp:0}},
  setTOD(k){const D=this.TODS[k]||this.TODS.night;this.tod=k;const U=this.sky.material.uniforms;['uTop','uMid','uHor','uSun'].forEach((n,i)=>U[n].value.setRGB(...D.sky[i]));U.uSt.value=U.uStars.value?(k==='night'?1:0):0;if(this.slMats)for(const m of this.slMats)m.color.setRGB(...(k==='night'?[1,1,1]:k==='golden'?[.8,.72,.7]:[.62,.68,.78]));
   this.scene.fog.color.set(D.fog);this.scene.background.set(D.fog);this.fogMul=D.fd;this.hemi.color.set(D.hemi[0]);this.hemi.groundColor.set(D.hemi[1]);this.hemiBase=D.hemi[2];
-  this.sun.color.set(D.sun[0]);this.sun.intensity=D.sun[1];this.sun.position.set(D.sun[2],D.sun[3],D.sun[4]);for(const k2 in this.facMats)this.facMats[k2].emissiveIntensity=D.em;this.wallMat.emissiveIntensity=D.em*1.3;
+  this.sun.color.set(D.sun[0]);this.sun.intensity=D.sun[1];this.sun.position.set(D.sun[2],D.sun[3],D.sun[4]);for(const k2 in this.facMats)this.facMats[k2].emissiveIntensity=D.em;if(this.facBase)this.facBase.value=k==='night'?.22:k==='golden'?.08:0;this.wallMat.emissiveIntensity=D.em*1.3;
   if(this.neonM){this.neonM.pink.emissive.set(0x1a120c).multiplyScalar(D.neon>1?1:.3);this.neonM.orange.emissive.set(0x1a120c).multiplyScalar(D.neon>1?1:.3)}this.neonMul=D.neon;
   this.pool.visible=!!D.pool;this.lbar.material.color.set(0xff6a3a).multiplyScalar(D.neon*1.2);this.renderer.toneMappingExposure=D.exp;if(this.bloom)this.bloom.strength=D.bloom;this.lampOn=D.lamp;this.beamMat.opacity=D.pool?.22:.06;this.envFor(k)},
  loadAssets(){const A=window.TADD;if(!A||!A.GLTFLoader)return;
@@ -72,7 +73,9 @@ const R3={ok:false,off:/[?&]2d/.test(location.search),chunks:new Map(),CH:16,PX:
    for(const nm of L)kl.load('models/cars/'+nm+'.glb',g=>{const sc=g.scene;sc.updateMatrixWorld(true);const b=new THREE.Box3().setFromObject(sc);this.km[nm]=sc;this.kInfo[nm]={ct:b.getCenter(new THREE.Vector3()),minY:b.min.y,len:b.max.z-b.min.z,wid:b.max.x-b.min.x,h:b.max.y-b.min.y};if(++n===L.length){this.kReady=true;console.info('Kenney cars ready')}},undefined,e=>{console.warn('car',nm,e);if(++n===L.length)this.kReady=true})}
   try{const gl=new A.GLTFLoader(),dr=new A.DRACOLoader();dr.setDecoderPath('vendor/jsm/libs/draco/gltf/');gl.setDRACOLoader(dr);const kt=new A.KTX2Loader();kt.setTranscoderPath('vendor/jsm/libs/basis/');kt.detectSupport(this.renderer);gl.setKTX2Loader(kt);
    gl.load('models/koncept/CarConcept.gltf',g=>this.prepConcept(g.scene),undefined,e=>console.warn('koncept',e))}catch(e){console.warn('koncept loader',e)}
- new A.GLTFLoader().load('models/xbot.glb',g=>{this.pedProto=g.scene;this.pedClips={};for(const c of g.animations)this.pedClips[c.name]=c},undefined,e=>console.warn('xbot',e))},
+ {const ml=new A.GLTFLoader();if(A.MeshoptDecoder)ml.setMeshoptDecoder(A.MeshoptDecoder);this.mini=[];const N=['female_a','female_b','female_c','female_d','female_e','female_f','male_a','male_b','male_c','male_d','male_e','male_f'];
+   for(const n of N)ml.load('models/people/mini_'+n+'.glb',g=>{const sc=g.scene;sc.updateMatrixWorld(true);const b=new THREE.Box3().setFromObject(sc),cl={};for(const c of g.animations)cl[c.name]=c;sc.traverse(o=>{if(o.isMesh){o.frustumCulled=false;if(o.material){o.material=new THREE.MeshLambertMaterial({map:o.material.map})}}});this.mini.push({sc,cl,h:b.max.y-b.min.y,minY:b.min.y,f:n[0]==='f'})},undefined,e=>console.warn('ped',n,e))}
+  new A.GLTFLoader().load('models/xbot.glb',g=>{this.pedProto=g.scene;this.pedClips={};for(const c of g.animations)this.pedClips[c.name]=c},undefined,e=>console.warn('xbot',e))},
  prepConcept(root){const T3=THREE;root.traverse(o=>{if(/License|Emblem/i.test(o.name))o.visible=false;if(o.isMesh){o.castShadow=false;const m=o.material;if(m&&/Khronos/i.test(JSON.stringify(m.userData||{})))o.visible=false}});
   root.updateMatrixWorld(true);const bb=new T3.Box3().setFromObject(root),sz=bb.getSize(new T3.Vector3()),ct=bb.getCenter(new T3.Vector3());const alongZ=sz.z>sz.x;
   let hl=null;root.traverse(o=>{if(o.name==='BodyHeadlights')hl=o});const hp=hl?new T3.Box3().setFromObject(hl).getCenter(new T3.Vector3()):ct.clone().add(new T3.Vector3(alongZ?0:1,0,alongZ?1:0));
@@ -137,7 +140,7 @@ const R3={ok:false,off:/[?&]2d/.test(location.search),chunks:new Map(),CH:16,PX:
   for(const b of buildings){const mx=b.x+b.w/2,my=b.y+b.h/2;if(mx<x0||mx>x1||my<y0||my>y1)continue;
    const H=Math.min(b.ht*this.HK,b.pylon?560:900),X0=b.x,X1=b.x+b.w,Z0=b.y,Z1=b.y+b.h;C.set(b.col);const wc=C.clone().lerp(new T3.Color(0xbdb8ae),.35);
    const quad=(o,a,bq,c,d,n,uv)=>{o.pos.push(...a,...bq,...c,...a,...c,...d);for(let q=0;q<6;q++)o.nor.push(...n);o.uv.push(uv[0],uv[1],uv[2],uv[3],uv[4],uv[5],uv[0],uv[1],uv[4],uv[5],uv[6],uv[7])};
-   const hsh=((b.x*13+b.y*7)/T|0),fk=b.panel?'panel':(b.factory||b.chimney)?'brick':(b.pylon||b.tower)?'plain':(b.castle||b.church||b.hotel)?'plaster':hsh%2?'brick':'plaster',FW=fk==='panel'?160:160,FH=fk==='panel'?150:120;
+   const hsh=((b.x*13+b.y*7)/T|0),fk=b.panel?'panel':b.factory?'industrial':b.chimney?'brick':b.pylon?'plain':(b.tower||b.hotel)?'modern':(b.castle||b.church)?'stone':['brick','plaster','baroque','plaster','brick','baroque'][hsh%6],FW=fk==='stone'?140:fk==='modern'?170:160,FH=fk==='panel'?150:fk==='modern'?150:fk==='stone'?110:120;
    const band=!b.panel&&!b.factory&&!b.chimney&&!b.pylon&&!b.tower&&!b.castle&&!b.church&&H>50&&(b.shop||b.bar||b.hotel||hsh%3!==0)?40:0;
    const acc=k=>WF[k]||(WF[k]={pos:[],nor:[],uv:[],col:[]}),tc=fk==='plain'?C.clone().lerp(new T3.Color(0xffffff),.7):new T3.Color(0xffffff).lerp(C,.22);
    const wall=(ax,az,bx,bz,n)=>{const L=Math.hypot(bx-ax,bz-az),u0=((ax+az)%997)/FW,u1=u0+L/FW;
@@ -378,7 +381,10 @@ const R3={ok:false,off:/[?&]2d/.test(location.search),chunks:new Map(),CH:16,PX:
   const bs=this.bloom?this.bloom.strength:0;if(this.bloom)this.bloom.strength=.28;const env=this.scene.environment;if(this.env)this.scene.environment=this.env;
   if(this.comp)this.comp.render();else this.renderer.render(this.scene,C);
   if(this.bloom)this.bloom.strength=bs;this.scene.environment=env;this.scene.fog.density=fogD;this.gRoom.visible=false;this.sky.visible=true;C.clearViewOffset();C.near=8;C.updateProjectionMatrix();return true},
- pedMesh(p){const near=this.focus?Math.hypot(p.x-(G.world&&G.world.player?G.world.player.x:this.focus.x),p.y-(G.world&&G.world.player?G.world.player.y:this.focus.y))<420:true;if(this.pedProto&&window.TADD&&near&&(this.skinN||0)<(isTouch?22:34)){const T3=THREE,g=new T3.Group(),m=TADD.SkeletonUtils.clone(this.pedProto);m.rotation.y=Math.PI/2;m.scale.setScalar(9.5);
+ pedMesh(p){const near=this.focus?Math.hypot(p.x-(G.world&&G.world.player?G.world.player.x:this.focus.x),p.y-(G.world&&G.world.player?G.world.player.y:this.focus.y))<600:true;
+  if(this.mini&&this.mini.length>=6&&window.TADD&&near&&(this.skinN||0)<(isTouch?44:70)){const T3=THREE,g=new T3.Group();if(p.mi===undefined)p.mi=Math.floor(Math.random()*1e6);const M=this.mini[p.mi%this.mini.length],m=TADD.SkeletonUtils.clone(M.sc),k=(12.8+(p.mi%5)*.55)/M.h;
+   m.scale.setScalar(k);m.position.y=-M.minY*k;m.rotation.y=Math.PI/2;const mixer=new T3.AnimationMixer(m),act={};for(const[a,b]of[['idle','idle'],['walk','walk'],['run','sprint'],['talk',(p.mi%2)?'emote-yes':'emote-no']])if(M.cl[b])act[a]=mixer.clipAction(M.cl[b]);
+   if(act.idle)act.idle.play();mixer.update(Math.random()*2);g.add(m);g.userData={skin:true,mixer,act,cur:'idle',body:m,mini:true};this.skinN=(this.skinN||0)+1;this.scene.add(g);return g}if(this.pedProto&&window.TADD&&near&&(this.skinN||0)<(isTouch?22:34)){const T3=THREE,g=new T3.Group(),m=TADD.SkeletonUtils.clone(this.pedProto);m.rotation.y=Math.PI/2;m.scale.setScalar(9.5);
    m.traverse(o=>{if(o.isMesh){o.frustumCulled=false;o.material=/Joints/.test(o.material.name)?this.matS(p.type==='worker'?'#ffd02e':p.hair||'#222228'):this.matS(p.type==='worker'?'#ff7a1a':p.col)}});
    const mixer=new T3.AnimationMixer(m),act={};for(const n of['idle','walk','run'])if(this.pedClips[n])act[n]=mixer.clipAction(this.pedClips[n]);if(act.idle)act.idle.play();mixer.update(Math.random()*2);
    g.add(m);g.userData={skin:true,mixer,act,cur:'idle',body:m};this.skinN=(this.skinN||0)+1;this.scene.add(g);return g}
@@ -442,8 +448,8 @@ const R3={ok:false,off:/[?&]2d/.test(location.search),chunks:new Map(),CH:16,PX:
    if(g.userData.bar){const ph=Math.floor(t*8)%2;g.userData.bar[0].material=ph?this.redMat:this.offMat;g.userData.bar[1].material=ph?this.offMat:this.bluMat}}
   for(const[c,g]of this.cars)if(!seen.has(c)){this.scene.remove(g);g.traverse(o=>{if(o.material===g.userData.paint||(g.userData.k&&o.isMesh&&o.material&&o.material.isMeshPhysicalMaterial))o.material.dispose()});this.cars.delete(c)}
   // peds
-  const ps=new Set();for(const p of w.peds){let g=this.peds.get(p);if(g&&!g.userData.skin&&this.pedProto&&(this.skinN||0)<(isTouch?22:34)&&w.player&&Math.hypot(p.x-w.player.x,p.y-w.player.y)<300){this.scene.remove(g);g=null}if(!g){g=this.pedMesh(p);this.peds.set(p,g)}ps.add(p);g.position.set(p.x,0,p.y);g.rotation.y=-p.a;
-   const U=g.userData;if(U.skin){U.mixer.update(dt);if(p.down>0){U.body.rotation.z=Math.PI/2;g.position.y=3}else{U.body.rotation.z=0;const want=p.flee>0?'run':(p.sp>0?'walk':'idle');
+  const ps=new Set();for(const p of w.peds){let g=this.peds.get(p);if(g&&!g.userData.skin&&(this.pedProto||this.mini)&&(this.skinN||0)<(isTouch?44:70)&&w.player&&Math.hypot(p.x-w.player.x,p.y-w.player.y)<420){this.scene.remove(g);g=null}if(!g){g=this.pedMesh(p);this.peds.set(p,g)}ps.add(p);g.position.set(p.x,0,p.y);g.rotation.y=-p.a;
+   const U=g.userData;if(U.skin){U.mixer.update(dt);if(p.down>0){U.body.rotation.z=Math.PI/2;g.position.y=3}else{U.body.rotation.z=0;const want=p.flee>0?'run':(p.sp>0?'walk':((p.say||p.mate)&&U.act.talk&&Math.floor(w.t/4+p.x)%3===0?'talk':'idle'));
      if(want!==U.cur&&U.act[want]){U.act[want].reset().play();U.act[U.cur]&&U.act[U.cur].crossFadeTo(U.act[want],.25,false);U.cur=want}if(U.act.walk)U.act.walk.timeScale=Math.max(.5,(p.sp||20)/22);
      if(p.type==='drunk'||p.type==='party')U.body.rotation.x=Math.sin((p.wob||0)*2)*.12}continue}
    if(p.down>0){U.body.rotation.z=Math.PI/2;U.body.position.y=3}else{U.body.rotation.z=0;U.body.position.y=0;const mv=(p.sp>0||p.flee>0)?1:.12,sw=Math.sin(p.walk)*.7*mv;

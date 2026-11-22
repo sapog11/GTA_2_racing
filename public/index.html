@@ -810,9 +810,9 @@ function updateWorld(w,dt,pctl){
     if(!dead)for(const c of w.cars){if(c===w.player||c.wreck)continue;if(Math.hypot(c.x-b.x,c.y-b.y)<c.L*.5){c.hp-=b.dmg;sparks(w,b.x,b.y,4,'#fff3b0');c.hitT=.12;dead=true;break}}
     if(dead)w.bullets.splice(i,1)}
   // peds
-  if(w.peds.length<w.pedMax&&R()<.3)spawnPed(w,560,900);
+  if(w.peds.length<w.pedMax&&R()<.5)spawnPed(w,360,620);
   for(let i=w.peds.length-1;i>=0;i--){const p=w.peds[i];p.sayT-=dt;if(p.say){p.sayL-=dt;if(p.sayL<=0)p.say=null}
-    if(Math.hypot(p.x-w.cam.x,p.y-w.cam.y)>1250){w.peds.splice(i,1);if(p.mate)p.mate.mate=null;continue}
+    if(Math.hypot(p.x-w.cam.x,p.y-w.cam.y)>(G.mode==='ambient'?1250:780)){w.peds.splice(i,1);if(p.mate)p.mate.mate=null;continue}
     if(isSolid(tileAt(Math.floor(p.x/T),Math.floor(p.y/T)))){w.peds.splice(i,1);continue}
     if(p.down>0){p.down-=dt;if(p.down<=0){say(p,LINES.hit)}continue}
     // danger
@@ -1020,7 +1020,7 @@ function baseZoom(){return clamp(Math.min(VW,VH)/400,.8,1.6)}
 
 /* ---------------- GAME STATE ---------------- */
 const G={mode:'start',world:null,level:null,keys:{},cam:{x:IX(2),y:IX(6)}};
-function ambientWorld(){const w=newWorld({rain:true,dark:.74,civMax:9,pedMax:36,chatty:true});w.cam={x:IX(2)+150,y:IX(24)};for(let i=0;i<5;i++)spawnCiv(w);for(let i=0;i<24;i++)spawnPed(w,60,700);return w}
+function ambientWorld(){const w=newWorld({rain:true,dark:.74,civMax:9,pedMax:50,chatty:true});w.cam={x:IX(2)+150,y:IX(24)};for(let i=0;i<5;i++)spawnCiv(w);for(let i=0;i<24;i++)spawnPed(w,60,700);return w}
 
 /* ---------------- PROMO ---------------- */
 const ART=['keyart','street','heist','bridge','racestart','lucie','marek','kaja'];
@@ -1171,9 +1171,9 @@ function finishComic(){const d=comic.done;comic=null;if(d)d();else showComics()}
 
 /* ---------------- FREE ROAM ---------------- */
 function MARKERS(){return LEVELS.filter(L=>!L.soon).map(L=>{const r=L.route?L.route[0]:L.at;return{L,x:IX(r[0]),y:IX(r[1]),open:!L.soon}})}
-function startRoam(at,target){AN.ev('roam_start');hideAll();G.engineOff=false;$('keyB').classList.remove('off');$('keyB').style.display='';at=at||HOME;const w=newWorld({rain:R()<.45,dark:.8,civMax:8,pedMax:28});G.world=w;G.mode='roam';G.level=null;
+function startRoam(at,target){AN.ev('roam_start');hideAll();G.engineOff=false;$('keyB').classList.remove('off');$('keyB').style.display='';at=at||HOME;const w=newWorld({rain:R()<.45,dark:.8,civMax:8,pedMax:60});G.world=w;G.mode='roam';G.level=null;
   const car=CARS.find(c=>c.id===SAVE.car)||CARS[0];const p=makeCar(Object.assign({},car),at.x,at.y,at.a,'player');p.handMul=SAVE.hero==='lucie'?1.15:1;w.player=p;w.cars.push(p);
-  w.cam={x:p.x,y:p.y};w.zoom=baseZoom();for(let i=0;i<5;i++)spawnCiv(w);for(let i=0;i<20;i++)spawnPed(w,100,800);
+  w.cam={x:p.x,y:p.y};w.zoom=baseZoom();for(let i=0;i<5;i++)spawnCiv(w);for(let i=0;i<48;i++)spawnPed(w,40,520);
   RS={roam:true,nitro:.6,nitroFill:SAVE.hero==='lucie'?.098:.07,target:target||null,enterCD:2.5};G.roamDist='';
   $('hud').classList.add('on');if(isTouch)$('ctrl').classList.add('on');$('kU').style.display=SAVE.autoGas?'none':'block';$('kAt').textContent='NITRO';$('kA').classList.remove('hot');
   $('hMainL').textContent='ČTVRŤ';$('hMain').classList.add('small');$('bust').style.display='none';$('center').textContent='';$('obj').classList.add('on');
@@ -1208,7 +1208,7 @@ function startLevel(id){const L=LEVELS.find(l=>l.id===id);G.level=L;AN.ev('missi
   const go=()=>beginRace(L);
   if(!SAVE.seenIntro){SAVE.seenIntro=true;save();playComic('intro',()=>playComic(L.comic,go));return}
   playComic(L.comic,go)}
-function beginRace(L){hideAll();const w=newWorld({rain:L.rain,dark:L.dark,civMax:L.type==='race'?4:6,pedMax:26});setRoute(w,L.route);G.world=w;G.mode='race';
+function beginRace(L){hideAll();const w=newWorld({rain:L.rain,dark:L.dark,civMax:L.type==='race'?4:6,pedMax:42});setRoute(w,L.route);G.world=w;G.mode='race';
   const car=CARS.find(c=>c.id===SAVE.car)||CARS[0];const spec=Object.assign({},car);const lucie=SAVE.hero==='lucie';
   const r0=w.route[0],r1=w.route[1],a=Math.atan2(r1.y-r0.y,r1.x-r0.x),ca=Math.cos(a),sa=Math.sin(a),nx=-sa,ny=ca;
   RS={L,t:0,count:L.type==='race'?3.4:1.6,heat:0,over:false,nitro:.5,fireCD:0,kills:0,bust:0,end:0,finishOrder:[],spawnT:6,lucie,dmgMul:lucie?1:1.6,fireRate:lucie?.13:.085,heatPer:lucie?.075:.05,nitroFill:lucie?.098:.07};
@@ -1223,7 +1223,7 @@ function beginRace(L){hideAll();const w=newWorld({rain:L.rain,dark:L.dark,civMax
     for(const b of L.blocks){const s=w.cum[b[0]]+(w.cum[b[0]+1]-w.cum[b[0]])*b[1];const q=routeAt(w,s);for(const side of[-1,1]){const c=makeCar(POLICE,q.x-Math.sin(q.a)*side*24,q.y+Math.cos(q.a)*side*24,q.a+Math.PI/2+side*.4,'police');c.parked=true;c.seg=q.i;c.s=s;w.cars.push(c)}}
     w.onKill=c=>{RS.kills++;floatMsg('+2 000 Kč')};
   }
-  for(let i=0;i<4;i++)spawnCiv(w);for(let i=0;i<20;i++)spawnPed(w,100,800);
+  for(let i=0;i<4;i++)spawnCiv(w);for(let i=0;i<34;i++)spawnPed(w,80,800);
   w.cam={x:p.x,y:p.y};for(const c of w.cars)c.frozen=true;
   $('hud').classList.add('on');if(isTouch)$('ctrl').classList.add('on');
   $('kU').style.display=SAVE.autoGas?'none':'block';
@@ -1573,7 +1573,7 @@ import {KTX2Loader} from './vendor/jsm/loaders/KTX2Loader.js';
 import {MeshoptDecoder} from './vendor/jsm/libs/meshopt_decoder.module.js';
 import * as SkeletonUtils from './vendor/jsm/utils/SkeletonUtils.js';
 window.THREE=THREE;window.TADD={EffectComposer,RenderPass,UnrealBloomPass,OutputPass,GLTFLoader,RGBELoader,SkeletonUtils,DRACOLoader,KTX2Loader,MeshoptDecoder};
-const s=document.createElement('script');s.src='r3.js?v=21';document.body.appendChild(s);
+const s=document.createElement('script');s.src='r3.js?v=22';document.body.appendChild(s);
 </script>
 </body>
 </html>
