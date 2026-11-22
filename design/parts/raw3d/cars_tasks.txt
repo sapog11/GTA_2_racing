@@ -1,0 +1,6 @@
+car_felda 7dcaccce-3a1c-4d9f-b62e-f7b2b0bcd3f7
+car_golfik 20d10e69-3b57-4274-84df-b41f446941e8
+car_bavorak 082066ce-0f66-4a0a-a5db-628eb7e731d9
+car_imprezka f0651100-d7be-4f06-b3b0-2480a3d16144
+car_koncept 1b4decfa-955d-4818-afa0-906fb2740bce
+car_supka {'code': 2000, 'message': 'You have exceeded the limit of generation', 'suggestion': 'Try again later. You can also check `Retry-After` header.'}

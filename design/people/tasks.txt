@@ -1,0 +1,6 @@
+street_guy e5b1e273-7c6b-40c6-a0ce-0dea750149c9
+babicka 71b432d9-5061-4e13-9d1e-351a9f0b085d
+worker 88f89cac-d289-4e98-ab7f-b8dfb1fd8276
+girl 63e4803e-f4aa-4b69-8587-762f9c709218
+office 4379d37d-feea-4609-87d4-c466a9c1744c
+pub_guy bef63c02-b386-418c-81f5-dc216226c423
