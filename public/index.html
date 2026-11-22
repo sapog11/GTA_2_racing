@@ -205,7 +205,11 @@ body.cock #nav{top:calc(max(10px,env(safe-area-inset-top)) + 120px)}
 #bust b{font-family:Bangers;font-size:30px;color:#4da3ff;text-shadow:2px 2px 0 #000;letter-spacing:2px}
 #bust .hp{width:180px;margin:4px auto}#bust .hp i{background:#4da3ff}
 body.cock #spd{display:none}
-#spd{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom));width:170px;height:96px;text-align:center;pointer-events:none;filter:drop-shadow(0 0 8px rgba(255,46,136,.5))}#spd svg{position:absolute;inset:0;width:100%;height:100%}#spd b{position:absolute;left:0;right:0;bottom:10px;font-family:Audiowide,Oswald,sans-serif;font-size:34px;color:#fff;text-shadow:0 0 10px #ff2e88}#spd i{position:absolute;left:0;right:0;bottom:-2px;font-style:normal;font-family:Audiowide,sans-serif;font-size:11px;color:#ffb0d0;letter-spacing:2px}
+#spd{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(14px + env(safe-area-inset-bottom));width:210px;height:74px;pointer-events:none;background:rgba(0,0,0,.72);border:1px solid rgba(255,122,26,.35);border-radius:10px;font-family:Audiowide,Oswald,sans-serif}
+#spd .rpm{position:absolute;left:10px;bottom:16px;display:flex;align-items:flex-end;gap:3px}#spd .rpm i{display:block;width:6px;background:#2a1608;border-radius:1px}
+#spd .rpm i.on{background:#ff7a1a;box-shadow:0 0 6px #ff7a1a}#spd .rpm i.on.y{background:#ffd02e;box-shadow:0 0 6px #ffd02e}#spd .rpm i.on.r{background:#ff2040;box-shadow:0 0 6px #ff2040}
+#spd b{position:absolute;right:58px;top:2px;font-family:Oswald,sans-serif;font-weight:700!important;font-size:40px;color:#fff;text-shadow:0 0 12px #ff7a1a;font-weight:400;line-height:1}#spd em{position:absolute;right:62px;bottom:6px;font-style:normal;font-size:11px;color:#ff7a1a;font-family:Oswald}
+#spd span{position:absolute;right:8px;top:12px;width:40px;height:44px;border:2px solid #2ef0ff;border-radius:4px;color:#2ef0ff;font-size:28px;display:flex;align-items:center;justify-content:center}
 body.drag #spd,#ctrl.on~#hud #spd{}
 #hint{position:absolute;left:0;right:0;bottom:12px;text-align:center;color:#aab;font-size:13px;letter-spacing:1px}
 #area{position:absolute;left:14px;top:calc(max(10px,env(safe-area-inset-top)) + 96px);font-family:Bangers;font-size:clamp(26px,7vw,40px);letter-spacing:2px;color:#fff;text-shadow:3px 3px 0 #000;opacity:0;transition:opacity .6s}
@@ -231,7 +235,7 @@ body.arrows.driving #rbtn{top:calc(max(10px,env(safe-area-inset-top)) + 150px);b
 body.arrows #kA{right:max(14px,env(safe-area-inset-right));bottom:calc(max(18px,env(safe-area-inset-bottom)) + 150px);width:72px;height:72px;font-size:17px}#pedals button{position:static!important;width:96px;height:74px;border-radius:14px!important;font-size:19px!important;pointer-events:none!important}
 #pedals button.on{background:rgba(255,204,26,.75)!important;color:#111!important;border-color:#ffcc1a!important;box-shadow:0 0 18px rgba(255,204,26,.8),inset 0 0 10px rgba(255,255,255,.4)}#pedals #pB.on{background:rgba(255,60,80,.6)!important;border-color:#ff4466!important}
 body.wheel #kA{right:auto;left:max(21px,env(safe-area-inset-left));bottom:calc(max(16px,env(safe-area-inset-bottom)) + 172px);width:78px;height:78px;font-size:20px}
-body.wheel.driving #spd{left:auto;right:0;transform:scale(.72);transform-origin:right bottom;bottom:calc(16px + env(safe-area-inset-bottom) + 146px)}body.wheel.driving.cock #wheel{display:none}#wheel svg{width:100%;height:100%;display:block;transition:none}
+body.wheel.driving #spd{left:auto;right:0;transform:scale(.72);transform-origin:right bottom;bottom:calc(16px + env(safe-area-inset-bottom) + 146px)}body.arrows.driving #spd{bottom:calc(18px + env(safe-area-inset-bottom) + 96px);transform:translateX(-50%) scale(.85);transform-origin:center bottom}body.wheel.driving.cock #wheel{display:none}#wheel svg{width:100%;height:100%;display:block;transition:none}
 body.two #kL,body.two #kR,body.two #kU,body.two #kD{display:none!important}
 .tw{position:fixed;width:120px;height:120px;margin:-60px 0 0 -60px;border-radius:50%;border:3px solid rgba(255,255,255,.3);background:rgba(10,12,20,.25);display:none;z-index:8;pointer-events:none}
 #stickL{border-radius:60px;height:70px;margin-top:-35px}#stickR{width:70px;margin-left:-35px;border-radius:60px}
@@ -319,7 +323,7 @@ body.two.driving #twHint{display:flex}
   </div>
   <div id="bust"><b>POLICIE TĚ MÁ!</b><div class="hp"><i id="hBust"></i></div></div>
   <div id="center"></div><div id="area"></div><div id="obj"></div><div id="street"></div><div id="nav"><div id="navA">⬆</div><div class="nt"><b id="navD"></b><span id="navS"></span><i id="navC"></i></div></div><div id="wgrip"></div><div id="drift"></div>
-  <div id="spd"><svg viewBox="0 0 200 110"><defs><linearGradient id="sg" x1="0" x2="1"><stop offset="0" stop-color="#7a2cff"/><stop offset=".6" stop-color="#ff2e88"/><stop offset="1" stop-color="#ffb02e"/></linearGradient></defs><path d="M20 100 A80 80 0 0 1 180 100" fill="none" stroke="rgba(255,255,255,.12)" stroke-width="12" stroke-linecap="round"/><path id="spArc" d="M20 100 A80 80 0 0 1 180 100" fill="none" stroke="url(#sg)" stroke-width="12" stroke-linecap="round" pathLength="100" stroke-dasharray="0 100"/></svg><b id="spN">0</b><i>km/h</i></div>
+  <div id="spd"><div class="rpm" id="spR"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><b id="spN">0</b><em>km/h</em><span id="spG">N</span></div>
   <div id="hint"></div>
 </div>
 
@@ -1353,7 +1357,8 @@ function driftUpdate(p,w,dt,bank){const sp=Math.hypot(p.vx,p.vy),lat=Math.abs(-M
   if(DR.score>0&&DR.idle<1){el.className='on';el.innerHTML='<b>'+(DR.nm>0?'NEAR MISS! ':'DRIFT ')+'×'+mult+'</b><i>'+Math.floor(DR.score*mult)+'</i>'}
   else if(DR.score>0){const tot=Math.floor(DR.score*mult),rp=bank?Math.floor(tot/400):0,kc=bank?Math.round(tot*1.2/50)*50:0;if(rp>0||kc>0){SAVE.resp+=rp;SAVE.cash+=kc;save();if(kc>0)Snd.pb&&Snd.pb('cash',.35)}el.className='on';el.innerHTML='<b>+'+tot+'</b><i>'+(kc>0?'+'+kc.toLocaleString('cs-CZ')+' Kč':'BODY')+'</i>';DR.msgT=1.6;DR.score=0;DR.time=0;AN.ev('drift',{points:tot})}
   else if(DR.msgT>0){DR.msgT-=dt;if(DR.msgT<=0)el.className=''}}
-function spdSet(k){$('spN').textContent=k;$('spArc').setAttribute('stroke-dasharray',Math.min(100,k/1.6)+' 100')}
+let spdEls=null;function spdSet(k){$('spN').textContent=k;const p=G.world&&G.world.player;if(!p)return;spdEls=spdEls||[...document.querySelectorAll('#spR i')];const r=Math.round(clamp(p.rpm||0,0,1)*12),sp=Math.abs(p.v||0);
+  spdEls.forEach((e,i)=>{e.style.height=(10+i*3)+'px';e.className=i<r?('on'+(i>=10?' r':i>=8?' y':'')):''});$('spG').textContent=p.v<-5?'R':sp<3?'N':(p.gear||1)}
 let msgT=0;function floatMsg(t,dur){$('center').textContent=t;msgT=dur||1.1}
 const STK={id:null,x:0,y:0,dx:0,dy:0},TW={L:{id:null,x:0,y:0,dx:0,dy:0},R:{id:null,x:0,y:0,dx:0,dy:0}};
 function playerCtl(){const k=G.keys;const p=G.world&&G.world.player;
@@ -1693,7 +1698,7 @@ import {KTX2Loader} from './vendor/jsm/loaders/KTX2Loader.js';
 import {MeshoptDecoder} from './vendor/jsm/libs/meshopt_decoder.module.js';
 import * as SkeletonUtils from './vendor/jsm/utils/SkeletonUtils.js';
 window.THREE=THREE;window.TADD={EffectComposer,RenderPass,UnrealBloomPass,OutputPass,GLTFLoader,RGBELoader,SkeletonUtils,DRACOLoader,KTX2Loader,MeshoptDecoder};
-const s=document.createElement('script');s.src='r3.js?v=45';document.body.appendChild(s);
+const s=document.createElement('script');s.src='r3.js?v=46';document.body.appendChild(s);
 </script>
 </body>
 </html>
