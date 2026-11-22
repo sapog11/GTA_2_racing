@@ -500,6 +500,7 @@ const CARS=[
  {id:'supka',name:'Toyda Supka',desc:'Legenda nočních závodů. Kdo ji má, ten je někdo.',col:'#e8a21a',max:345,acc:270,turn:3.0,grip:6,hp:110,price:400000,L:44,Wd:21,spoiler:1},
 ];
 for(const c of CARS)if(c.soon&&SAVE.owned.includes(c.id)){SAVE.owned=SAVE.owned.filter(x=>x!==c.id);if(c.price)SAVE.cash+=c.price;if(SAVE.car===c.id)SAVE.car='civka'}
+const GANG={col:'#0c0c0e',max:250,acc:240,turn:2.9,grip:6.2,hp:70,L:46,Wd:22,gang:1};
 const POLICE={col:'#e9ecef',max:236,acc:235,turn:2.8,grip:6,hp:60,L:44,Wd:20,police:1};
 const CIV_COLS=['#7a2222','#3a4a6a','#bdbdbd','#5a5a5a','#7a6a3a','#2f5f5a','#6a3a6a','#9a9a8a'];
 const RIVALS=[{n:'Kája',c:'#9dff00'},{n:'Pepa Turbo',c:'#ff2ec8'},{n:'Denis',c:'#ff7a00'},{n:'Žanetka',c:'#00e5ff'}];
@@ -512,6 +513,12 @@ const LEVELS=[
   blocks:[[2,.55],[5,.5],[7,.6],[8,.5]],reward:{resp:150,cash:50000},dark:.84,rain:true,from:'Mírové náměstí',to:'Úkryt v Neštěmicích',comic:'utek'},
  {id:'zavod',name:'Závod s místníma',sub:'Předlice → Střekov • 5 aut',type:'race',route:[[1,20],[3,20],[3,22],[1,22],[1,25],[4,25],[4,23],[9,23],[9,25],[7,25],[7,28]],
   reward:{resp:200,cash:25000},dark:.78,rain:false,from:'Předlice',to:'Střekov',comic:'zavod',req:'utek'},
+ {id:'kuryr',name:'Kurýr do Předlic',sub:'Na čas • bez policie',type:'chase',cops:0,time:75,route:[[2,24],[2,27],[4,27],[4,29],[1,29]],reward:{resp:80,cash:30000},dark:.8,rain:true,comic:'kuryr'},
+ {id:'pepa',name:'Ožralej Pepa',sub:'Odvez ho domů, než se pobleje',type:'chase',cops:0,time:110,gentle:1,route:[[3,25],[4,25],[9,25],[9,21],[10,21],[10,18]],reward:{resp:80,cash:35000},dark:.82,rain:false,comic:'pepa'},
+ {id:'cetky',name:'Zlatý řetězy',sub:'Rozstřílej 6 aut gangu za 2 minuty',type:'chase',cops:0,gang:6,kills:6,time:120,route:[[1,13],[4,13],[4,16],[1,16],[1,13]],reward:{resp:150,cash:60000},dark:.84,rain:true,comic:'cetky'},
+ {id:'fizl',name:'Fízlové na Klíši',sub:'Sejmi 5 policejních aut',type:'chase',kills:5,time:150,route:[[1,18],[1,12],[3,12],[3,10],[0,10]],blocks:[[1,.5]],reward:{resp:150,cash:55000},dark:.84,rain:true,comic:'fizl'},
+ {id:'chem',name:'Útěk z Chemičky',sub:'Přes most v Povrlech • policie',type:'chase',route:[[2,16],[2,14],[9,14],[9,11],[7,11]],blocks:[[1,.5],[2,.6]],reward:{resp:180,cash:70000},dark:.86,rain:true,comic:'chem'},
+ {id:'mosty',name:'Závod přes mosty',sub:'Tři mosty • 5 aut',type:'race',route:[[4,14],[8,14],[8,19],[4,19],[4,23],[9,23],[9,26]],reward:{resp:200,cash:40000},dark:.78,rain:false,comic:'mosty'},
  {id:'l3',name:'Děčín',sub:'Zatím zavřeno',soon:true,at:[6,4]},
 ];
 
@@ -587,6 +594,24 @@ const COMICS={
   {scene:'cutoff2',who:['lucie','kaja'],bubs:[{w:'kaja',t:'Ty vole, kdo tě učil řídit? Šlapko jedna!',x:40,y:10,shout:1},{w:'lucie',t:'Cos to řek, ty pičo?',x:4,y:36}]},
   {scene:'start',art:'racestart',who:['marek','kaja'],bubs:[{w:'kaja',t:'Chceš respekt? Závod. Pět kár, přes Mariánskej most na Střekov. Vítěz bere prachy.',x:36,y:8},{w:'marek',t:'Platí. Lucko, nakopni jim prdele.',x:4,y:40}]},
   {scene:'start2',cap:'Platí jen první místo. Tlačítko NITRO = krátký zrychlení, nabíjí se samo.'}]},
+ kuryr:{title:'Kurýr',panels:[
+  {art:'courier',bubs:[{w:'pepa',t:'Balík do Předlic. Za 75 vteřin, jinak tě sežerou.',x:44,y:8},{w:'lucie',t:'Co v tom je?',x:4,y:40}]},
+  {art:'courier',cap2:'Neptej se. JEĎ!'}]},
+ pepa:{title:'Ožralej Pepa',panels:[
+  {art:'drunk',bubs:[{w:'pepa',t:'Holka zlatá… vez mě domů… hik!',x:4,y:8,shout:1},{w:'lucie',t:'Jestli mi to tu pobleješ, vyhodím tě na mostě!',x:50,y:40}]},
+  {art:'drunk',cap:'Jeď opatrně. Každej náraz = Pepovi je hůř.',cap2:'Krásný Březno, rychle!'}]},
+ cetky:{title:'Zlatý řetězy',panels:[
+  {art:'gang',bubs:[{w:'kaja',t:'Tohle je náš rajón, šlapko. Zlatý řetězy, černý káry.',x:40,y:6,shout:1},{w:'marek',t:'Pěkný řetízky. Budou se hodit do šrotu.',x:4,y:44}]},
+  {art:'shootout',cap:'Šest černejch SUV. Dvě minuty.',cap2:'PAL!'}]},
+ fizl:{title:'Fízlové na Klíši',panels:[
+  {art:'bridge',bubs:[{w:'police',t:'Tady hlídka. Ten černej hatchback zase jezdí.',x:40,y:8},{w:'marek',t:'Pět fízláků. Ani o jednoho víc.',x:4,y:44}]},
+  {art:'shootout',cap2:'Sejmi 5 aut policie!'}]},
+ chem:{title:'Chemička',panels:[
+  {art:'shootout',cap:'Noc u Spolchemie. Někdo zmáčkl alarm.',bubs:[{w:'marek',t:'Mám to v kufru. Teď jen přes most v Povrlech.',x:40,y:50}]},
+  {art:'bridge',cap2:'Ujeď policii!'}]},
+ mosty:{title:'Tři mosty',panels:[
+  {art:'racestart',bubs:[{w:'kaja',t:'Odveta. Tři mosty, žádný zkratky.',x:40,y:8,shout:1},{w:'lucie',t:'Zase prohraješ, šneku.',x:4,y:40}]},
+  {art:'keyart',cap2:'Jen první místo!'}]},
  ch4:{title:'Kapitola 4: Chemička',cost:40000,soon:true},
  ch5:{title:'Kapitola 5: Střekovskej hrad',cost:80000,soon:true},
 };
@@ -843,7 +868,7 @@ function updateWorld(w,dt,pctl){
   w.t+=dt;
   for(const c of w.cars){const ctl=c===w.player?pctl:ai(w,c,dt);if(c.frozen){c.vx=c.vy=0;c.v=0;continue}
     if(!c.wreck)carPhysics(w,c,ctl,dt);else{c.vx*=1-2*dt;c.vy*=1-2*dt;c.x+=c.vx*dt;c.y+=c.vy*dt}
-    if(c.hp<=0&&!c.wreck&&c!==w.player){c.wreck=1;c.hp=0;explode(w,c.x,c.y);if(c.kind==='police'&&w.onKill)w.onKill(c)}
+    if(c.hp<=0&&!c.wreck&&c!==w.player){c.wreck=1;c.hp=0;explode(w,c.x,c.y);if((c.kind==='police'||c.gang)&&w.onKill)w.onKill(c)}
     if(c.hp<c.maxhp*.4||c.wreck){c.smokeT-=dt;if(c.smokeT<0){c.smokeT=c.wreck?.08:.18;part(w,{x:c.x,y:c.y,vx:rr(-10,10),vy:rr(-10,10),life:rr(.8,1.6),max:1.6,type:c.wreck&&R()<.5?'fire':'smoke',size:rr(6,11),z:.02})}}
     if(c.wreck)c.wreck+=dt;
     if(c.say){c.sayL-=dt;if(c.sayL<=0)c.say=null}
@@ -1276,9 +1301,10 @@ function beginRace(L){hideAll();const w=newWorld({rain:L.rain,dark:L.dark,civMax
       const c=makeCar({col:R0.c,max:rr(244,258),acc:rr(195,215),turn:2.9,grip:6.2,hp:100,L:42,Wd:20},r0.x+ca*sl[0]+nx*sl[1],r0.y+sa*sl[0]+ny*sl[1],a,'rival');c.name=R0.n;c.stripe='#111';c.lane=sl[1]*.6;c.path=routePath(w,c.lane);c.pi=0;w.cars.push(c)});
     p.x=r0.x+ca*200-nx*20;p.y=r0.y+sa*200-ny*20;
   }else{
-    for(let k=0;k<2;k++){const c=makeCar(POLICE,r0.x-ca*(260+k*80)+nx*(k?-18:18),r0.y-sa*(260+k*80)+ny*(k?-18:18),a,'police');c.v=120;w.cars.push(c)}
-    for(const b of L.blocks){const s=w.cum[b[0]]+(w.cum[b[0]+1]-w.cum[b[0]])*b[1];const q=routeAt(w,s);for(const side of[-1,1]){const c=makeCar(POLICE,q.x-Math.sin(q.a)*side*24,q.y+Math.cos(q.a)*side*24,q.a+Math.PI/2+side*.4,'police');c.parked=true;c.seg=q.i;c.s=s;w.cars.push(c)}}
-    w.onKill=c=>{RS.kills++;floatMsg('+2 000 Kč')};
+    if(L.gang){for(let k=0;k<L.gang;k++){const q=routeAt(w,w.total*(k+.6)/(L.gang+.5));const c=makeCar(GANG,q.x,q.y,q.a+Math.PI*(k%2),'police');c.v=80;c.gang=1;c.seg=q.i;c.s=w.total*(k+.6)/(L.gang+.5);w.cars.push(c)}}
+    if(L.cops!==0)for(let k=0;k<2;k++){const c=makeCar(POLICE,r0.x-ca*(260+k*80)+nx*(k?-18:18),r0.y-sa*(260+k*80)+ny*(k?-18:18),a,'police');c.v=120;w.cars.push(c)}
+    for(const b of(L.blocks||[])){const s=w.cum[b[0]]+(w.cum[b[0]+1]-w.cum[b[0]])*b[1];const q=routeAt(w,s);for(const side of[-1,1]){const c=makeCar(POLICE,q.x-Math.sin(q.a)*side*24,q.y+Math.cos(q.a)*side*24,q.a+Math.PI/2+side*.4,'police');c.parked=true;c.seg=q.i;c.s=s;w.cars.push(c)}}
+    w.onKill=c=>{RS.kills++;floatMsg(L.kills?`${Math.min(RS.kills,L.kills)} / ${L.kills}`:'+2 000 Kč')};
   }
   for(let i=0;i<4;i++)spawnCiv(w);for(let i=0;i<34;i++)spawnPed(w,80,800);
   w.cam={x:p.x,y:p.y};for(const c of w.cars)c.frozen=true;
@@ -1287,7 +1313,7 @@ function beginRace(L){hideAll();const w=newWorld({rain:L.rain,dark:L.dark,civMax
   $('kAt').textContent=L.type==='race'?'NITRO':'PAL';
   $('hint').textContent=isTouch?'':(L.type==='race'?'←→ řízení • ↑ plyn • ↓ brzda • MEZERNÍK nitro • SHIFT smyk • C kamera • R rádio • P pauza':'←→ řízení • ↑ plyn • ↓ brzda • MEZERNÍK střelba • P pauza');
   $('keyB').style.display='none';G.engineOff=false;
-  $('hMainL').textContent=L.type==='race'?'POZICE':'DO CÍLE';$('hMain').classList.remove('small');$('obj').classList.remove('on');$('area').classList.remove('on');
+  $('hMainL').textContent=L.type==='race'?'POZICE':L.kills?'ZNIČENO':L.time?'ČAS':'DO CÍLE';$('hMain').classList.remove('small');$('obj').classList.remove('on');$('area').classList.remove('on');
   Snd.setCar&&Snd.setCar(SAVE.car);Snd.startMusic(false);Snd.setStyle(L.type==='chase'?'chase':'race');DJ.stop();DJ.t=L.type==='chase'?6:12;Snd.rain(L.rain);drawMinimapBg();
 }
 const TODN={night:'🌙 NOC',golden:'🌇 ZLATÁ HODINA',day:'☀️ DEN'};
@@ -1418,7 +1444,7 @@ function updateRace(dt){const w=G.world,p=w.player,L=RS.L;RS.t+=dt;
   // action
   const act=G.keys.a&&!RS.end&&RS.count<=0;
   if(L.type==='chase'){RS.fireCD-=dt;if(RS.over){RS.heat-=dt*.45;if(RS.heat<=.25)RS.over=false}else RS.heat=Math.max(0,RS.heat-dt*.32);
-    if(act&&!RS.over&&RS.fireCD<=0){RS.fireCD=RS.fireRate;let a=p.a;let best=null,bd=1e9;for(const c of w.cars){if(c.kind!=='police'||c.wreck)continue;const dx=c.x-p.x,dy=c.y-p.y,d=Math.hypot(dx,dy);if(d>480)continue;const da=Math.abs(wrapA(Math.atan2(dy,dx)-p.a));if(da<.5&&d<bd){bd=d;best=c}}
+    if(act&&!RS.over&&RS.fireCD<=0){RS.fireCD=RS.fireRate;let a=p.a;let best=null,bd=1e9;for(const c of w.cars){if((c.kind!=='police'&&!(L.kills&&c.kind==='civ'&&false))||c.wreck)continue;const dx=c.x-p.x,dy=c.y-p.y,d=Math.hypot(dx,dy);if(d>480)continue;const da=Math.abs(wrapA(Math.atan2(dy,dx)-p.a));if(da<.5&&d<bd){bd=d;best=c}}
       if(best)a=Math.atan2(best.y-p.y,best.x-p.x);a+=rr(-.05,.05);const ca=Math.cos(p.a),sa=Math.sin(p.a);
       w.bullets.push({x:p.x+ca*p.L*.4-sa*6,y:p.y+sa*p.L*.4+ca*6,vx:Math.cos(a)*950+p.vx,vy:Math.sin(a)*950+p.vy,life:.5,dmg:10*RS.dmgMul});w.muzzle=.05;Snd.shot();RS.heat+=RS.heatPer;if(RS.heat>=1){RS.heat=1;RS.over=true;floatMsg('PŘEHŘÁTO!',.7)}}
     w.muzzle=Math.max(0,(w.muzzle||0)-dt);
@@ -1433,8 +1459,8 @@ function updateRace(dt){const w=G.world,p=w.player,L=RS.L;RS.t+=dt;
   Snd.engine(p.v,!RS.end,p.boost);
   // police mgmt & siren
   let nearP=1e9;
-  if(L.type==='chase'){let active=0;for(const c of w.cars)if(c.kind==='police'&&!c.wreck){nearP=Math.min(nearP,Math.hypot(c.x-p.x,c.y-p.y));if(!c.parked)active++}
-    RS.spawnT-=dt;if(RS.spawnT<0&&active<3+Math.floor(p.s/w.total*2)&&p.s>700&&!RS.end){RS.spawnT=rr(7,11);const q=routeAt(w,p.s-650);const c=makeCar(POLICE,q.x,q.y,q.a,'police');c.v=200;c.vx=Math.cos(q.a)*200;c.vy=Math.sin(q.a)*200;c.seg=Math.max(0,q.i);w.cars.push(c)}
+  if(L.type==='chase'){let active=0;for(const c of w.cars)if(c.kind==='police'&&!c.wreck&&!c.gang){nearP=Math.min(nearP,Math.hypot(c.x-p.x,c.y-p.y));if(!c.parked)active++}
+    RS.spawnT-=dt;if(L.cops!==0&&RS.spawnT<0&&active<(L.kills&&!L.gang?4:3+Math.floor(p.s/w.total*2))&&(p.s>700||L.kills)&&!RS.end){RS.spawnT=rr(7,11);const q=routeAt(w,p.s-650);const c=makeCar(POLICE,q.x,q.y,q.a,'police');c.v=200;c.vx=Math.cos(q.a)*200;c.vy=Math.sin(q.a)*200;c.seg=Math.max(0,q.i);w.cars.push(c)}
     // bust
     let close=false;for(const c of w.cars)if(c.kind==='police'&&!c.wreck&&!c.parked&&Math.hypot(c.x-p.x,c.y-p.y)<62)close=true;
     if(close&&sp<35&&!RS.end)RS.bust+=dt;else RS.bust=Math.max(0,RS.bust-dt*1.5);
@@ -1444,15 +1470,18 @@ function updateRace(dt){const w=G.world,p=w.player,L=RS.L;RS.t+=dt;
   Snd.siren(nearP<700?clamp(1-nearP/700,0,1):0,w.t);
   // HUD
   $('hHp').style.width=clamp(p.hp/p.maxhp*100,0,100)+'%';$('hResp').textContent=SAVE.cash.toLocaleString('cs-CZ');spdSet(Math.round(sp*.42));streetHud(p);navUpdate(dt);
-  if(L.type==='chase'){$('hMain').textContent=((w.total-p.s)/1000).toFixed(1)+' km'}
+  if(L.type==='chase'){const tl=L.time?Math.max(0,L.time-RS.t):0;$('hMainL').textContent=L.kills?'ZNIČENO':L.time?'ČAS':'DO CÍLE';$('hMain').textContent=L.kills?`${RS.kills}/${L.kills} • ${Math.ceil(tl)}s`:L.time?`${Math.ceil(tl)} s • ${((w.total-p.s)/1000).toFixed(1)} km`:((w.total-p.s)/1000).toFixed(1)+' km'}
   else{let rank=1;for(const c of w.cars)if(c.kind==='rival'&&(c.finished||(c.s>p.s&&!p.finished)))rank++;RS.rank=rank;$('hMain').textContent=rank+'/5'}
   drawMinimap();
   // rivals: rubber band + finish
   if(L.type==='race')for(const c of w.cars){if(c.kind!=='rival')continue;const gap=c.s-p.s;c.speedMul=gap>500?.93:gap<-450?1.07:1;if(!c.finished&&(c.atFinish||c.seg>=w.route.length-2&&c.segT>=.97)){c.finished=RS.t;RS.finishOrder.push(c.name)}if(c.finished){c.path=null}}
   // end checks
+  if(!RS.end&&RS.count<=0&&L.time&&RS.t>L.time){endRace(false,'ČAS VYPRŠEL',L.kills?'Nestihl jsi to. Gang se ti směje.':'Pozdě. Kšeft je fuč.')}
+  if(!RS.end&&L.kills&&RS.kills>=L.kills){endRace(true,'HOTOVO!',L.gang?'Zlatý řetězy jsou tvoje. Gang je na šrotu.':'Pět fízláků na šrotu. Klíše tě má za krále.')}
+  if(!RS.end&&L.gentle&&p.hp<p.maxhp*.55){endRace(false,'POBLIL SE!','Pepa ti to pozvracel celý. Smrdí to až do Děčína.')}
   if(!RS.end){if(p.hp<=0){p.hp=0;explode(w,p.x,p.y);endRace(false,'AUTO NA ŠROT','Tvoje kára to nedala. Zkus to znova.')}
-    else if(p.atFinish||(p.seg>=w.route.length-2&&p.segT>=.97)){p.finished=RS.t;
-      if(L.type==='chase')endRace(true,'KŠEFT JE TVŮJ!','Ujel jsi policajtům až do Neštěmic.');
+    else if(!L.kills&&(p.atFinish||(p.seg>=w.route.length-2&&p.segT>=.97))){p.finished=RS.t;
+      if(L.type==='chase')endRace(true,L.gentle?'PEPA JE DOMA!':L.cops===0?'DORUČENO!':'KŠEFT JE TVŮJ!',L.gentle?'Pepa ti dal pusu a usnul na schodech.':L.cops===0?'Balík je tam. Nikdo se neptal.':'Ujel jsi policajtům.');
       else{const place=RS.finishOrder.length+1;if(place===1)endRace(true,'PRVNÍ!','Předlice ti tleskaj. Prachy a respekt jsou tvoje.');else endRace(false,place+'. MÍSTO','Bere jen první. Místní se ti smějou.')}}
     else if(L.type==='race'&&RS.finishOrder.length>=4)endRace(false,'POSLEDNÍ','Všichni už sou v cíli, vole.')}
   if(RS.end){RS.end-=dt;if(RS.end<=0)showResult()}
@@ -1641,7 +1670,7 @@ import {KTX2Loader} from './vendor/jsm/loaders/KTX2Loader.js';
 import {MeshoptDecoder} from './vendor/jsm/libs/meshopt_decoder.module.js';
 import * as SkeletonUtils from './vendor/jsm/utils/SkeletonUtils.js';
 window.THREE=THREE;window.TADD={EffectComposer,RenderPass,UnrealBloomPass,OutputPass,GLTFLoader,RGBELoader,SkeletonUtils,DRACOLoader,KTX2Loader,MeshoptDecoder};
-const s=document.createElement('script');s.src='r3.js?v=35';document.body.appendChild(s);
+const s=document.createElement('script');s.src='r3.js?v=36';document.body.appendChild(s);
 </script>
 </body>
 </html>

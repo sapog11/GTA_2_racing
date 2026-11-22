@@ -235,7 +235,7 @@ const R3={ok:false,off:/[?&]2d/.test(location.search),chunks:new Map(),CH:16,PX:
   const pl=new T3.Mesh(this.carBox,this.matC(0xeeeeee));pl.scale.set(.6,3,8);pl.position.set(-L/2-1.6,7,0);ch.add(pl);const ex=new T3.Mesh(this.carBox,this.matC(0x555a60));ex.scale.set(3,1.8,1.8);ex.position.set(-L/2-1,3.6,-W*.28);ch.add(ex);
   g.userData={beam,paint,wheels,bar:g.userData.bar,ch,glow,fl};this.scene.add(g);return g},
  kModelFor(c){if(!this.kReady)return null;const st=c.st||{},id=st.id;let m=null;
-  if(st.police)m='police_car';else if(c.kind==='player'||id)m={civka:'hatchback_sports',felda:'hatchback_sports',golfik:'hatchback_sports',bavorak:'sedan_sports',imprezka:'sedan_sports',supka:'sedan_sports'}[id]||(c.kind==='player'?'hatchback_sports':null);
+  if(st.police)m='police_car';else if(st.gang)m='suv_luxury';else if(c.kind==='player'||id)m={civka:'hatchback_sports',felda:'hatchback_sports',golfik:'hatchback_sports',bavorak:'sedan_sports',imprezka:'sedan_sports',supka:'sedan_sports'}[id]||(c.kind==='player'?'hatchback_sports':null);
   if(!m&&c.kind==='rival')m=(c.name||'').length%2?'sedan_sports':'hatchback_sports';
   if(!m&&c.kind==='civ'){const L=['sedan','suv','van','sedan','taxi','suv_luxury','delivery_van','truck','sedan'];m=L[Math.floor((c.L*97)%L.length)]}
   return m&&this.km[m]?m:null},
