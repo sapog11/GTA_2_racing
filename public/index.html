@@ -114,7 +114,7 @@ h1,h2,h3{margin:0}
 #djsub{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(170px + env(safe-area-inset-bottom));max-width:min(92vw,560px);background:rgba(5,6,12,.82);border:1px solid rgba(255,204,26,.5);border-radius:8px;padding:7px 12px;font-size:14px;line-height:1.3;color:#f3efe6;z-index:12;display:none;pointer-events:none}
 body.driving #djsub{left:auto;right:76px;transform:none;top:calc(64% - 4px);bottom:auto;max-width:min(58vw,360px);font-size:12px;padding:5px 9px;background:rgba(5,6,12,.62);border-color:rgba(255,204,26,.3)}
 #rbtn{position:fixed;right:12px;top:64%;width:56px;height:56px;border-radius:50%;border:2px solid rgba(255,204,26,.45);background:rgba(8,9,16,.55);color:#fff;font-size:22px;z-index:12;display:none;padding:0;pointer-events:auto}
-#rbtn:before{content:'📻'}body.driving #rbtn{display:block}#rbtn i{position:absolute;inset:-2px;border-radius:50%;border:2px solid rgba(255,204,26,.5);opacity:0;pointer-events:none}
+#rbtn:before{content:'📻'}body.driving #rbtn{display:block}body.driving:not(.cock) #rbtn{top:48%}body.driving:not(.cock) #djsub{top:calc(48% - 4px)}#rbtn i{position:absolute;inset:-2px;border-radius:50%;border:2px solid rgba(255,204,26,.5);opacity:0;pointer-events:none}
 #rbtn.play i{animation:rbeat .5s ease-out infinite}#rbtn.play{animation:rthump .5s ease-out infinite}
 #rbtn span{position:absolute;top:100%;left:50%;transform:translateX(-50%);margin-top:3px;white-space:nowrap;font-family:Oswald;font-size:10px;color:rgba(255,255,255,.6);letter-spacing:.5px}
 @keyframes rbeat{0%{transform:scale(1);opacity:.55}100%{transform:scale(1.45);opacity:0}}@keyframes rthump{0%{transform:scale(1.05)}25%{transform:scale(1)}}
@@ -214,9 +214,9 @@ body.drag #kL,body.drag #kR{display:none}body.wheel #kL,body.wheel #kR{display:n
 body.wheel.driving #wheel{display:block}body.wheel #kU,body.wheel #kD{display:none!important}
 #wheel{left:auto!important;right:max(14px,env(safe-area-inset-right))}
 #pedals{display:none;position:absolute;left:max(12px,env(safe-area-inset-left));bottom:max(16px,env(safe-area-inset-bottom));pointer-events:auto;touch-action:none;gap:8px}
-body.wheel #pedals{display:flex}#pedals button{position:static!important;width:76px;height:96px;border-radius:14px!important;font-size:19px!important;pointer-events:none!important}
+body.wheel #pedals{display:flex;flex-direction:column}#pedals button{position:static!important;width:96px;height:74px;border-radius:14px!important;font-size:19px!important;pointer-events:none!important}
 #pedals button.on{background:rgba(255,204,26,.6)!important;color:#111!important;border-color:#ffcc1a!important}#pedals #pB.on{background:rgba(255,60,80,.6)!important;border-color:#ff4466!important}
-body.wheel #kA{right:auto;left:max(12px,env(safe-area-inset-left));bottom:calc(max(16px,env(safe-area-inset-bottom)) + 108px);width:78px;height:78px;font-size:20px}
+body.wheel #kA{right:auto;left:max(21px,env(safe-area-inset-left));bottom:calc(max(16px,env(safe-area-inset-bottom)) + 172px);width:78px;height:78px;font-size:20px}
 body.wheel.driving #spd{left:auto;right:0;transform:scale(.72);transform-origin:right bottom;bottom:calc(16px + env(safe-area-inset-bottom) + 146px)}body.wheel.driving.cock #wheel{display:none}#wheel svg{width:100%;height:100%;display:block;transition:none}
 body.two #kL,body.two #kR,body.two #kU,body.two #kD{display:none!important}
 .tw{position:fixed;width:120px;height:120px;margin:-60px 0 0 -60px;border-radius:50%;border:3px solid rgba(255,255,255,.3);background:rgba(10,12,20,.25);display:none;z-index:8;pointer-events:none}
@@ -1177,7 +1177,7 @@ function startRoam(at,target){AN.ev('roam_start');hideAll();G.engineOff=false;$(
   RS={roam:true,nitro:.6,nitroFill:SAVE.hero==='lucie'?.098:.07,target:target||null,enterCD:2.5};G.roamDist='';
   $('hud').classList.add('on');if(isTouch)$('ctrl').classList.add('on');$('kU').style.display=SAVE.autoGas?'none':'block';$('kAt').textContent='NITRO';$('kA').classList.remove('hot');
   $('hMainL').textContent='ČTVRŤ';$('hMain').classList.add('small');$('bust').style.display='none';$('center').textContent='';$('obj').classList.add('on');
-  $('hint').textContent=isTouch?'':'←→ řízení • ↑ plyn • ↓ brzda • MEZERNÍK nitro • SHIFT smyk • C kamera • R rádio • P pauza';if(isTouch&&SAVE.steer==='wheel'&&!SAVE.wheelTip){SAVE.wheelTip=1;save();floatMsg('🛞 TOČ VOLANTEM PRSTEM',3);}
+  $('hint').textContent=isTouch?'':'←→ řízení • ↑ plyn • ↓ brzda • MEZERNÍK nitro • SHIFT smyk • C kamera • R rádio • P pauza';if(isTouch&&effSteer()==='wheel'&&!SAVE.wheelTip){SAVE.wheelTip=1;save();floatMsg('🛞 TOČ VOLANTEM PRSTEM',3);}
   Snd.startMusic(false);Snd.setStyle(SAVE.radio||'labe');Snd.rain(w.rain);drawMinimapBg();setTimeout(()=>{const a=$('area');if(G.mode==='roam'){a.textContent='📻 '+STY[Snd.style].name;a.classList.add('on');areaT=2.2}},2600)}
 let areaT=0;
 function updateRoam(dt){const w=G.world,p=w.player;
@@ -1254,8 +1254,8 @@ const STK={id:null,x:0,y:0,dx:0,dy:0},TW={L:{id:null,x:0,y:0,dx:0,dy:0},R:{id:nu
 function playerCtl(){const k=G.keys;const p=G.world&&G.world.player;
   if(G.engineOff)return{thr:p&&p.v>3?-1:0,steer:0};
   let thr=(k.u?1:0)+(k.d?-1:0);let steer=(k.r?1:0)-(k.l?1:0);
-  const drag=SAVE.steer==='drag'&&isTouch,two=SAVE.steer==='two'&&isTouch;
-  if(SAVE.steer==='wheel'&&isTouch&&p){wheelUI();steer=WH.ang/WMAX;return{thr,steer,hb:!!k.h}}
+  const drag=effSteer()==='drag'&&isTouch,two=SAVE.steer==='two'&&isTouch;
+  if(effSteer()==='wheel'&&isTouch&&p){wheelUI();steer=WH.ang/WMAX;return{thr,steer,hb:!!k.h}}
   if(two&&p){if(TW.L.id!==null){const x=clamp(TW.L.dx/62,-1,1);steer=Math.sign(x)*x*x*.35+x*.65}if(TW.R.id!==null){const dy=TW.R.dy;thr=dy<-6?clamp(-dy/50,.35,1):dy>18?-1:0}else if(!k.u&&!k.d)thr=-.3;if(k.d)thr=-1;return{thr,steer,hb:!!k.h}}
   if(SAVE.autoGas&&!k.d&&isTouch&&!drag)thr=1;
   const chaseCam=typeof R3!=='undefined'&&R3.ok&&(SAVE.cam||'chase')!=='top';
@@ -1281,7 +1281,7 @@ function navTarget(){const w=G.world,p=w&&w.player;if(!p)return null;if(G.mode==
 let rbKey='';function radioUI(){const st=Snd.style||'off',k=st+(Snd.muted?1:0);if(k===rbKey)return;rbKey=k;const b=$('rbtn'),on=st!=='off'&&STY[st]&&STY[st].bpm;b.classList.toggle('play',!!on);
   const d=on?(60/STY[st].bpm).toFixed(3)+'s':'0s';b.style.animationDuration=d;b.firstChild.style.animationDuration=d;$('rbtnN').textContent=STY[st]?STY[st].name:'VYPNUTO'}
 $('rbtn').addEventListener('click',e=>{e.stopPropagation();nextRadio();rbKey='';radioUI()});
-function navUpdate(dt){radioUI();const w=G.world,p=w&&w.player,tg=navTarget();if(!tg||!p){if(NAV.path){NAV.path=null;if(typeof R3!=='undefined'&&R3.ok)R3.setNav(null)}NAV.ins=null;$('nav').classList.remove('on');return}
+function navUpdate(dt){radioUI();if(effSteer()!==lastEff){applySteerMode();G.keys.u=G.keys.d=false;if(WH)WH.id=null}const w=G.world,p=w&&w.player,tg=navTarget();if(!tg||!p){if(NAV.path){NAV.path=null;if(typeof R3!=='undefined'&&R3.ok)R3.setNav(null)}NAV.ins=null;$('nav').classList.remove('on');return}
   NAV.t-=dt;const key=Math.floor(p.x/T)+','+Math.floor(p.y/T)+'>'+Math.round(tg.x)+','+Math.round(tg.y);
   if(key!==NAV.key||NAV.t<=0){NAV.key=key;NAV.t=1.2;NAV.path=navPath(p.x,p.y,tg.x,tg.y);if(typeof R3!=='undefined'&&R3.ok)R3.setNav(NAV.path)}
   const P=NAV.path;let ins={a:'⬆',d:Math.hypot(tg.x-p.x,tg.y-p.y),s:'',c:tg.name};
@@ -1307,10 +1307,11 @@ $('nav').addEventListener('click',()=>openNav());
 function infoHit(e){if(!document.body.classList.contains('cock')||typeof R3==='undefined'||!R3.iRect)return null;const r=R3.iRect;if(e.clientX<r.x0||e.clientX>r.x1||e.clientY<r.y0||e.clientY>r.y1)return null;return e.clientX<r.x0+(r.x1-r.x0)*.58?'nav':'radio'}
 cv.addEventListener('pointerdown',e=>{if(!(G.mode==='roam'||G.mode==='race'))return;const h=infoHit(e);if(!h)return;if(h==='nav')openNav();else{nextRadio();floatMsg('📻 '+STY[Snd.style].name,1.2)}});
 const WH={id:null,ang:0,last:0,cx:0,cy:0,lx:0},WMAX=2.2;
-{const pd=$('pedals');let pid=null;const set=e=>{const r=pd.getBoundingClientRect(),g=e.clientX>r.left+r.width/2;G.keys.u=g;G.keys.d=!g;$('pG').classList.toggle('on',g);$('pB').classList.toggle('on',!g)},off=e=>{if(e.pointerId!==pid)return;pid=null;G.keys.u=G.keys.d=false;$('pG').classList.remove('on');$('pB').classList.remove('on')};
+{const pd=$('pedals');let pid=null;const set=e=>{const r=pd.getBoundingClientRect(),g=e.clientY>r.top+r.height/2;G.keys.u=g;G.keys.d=!g;$('pG').classList.toggle('on',g);$('pB').classList.toggle('on',!g)},off=e=>{if(e.pointerId!==pid)return;pid=null;G.keys.u=G.keys.d=false;$('pG').classList.remove('on');$('pB').classList.remove('on')};
  pd.addEventListener('pointerdown',e=>{e.preventDefault();pid=e.pointerId;try{pd.setPointerCapture(pid)}catch(_){}set(e)});pd.addEventListener('pointermove',e=>{if(e.pointerId===pid)set(e)});
  pd.addEventListener('pointerup',off);pd.addEventListener('pointercancel',off);pd.addEventListener('lostpointercapture',off);pd.addEventListener('contextmenu',e=>e.preventDefault())}
-function wheelOn(){return SAVE.steer==='wheel'&&isTouch&&(G.mode==='race'||G.mode==='roam')}
+function effSteer(){if(SAVE.steer!=='wheel')return SAVE.steer;return(SAVE.cam==='cockpit'&&typeof R3!=='undefined'&&R3.ok)?'wheel':'drag'}
+function wheelOn(){return effSteer()==='wheel'&&isTouch&&(G.mode==='race'||G.mode==='roam')}
 function wheelCenter(){if(document.body.classList.contains('cock')&&typeof R3!=='undefined'&&R3.swScr)return R3.swScr;const r=$('wheel').getBoundingClientRect();return{x:r.left+r.width/2,y:r.top+r.height/2}}
 cv.addEventListener('pointerdown',e=>{if(!wheelOn()||WH.id!==null)return;if(e.clientX<VW*.4||e.clientY<VH*.3||infoHit(e))return;const c=wheelCenter();WH.id=e.pointerId;WH.cx=c.x;WH.cy=c.y;WH.last=Math.atan2(e.clientY-c.y,e.clientX-c.x);WH.lx=e.clientX;gripAt(WH.last);try{cv.setPointerCapture(e.pointerId)}catch(_){}});
 cv.addEventListener('pointermove',e=>{if(e.pointerId!==WH.id)return;const dx=e.clientX-WH.cx,dy=e.clientY-WH.cy,r=Math.hypot(dx,dy),a=Math.atan2(dy,dx);
@@ -1318,7 +1319,7 @@ cv.addEventListener('pointermove',e=>{if(e.pointerId!==WH.id)return;const dx=e.c
 function gripAt(a){const c=wheelCenter(),cock=document.body.classList.contains('cock'),R=cock&&R3.swRpx?R3.swRpx:$('wheel').getBoundingClientRect().width*.44,g=$('wgrip');g.style.left=(c.x+Math.cos(a)*R)+'px';g.style.top=(c.y+Math.sin(a)*R)+'px';g.style.display='block'}
 const whEnd=e=>{if(e.pointerId===WH.id){WH.id=null;$('wgrip').style.display='none'}};{const wt=e=>{if(WH.id!==null&&![...e.touches].some(t=>t.clientX>VW*.4)){WH.id=null;$('wgrip').style.display='none'}};addEventListener('touchend',wt);addEventListener('touchcancel',wt)}cv.addEventListener('pointerup',whEnd);cv.addEventListener('pointercancel',whEnd);cv.addEventListener('lostpointercapture',whEnd);
 let whDrawn=99;function wheelUI(){const now=performance.now(),dt=Math.min(.1,(now-(WH.t||now))/1000);WH.t=now;if(WH.id===null)WH.ang*=Math.exp(-dt*9);if(Math.abs(WH.ang)<.01)WH.ang=0;const p=G.world&&G.world.player,a=p?(p.steer||0)*WMAX:WH.ang;if(Math.abs(a-whDrawn)>.01){whDrawn=a;$('wheel').firstChild.style.transform='rotate('+a+'rad)'}}
-function stickOn(){return SAVE.steer==='drag'&&isTouch&&(G.mode==='race'||G.mode==='roam')}
+function stickOn(){return effSteer()==='drag'&&isTouch&&(G.mode==='race'||G.mode==='roam')}
 function twoOn(){return SAVE.steer==='two'&&isTouch&&(G.mode==='race'||G.mode==='roam')}
 const twEl=k=>$(k==='L'?'stickL':'stickR');
 cv.addEventListener('pointerdown',e=>{if(!twoOn())return;const k=e.clientX<VW/2?'L':'R',S=TW[k];if(S.id!==null)return;S.id=e.pointerId;S.x=e.clientX;S.y=e.clientY;S.dx=S.dy=0;const el=twEl(k);el.style.left=e.clientX+'px';el.style.top=e.clientY+'px';el.style.display='block';el.firstChild.style.transform='';try{cv.setPointerCapture(e.pointerId)}catch(_){}});
@@ -1340,7 +1341,7 @@ const panEnd=e=>{PTS.delete(e.pointerId);pinchD=0;if(e.pointerId===PAN.id){PAN.i
 cv.addEventListener('wheel',e=>{if(!menuOn())return;e.preventDefault();mzoom(e.deltaY>0?.9:1.1)},{passive:false});
 $('zIn').onclick=()=>mzoom(1.25);$('zOut').onclick=()=>mzoom(.8);
 cv.style.cursor='';setInterval(()=>{cv.style.cursor=menuOn()?(PAN.id!==null?'grabbing':'grab'):''},300);
-function applySteerMode(){document.body.classList.toggle('wheel',SAVE.steer==='wheel'&&isTouch);document.body.classList.toggle('drag',SAVE.steer==='drag'&&isTouch);document.body.classList.toggle('two',SAVE.steer==='two'&&isTouch)}applySteerMode();
+let lastEff='';function applySteerMode(){const m=effSteer();lastEff=m;document.body.classList.toggle('wheel',m==='wheel'&&isTouch);document.body.classList.toggle('drag',m==='drag'&&isTouch);document.body.classList.toggle('two',SAVE.steer==='two'&&isTouch)}applySteerMode();
 function updateRace(dt){const w=G.world,p=w.player,L=RS.L;RS.t+=dt;
   if(RS.count>0){RS.count-=dt;const n=Math.ceil(RS.count-.4);$('center').textContent=RS.count>.4?(L.type==='race'?String(n):'JEĎ!'):'JEĎ!';if(RS.count<=0){for(const c of w.cars)c.frozen=false;floatMsg('JEĎ!',.8)}}
   else if(msgT>0){msgT-=dt;if(msgT<=0)$('center').textContent=''}
