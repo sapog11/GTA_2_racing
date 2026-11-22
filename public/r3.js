@@ -14,10 +14,10 @@ const R3={ok:false,off:/[?&]2d/.test(location.search),chunks:new Map(),CH:16,PX:
    r.useLegacyLights=true;r.outputColorSpace=T3.SRGBColorSpace;r.toneMapping=T3.ACESFilmicToneMapping;r.toneMappingExposure=.85;r.setPixelRatio(Math.min(window.devicePixelRatio||1,isTouch?1.5:2));r.setSize(VW,VH,false);
   }catch(e){console.warn('WebGL off',e);return}
   const S=this.scene=new T3.Scene();S.background=new T3.Color(0x1a0b2a);S.fog=new T3.FogExp2(0x2a1238,.00045);
-  {const sg=new T3.SphereGeometry(4000,24,16),sm=new T3.ShaderMaterial({side:T3.BackSide,depthWrite:false,fog:false,uniforms:{uTop:{value:new T3.Color(.05,.02,.12)},uMid:{value:new T3.Color(.28,.06,.32)},uHor:{value:new T3.Color(1,.32,.45)},uSun:{value:new T3.Color(1,.62,.3)}},
+  {const sg=new T3.SphereGeometry(4000,24,16),sm=new T3.ShaderMaterial({side:T3.BackSide,depthWrite:false,fog:false,uniforms:{uStars:{value:null},uSt:{value:0},uTop:{value:new T3.Color(.05,.02,.12)},uMid:{value:new T3.Color(.28,.06,.32)},uHor:{value:new T3.Color(1,.32,.45)},uSun:{value:new T3.Color(1,.62,.3)}},
     vertexShader:'varying vec3 vP;void main(){vP=normalize(position);gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',
-    fragmentShader:'uniform vec3 uTop,uMid,uHor,uSun;varying vec3 vP;void main(){float h=vP.y;vec3 top=uTop,mid=uMid,hor=uHor,sun=uSun;vec3 c=mix(mid,top,smoothstep(.05,.6,h));c=mix(hor,c,smoothstep(-.02,.16,h));c+=sun*.55*exp(-pow((h-.02)*14.,2.));gl_FragColor=vec4(c,1.);}'});
-   this.sky=new T3.Mesh(sg,sm);this.sky.renderOrder=-1;S.add(this.sky)}
+    fragmentShader:'uniform vec3 uTop,uMid,uHor,uSun;uniform sampler2D uStars;uniform float uSt;varying vec3 vP;void main(){float h=vP.y;vec3 top=uTop,mid=uMid,hor=uHor,sun=uSun;vec3 c=mix(mid,top,smoothstep(.05,.6,h));c=mix(hor,c,smoothstep(-.02,.16,h));c+=sun*.55*exp(-pow((h-.02)*14.,2.));if(uSt>0.){float u=atan(vP.z,vP.x)/6.2832+.5;u=abs(fract(u*2.)-.5)*2.;float v=1.-clamp(h,0.,1.);vec3 st=texture2D(uStars,vec2(u,1.-v*.92)).rgb;st=pow(st,vec3(1.2))*1.1;c=mix(c,st+c*.25,uSt*smoothstep(-.01,.12,h));}gl_FragColor=vec4(c,1.);}'});
+   new T3.TextureLoader().load('art/tex/sky_night.jpg',t=>{t.colorSpace=T3.SRGBColorSpace;t.wrapS=T3.MirroredRepeatWrapping;sm.uniforms.uStars.value=t;sm.uniforms.uSt.value=this.tod==='night'||!this.tod?1:0});this.sky=new T3.Mesh(sg,sm);this.sky.renderOrder=-1;S.add(this.sky)}
   this.cam=new T3.PerspectiveCamera(50,VW/VH,8,5200);
   // neon environment map for glossy reflections
   {const pm=new T3.PMREMGenerator(this.renderer),es=new T3.Scene();es.background=new T3.Color(0x04050a);
@@ -58,10 +58,10 @@ const R3={ok:false,off:/[?&]2d/.test(location.search),chunks:new Map(),CH:16,PX:
  TODS:{night:{sky:[[.05,.02,.12],[.28,.06,.32],[1,.32,.45],[1,.62,.3]],fog:0x2a1238,fd:1,hemi:[0x7f90d0,0x141626,.6],sun:[0x9fb0ff,.35,-400,900,-300],em:1.2,neon:2.2,pool:1,exp:.85,bloom:.7,lamp:1},
   golden:{sky:[[.16,.3,.6],[.95,.62,.42],[1,.82,.55],[1,.92,.6]],fog:0xd49a78,fd:.75,hemi:[0xffdcb8,0x5a4030,1.05],sun:[0xffb070,1.4,900,380,-200],em:.15,neon:1.1,pool:0,exp:1,bloom:.35,lamp:0},
   day:{sky:[[.2,.45,.85],[.55,.75,.95],[.88,.93,.98],[1,1,1]],fog:0xa9c4dd,fd:.7,hemi:[0xe8f2ff,0x6b6455,1.25],sun:[0xffffff,1.35,400,1200,300],em:0,neon:.5,pool:0,exp:1.05,bloom:.2,lamp:0}},
- setTOD(k){const D=this.TODS[k]||this.TODS.night;this.tod=k;const U=this.sky.material.uniforms;['uTop','uMid','uHor','uSun'].forEach((n,i)=>U[n].value.setRGB(...D.sky[i]));
+ setTOD(k){const D=this.TODS[k]||this.TODS.night;this.tod=k;const U=this.sky.material.uniforms;['uTop','uMid','uHor','uSun'].forEach((n,i)=>U[n].value.setRGB(...D.sky[i]));U.uSt.value=U.uStars.value?(k==='night'?1:0):0;
   this.scene.fog.color.set(D.fog);this.scene.background.set(D.fog);this.fogMul=D.fd;this.hemi.color.set(D.hemi[0]);this.hemi.groundColor.set(D.hemi[1]);this.hemiBase=D.hemi[2];
   this.sun.color.set(D.sun[0]);this.sun.intensity=D.sun[1];this.sun.position.set(D.sun[2],D.sun[3],D.sun[4]);for(const k2 in this.facMats)this.facMats[k2].emissiveIntensity=D.em;this.wallMat.emissiveIntensity=D.em*1.3;
-  if(this.neonM){this.neonM.pink.color.set(0x4a3c32).multiplyScalar(.35+D.neon*.45);this.neonM.orange.color.set(0x5c5048).multiplyScalar(.35+D.neon*.45)}this.neonMul=D.neon;
+  if(this.neonM){this.neonM.pink.emissive.set(0x1a120c).multiplyScalar(D.neon>1?1:.3);this.neonM.orange.emissive.set(0x1a120c).multiplyScalar(D.neon>1?1:.3)}this.neonMul=D.neon;
   this.pool.visible=!!D.pool;this.lbar.material.color.set(0xff6a3a).multiplyScalar(D.neon*1.2);this.renderer.toneMappingExposure=D.exp;if(this.bloom)this.bloom.strength=D.bloom;this.lampOn=D.lamp;this.beamMat.opacity=D.pool?.22:.06;this.envFor(k)},
  loadAssets(){const A=window.TADD;if(!A||!A.GLTFLoader)return;
   if(A.MeshoptDecoder){const kl=new A.GLTFLoader();kl.setMeshoptDecoder(A.MeshoptDecoder);this.km={};this.kInfo={};const L=['hatchback_sports','sedan','sedan_sports','police_car','taxi','suv','suv_luxury','van','delivery_van','truck'];let n=0;
@@ -149,8 +149,11 @@ const R3={ok:false,off:/[?&]2d/.test(location.search),chunks:new Map(),CH:16,PX:
    const isR=t=>t===ROAD||t===BRIDGE,tx0=Math.floor(x0/T),ty0=Math.floor(y0/T);
    for(let ty=ty0;ty<ty0+CH;ty++)for(let tx=tx0;tx<tx0+CH;tx++){const t0=tileAt(tx,ty);if(!isR(t0))continue;const o=t0===BRIDGE?NE.orange:NE.pink,X=tx*T,Y=ty*T,w=1.6,h1=2.6;
     if(!isR(tileAt(tx,ty-1)))box(o,X,Y,X+T,Y+w,.5,h1);if(!isR(tileAt(tx,ty+1)))box(o,X,Y+T-w,X+T,Y+T,.5,h1);if(!isR(tileAt(tx-1,ty)))box(o,X,Y,X+w,Y+T,.5,h1);if(!isR(tileAt(tx+1,ty)))box(o,X+T-w,Y,X+T,Y+T,.5,h1)}
-   if(!this.neonM){const nm=this.neonMul||2.2;this.neonM={pink:new T3.MeshBasicMaterial({color:new T3.Color(0x4a3c32).multiplyScalar(.35+nm*.45)}),orange:new T3.MeshBasicMaterial({color:new T3.Color(0x5c5048).multiplyScalar(.35+nm*.45)})}}
-   for(const k in NE){if(!NE[k].pos.length)continue;const bg=new T3.BufferGeometry();bg.setAttribute('position',new T3.Float32BufferAttribute(NE[k].pos,3));grp.add(new T3.Mesh(bg,this.neonM[k]))}}
+   if(!this.neonM){const mk=(tint)=>{const m=new T3.MeshLambertMaterial({color:tint,emissive:0x1a120c});const tx=this.curbTex||(this.curbTex=new T3.TextureLoader().load('art/tex/curb.jpg',t=>{t.colorSpace=T3.SRGBColorSpace}));tx.wrapS=tx.wrapT=T3.RepeatWrapping;m.map=tx;
+     m.onBeforeCompile=sh=>{sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vCW;').replace('#include <begin_vertex>','#include <begin_vertex>\nvCW=(modelMatrix*vec4(position,1.)).xyz;');
+      sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nvarying vec3 vCW;').replace('#include <map_fragment>','vec4 sampledDiffuseColor=texture2D(map,vec2((vCW.x+vCW.z)/72.,vCW.y/3.2+.05));diffuseColor*=sampledDiffuseColor;')};m.customProgramCacheKey=()=>'curb';return m};
+    this.neonM={pink:mk(0xffffff),orange:mk(0xd8d2c8)}}
+   for(const k in NE){if(!NE[k].pos.length)continue;const bg=new T3.BufferGeometry();bg.setAttribute('position',new T3.Float32BufferAttribute(NE[k].pos,3));bg.computeVertexNormals();grp.add(new T3.Mesh(bg,this.neonM[k]))}}
   // neon signs on facades
   for(const sg of signs){if(sg.x<x0||sg.x>x1||sg.y<y0||sg.y>y1+2)continue;const m=this.signMesh(sg);if(m)grp.add(m)}
   this.scene.add(grp);return{grp,tex,gm}},
