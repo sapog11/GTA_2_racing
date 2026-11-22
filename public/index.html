@@ -112,6 +112,13 @@ h1,h2,h3{margin:0}
 #scr-menu .note{display:none}
 #zoomB{position:fixed;right:12px;bottom:max(16px,env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:8px}#zoomB .btn{width:48px!important;font-family:Oswald;font-size:26px!important;text-align:center!important;padding:2px 0!important}
 #djsub{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(170px + env(safe-area-inset-bottom));max-width:min(92vw,560px);background:rgba(5,6,12,.82);border:1px solid rgba(255,204,26,.5);border-radius:8px;padding:7px 12px;font-size:14px;line-height:1.3;color:#f3efe6;z-index:12;display:none;pointer-events:none}
+body.driving #djsub{left:auto;right:76px;transform:none;top:calc(64% - 4px);bottom:auto;max-width:min(58vw,360px);font-size:12px;padding:5px 9px;background:rgba(5,6,12,.62);border-color:rgba(255,204,26,.3)}
+#rbtn{position:fixed;right:12px;top:64%;width:56px;height:56px;border-radius:50%;border:2px solid rgba(255,204,26,.45);background:rgba(8,9,16,.55);color:#fff;font-size:22px;z-index:12;display:none;padding:0;pointer-events:auto}
+#rbtn:before{content:'📻'}body.driving #rbtn{display:block}#rbtn i{position:absolute;inset:-2px;border-radius:50%;border:2px solid rgba(255,204,26,.5);opacity:0;pointer-events:none}
+#rbtn.play i{animation:rbeat .5s ease-out infinite}#rbtn.play{animation:rthump .5s ease-out infinite}
+#rbtn span{position:absolute;top:100%;left:50%;transform:translateX(-50%);margin-top:3px;white-space:nowrap;font-family:Oswald;font-size:10px;color:rgba(255,255,255,.6);letter-spacing:.5px}
+@keyframes rbeat{0%{transform:scale(1);opacity:.55}100%{transform:scale(1.45);opacity:0}}@keyframes rthump{0%{transform:scale(1.05)}25%{transform:scale(1)}}
+body.driving #radioB{display:none}
 #djsub b{color:#ffcc1a;font-weight:700;margin-right:4px}#djsub.on{display:block;animation:pin .3s ease-out}
 #consent{position:fixed;left:12px;right:12px;bottom:max(12px,env(safe-area-inset-bottom));z-index:30;background:rgba(10,12,20,.96);border:1px solid #ffcc1a;border-radius:8px;padding:12px 14px;font-size:13px;line-height:1.35;display:none;max-width:560px;margin:0 auto}
 #consent.on{display:block;animation:pin .4s ease-out}
@@ -260,7 +267,7 @@ body.two.driving #twHint{display:flex}
 </div>
 
 <div id="cine"><div class="ci" id="ciA"></div><div class="ci" id="ciB"></div><div class="shade"></div><div id="card"></div><div id="titlecard"><div class="studio">ZORYX STUDIO</div><div class="logo"><span class="a">ÚSTÍ</span><span class="nad">NAD LABEM</span><span class="b">MĚSTO ANDĚLŮ</span></div><div class="tag" style="color:#ffcc1a;margin-top:10px;font-size:clamp(16px,4.4vw,24px)">Na mobilu i na PC</div></div><div id="grain"></div><div id="flash"></div></div>
-<div id="djsub"></div>
+<div id="djsub"></div><button id="rbtn" title="Rádio"><i></i><span id="rbtnN"></span></button>
 <div id="consent"><div class="cimg"><span>ÚSTÍ</span></div><div>Hra sbírá anonymní statistiky (Google Analytics), abychom věděli, kolik lidí hraje a co je baví. Žádná osobní data neprodáváme.</div><div class="row" style="margin-top:8px"><button class="btn sm" id="cYes">👑 KRÁL A JEDU</button><button class="btn sm dark" id="cNo">NE</button></div></div>
 <div id="promoTxt"></div>
 <button id="skip" class="btn sm dark">Přeskočit ▸</button>
@@ -1271,7 +1278,10 @@ function navPath(x0,y0,x1,y1){const a=nearestRoad(x0,y0),b=nearestRoad(x1,y1);if
   const out=[cr[0]];for(let i=1;i<cr.length;i++){const l=out[out.length-1];if(i<cr.length-1&&Math.hypot(cr[i].x-l.x,cr[i].y-l.y)<T*2.6)continue;out.push(cr[i])}return out}
 function navTarget(){const w=G.world,p=w&&w.player;if(!p)return null;if(G.mode==='race'&&w.route){const n=w.route[Math.min(p.seg+1,w.route.length-1)];return{x:n.x,y:n.y,name:RS&&RS.L?RS.L.name:'Cíl'}}
   if(G.mode==='roam'){if(NAV.to)return NAV.to;if(RS&&RS.arrowTo)return{x:RS.arrowTo.x,y:RS.arrowTo.y,name:RS.arrowTo.L.name}}return null}
-function navUpdate(dt){const w=G.world,p=w&&w.player,tg=navTarget();if(!tg||!p){if(NAV.path){NAV.path=null;if(typeof R3!=='undefined'&&R3.ok)R3.setNav(null)}NAV.ins=null;$('nav').classList.remove('on');return}
+let rbKey='';function radioUI(){const st=Snd.style||'off',k=st+(Snd.muted?1:0);if(k===rbKey)return;rbKey=k;const b=$('rbtn'),on=st!=='off'&&STY[st]&&STY[st].bpm;b.classList.toggle('play',!!on);
+  const d=on?(60/STY[st].bpm).toFixed(3)+'s':'0s';b.style.animationDuration=d;b.firstChild.style.animationDuration=d;$('rbtnN').textContent=STY[st]?STY[st].name:'VYPNUTO'}
+$('rbtn').addEventListener('click',e=>{e.stopPropagation();nextRadio();rbKey='';radioUI()});
+function navUpdate(dt){radioUI();const w=G.world,p=w&&w.player,tg=navTarget();if(!tg||!p){if(NAV.path){NAV.path=null;if(typeof R3!=='undefined'&&R3.ok)R3.setNav(null)}NAV.ins=null;$('nav').classList.remove('on');return}
   NAV.t-=dt;const key=Math.floor(p.x/T)+','+Math.floor(p.y/T)+'>'+Math.round(tg.x)+','+Math.round(tg.y);
   if(key!==NAV.key||NAV.t<=0){NAV.key=key;NAV.t=1.2;NAV.path=navPath(p.x,p.y,tg.x,tg.y);if(typeof R3!=='undefined'&&R3.ok)R3.setNav(NAV.path)}
   const P=NAV.path;let ins={a:'⬆',d:Math.hypot(tg.x-p.x,tg.y-p.y),s:'',c:tg.name};
@@ -1561,7 +1571,7 @@ import {KTX2Loader} from './vendor/jsm/loaders/KTX2Loader.js';
 import {MeshoptDecoder} from './vendor/jsm/libs/meshopt_decoder.module.js';
 import * as SkeletonUtils from './vendor/jsm/utils/SkeletonUtils.js';
 window.THREE=THREE;window.TADD={EffectComposer,RenderPass,UnrealBloomPass,OutputPass,GLTFLoader,RGBELoader,SkeletonUtils,DRACOLoader,KTX2Loader,MeshoptDecoder};
-const s=document.createElement('script');s.src='r3.js?v=19';document.body.appendChild(s);
+const s=document.createElement('script');s.src='r3.js?v=20';document.body.appendChild(s);
 </script>
 </body>
 </html>

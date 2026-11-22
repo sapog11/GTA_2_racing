@@ -349,7 +349,7 @@ const R3={ok:false,off:/[?&]2d/.test(location.search),chunks:new Map(),CH:16,PX:
   const fl=new T3.Mesh(this.flG,this.flM);fl.position.set(-L/2-8,5*zs,0);fl.visible=false;g.add(fl);
   g.userData={beam,paint,pc:sp.p1,wheels:[],cw:wheels,ch,glow,fl,concept:true,sw:swSpin,dice:diceG,scr:scrM,zs,zw,lo,tk:c.st?this.tuneKey(c.st.id):''};if(!noAdd)this.scene.add(g);return g},
  // ---------- 3D garage studio (far away in the same scene, so bloom + reflections work) ----------
- ck:{back:7.6,up:4.8,pitchL:10,pitchP:10,fovL:64,fovP:78},
+ ck:{back:7.6,up:4.8,upP:5.8,pitchL:10,pitchP:3,fovL:64,fovP:74},
  GX:-60000,GZ:-60000,
  garageBuild(){const T3=THREE,S=this.scene,gr=this.gRoom=new T3.Group();gr.position.set(this.GX,0,this.GZ);gr.visible=false;S.add(gr);
   const fc=document.createElement('canvas');fc.width=fc.height=512;const x=fc.getContext('2d');const gd=x.createRadialGradient(256,256,20,256,256,256);gd.addColorStop(0,'#2a2438');gd.addColorStop(.55,'#120f1c');gd.addColorStop(1,'#050409');x.fillStyle=gd;x.fillRect(0,0,512,512);
@@ -407,7 +407,7 @@ const R3={ok:false,off:/[?&]2d/.test(location.search),chunks:new Map(),CH:16,PX:
   const g=p&&this.cars.get(p);if(g)g.userData.ch.visible=!(cock&&!g.userData.concept)||true;
   if(cock){const sp=Math.hypot(p.vx,p.vy),fx=Math.cos(p.a),fz=Math.sin(p.a),lx=fz,lz=-fx,con=g&&g.userData.concept;
    if(C.near!==1){C.near=1;C.updateProjectionMatrix()}const sk=shakeA*.35;
-   let fo=p.L*.2,so=0,hh=17.5;if(con&&this.swPos){const zs=g.userData.zs||1,zw=g.userData.zw||1,lo=g.userData.lo||0;const K=this.ck;fo=(this.swPos.x-K.back)*zs;so=-this.swPos.z*zs*zw;hh=(this.swPos.y+K.up)*zs-lo}this.ca=p.a;this.cp=null;
+   let fo=p.L*.2,so=0,hh=17.5;if(con&&this.swPos){const zs=g.userData.zs||1,zw=g.userData.zw||1,lo=g.userData.lo||0;const K=this.ck;fo=(this.swPos.x-K.back)*zs;so=-this.swPos.z*zs*zw;hh=(this.swPos.y+(VH>VW*1.1?K.upP:K.up))*zs-lo}this.ca=p.a;this.cp=null;
    const roll=(p.steer||0)*Math.min(1,sp/260)*.04;C.position.set(p.x+fx*fo+lx*so+rr(-sk,sk),hh+rr(-sk,sk)*.4,p.y+fz*fo+lz*so+rr(-sk,sk));
    const port=VH>VW*1.1,K=this.ck;C.up.set(-fz*roll,1,fx*roll).normalize();C.lookAt(p.x+fx*400+lx*so,hh-(con?400*Math.tan((port?K.pitchP:K.pitchL)*Math.PI/180):14),p.y+fz*400+lz*so);C.up.set(0,1,0);
    C.fov=lerp(C.fov,(con?(port?K.fovP:K.fovL):66)+Math.min(12,sp/25)+(p.boost?10:0),Math.min(1,dt*3));C.updateProjectionMatrix();this.focus={x:p.x+fx*500,y:p.y+fz*500,r:1500};return}
