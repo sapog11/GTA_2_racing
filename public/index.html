@@ -215,7 +215,7 @@ body.wheel.driving #wheel{display:block}body.wheel #kU,body.wheel #kD{display:no
 #wheel{left:auto!important;right:max(14px,env(safe-area-inset-right))}
 #pedals{display:none;position:absolute;left:max(12px,env(safe-area-inset-left));bottom:max(16px,env(safe-area-inset-bottom));pointer-events:auto;touch-action:none;gap:8px}
 body.wheel #pedals{display:flex;flex-direction:column}#pedals button{position:static!important;width:96px;height:74px;border-radius:14px!important;font-size:19px!important;pointer-events:none!important}
-#pedals button.on{background:rgba(255,204,26,.6)!important;color:#111!important;border-color:#ffcc1a!important}#pedals #pB.on{background:rgba(255,60,80,.6)!important;border-color:#ff4466!important}
+#pedals button.on{background:rgba(255,204,26,.75)!important;color:#111!important;border-color:#ffcc1a!important;box-shadow:0 0 18px rgba(255,204,26,.8),inset 0 0 10px rgba(255,255,255,.4)}#pedals #pB.on{background:rgba(255,60,80,.6)!important;border-color:#ff4466!important}
 body.wheel #kA{right:auto;left:max(21px,env(safe-area-inset-left));bottom:calc(max(16px,env(safe-area-inset-bottom)) + 172px);width:78px;height:78px;font-size:20px}
 body.wheel.driving #spd{left:auto;right:0;transform:scale(.72);transform-origin:right bottom;bottom:calc(16px + env(safe-area-inset-bottom) + 146px)}body.wheel.driving.cock #wheel{display:none}#wheel svg{width:100%;height:100%;display:block;transition:none}
 body.two #kL,body.two #kR,body.two #kU,body.two #kD{display:none!important}
@@ -1299,7 +1299,7 @@ function navTarget(){const w=G.world,p=w&&w.player;if(!p)return null;if(G.mode==
 let rbKey='';function radioUI(){const st=Snd.style||'off',k=st+(Snd.muted?1:0);if(k===rbKey)return;rbKey=k;const b=$('rbtn'),on=st!=='off'&&STY[st]&&STY[st].bpm;b.classList.toggle('play',!!on);
   const d=on?(60/STY[st].bpm).toFixed(3)+'s':'0s';b.style.animationDuration=d;b.firstChild.style.animationDuration=d;$('rbtnN').textContent=STY[st]?STY[st].name:'VYPNUTO'}
 $('rbtn').addEventListener('click',e=>{e.stopPropagation();nextRadio();rbKey='';radioUI()});
-function navUpdate(dt){radioUI();if(effSteer()!==lastEff){applySteerMode();G.keys.u=G.keys.d=false;if(WH)WH.id=null}const w=G.world,p=w&&w.player,tg=navTarget();if(!tg||!p){if(NAV.path){NAV.path=null;if(typeof R3!=='undefined'&&R3.ok)R3.setNav(null)}NAV.ins=null;$('nav').classList.remove('on');return}
+function navUpdate(dt){radioUI();if(document.body.classList.contains('wheel'))pedUI();if(effSteer()!==lastEff){applySteerMode();G.keys.u=G.keys.d=false;if(WH)WH.id=null}const w=G.world,p=w&&w.player,tg=navTarget();if(!tg||!p){if(NAV.path){NAV.path=null;if(typeof R3!=='undefined'&&R3.ok)R3.setNav(null)}NAV.ins=null;$('nav').classList.remove('on');return}
   NAV.t-=dt;const key=Math.floor(p.x/T)+','+Math.floor(p.y/T)+'>'+Math.round(tg.x)+','+Math.round(tg.y)+(tg.next?'>'+Math.round(tg.next.x):'');
   if(key!==NAV.key||NAV.t<=0){NAV.key=key;NAV.t=1.2;NAV.path=navPath(p.x,p.y,tg.x,tg.y);if(NAV.path&&tg.next){const q=navPath(tg.x,tg.y,tg.next.x,tg.next.y);if(q&&q.length>1)NAV.path=NAV.path.concat(q.slice(1))}if(typeof R3!=='undefined'&&R3.ok)R3.setNav(NAV.path)}
   const P=NAV.path;let ins={a:'⬆',d:Math.hypot(tg.x-p.x,tg.y-p.y),s:'',c:tg.name};
@@ -1326,10 +1326,14 @@ $('nav').addEventListener('click',()=>openNav());
 function infoHit(e){if(!document.body.classList.contains('cock')||typeof R3==='undefined'||!R3.iRect)return null;const r=R3.iRect;if(e.clientX<r.x0||e.clientX>r.x1||e.clientY<r.y0||e.clientY>r.y1)return null;return e.clientX<r.x0+(r.x1-r.x0)*.58?'nav':'radio'}
 cv.addEventListener('pointerdown',e=>{if(!(G.mode==='roam'||G.mode==='race'))return;const h=infoHit(e);if(!h)return;if(h==='nav')openNav();else{nextRadio();floatMsg('📻 '+STY[Snd.style].name,1.2)}});
 const WH={id:null,ang:0,last:0,cx:0,cy:0,lx:0},WMAX=1.7;
-{const pd=$('pedals');let pid=null;const set=e=>{const r=pd.getBoundingClientRect(),g=e.clientY>r.top+r.height/2;G.keys.u=g;G.keys.d=!g;$('pG').classList.toggle('on',g);$('pB').classList.toggle('on',!g)},off=e=>{if(e.pointerId!==pid)return;pid=null;G.keys.u=G.keys.d=false;$('pG').classList.remove('on');$('pB').classList.remove('on')};
- pd.addEventListener('pointerdown',e=>{e.preventDefault();pid=e.pointerId;try{pd.setPointerCapture(pid)}catch(_){}set(e)});pd.addEventListener('pointermove',e=>{if(e.pointerId===pid)set(e)});
+{const pd=$('pedals');let pid=null,zone=null;
+ const zoneOf=e=>{const r=pd.getBoundingClientRect();return e.clientY>r.top+r.height/2?'g':'b'};
+ const enter=z=>{if(z===zone)return;zone=z;if(z==='g'){G.keys.d=false;G.keys.u=!G.keys.u;if(G.keys.u)navigator.vibrate&&navigator.vibrate(12)}else{G.keys.u=false;G.keys.d=true}pedUI()};
+ const off=e=>{if(e.pointerId!==pid)return;pid=null;zone=null;G.keys.d=false;pedUI()};
+ pd.addEventListener('pointerdown',e=>{e.preventDefault();pid=e.pointerId;zone=null;try{pd.setPointerCapture(pid)}catch(_){}enter(zoneOf(e))});
+ pd.addEventListener('pointermove',e=>{if(e.pointerId===pid)enter(zoneOf(e))});
  pd.addEventListener('pointerup',off);pd.addEventListener('pointercancel',off);pd.addEventListener('lostpointercapture',off);pd.addEventListener('contextmenu',e=>e.preventDefault())}
-function effSteer(){if(SAVE.steer!=='wheel')return SAVE.steer;return(SAVE.cam==='cockpit'&&typeof R3!=='undefined'&&R3.ok)?'wheel':'drag'}
+function pedUI(){$('pG').classList.toggle('on',!!G.keys.u);$('pB').classList.toggle('on',!!G.keys.d)}
 function wheelOn(){return effSteer()==='wheel'&&isTouch&&(G.mode==='race'||G.mode==='roam')}
 function wheelCenter(){if(document.body.classList.contains('cock')&&typeof R3!=='undefined'&&R3.swScr)return R3.swScr;const r=$('wheel').getBoundingClientRect();return{x:r.left+r.width/2,y:r.top+r.height/2}}
 cv.addEventListener('pointerdown',e=>{if(!wheelOn()||WH.id!==null)return;if(e.clientX<VW*.4||e.clientY<VH*.3||infoHit(e))return;const c=wheelCenter();WH.id=e.pointerId;WH.cx=c.x;WH.cy=c.y;WH.last=Math.atan2(e.clientY-c.y,e.clientX-c.x);WH.lx=e.clientX;gripAt(WH.last);try{cv.setPointerCapture(e.pointerId)}catch(_){}});
