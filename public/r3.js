@@ -239,7 +239,7 @@ const R3={ok:false,off:/[?&]2d/.test(location.search),chunks:new Map(),CH:16,PX:
   const inner=new T3.Group();m.position.set(-info.ct.x,-info.minY,-info.ct.z);inner.add(m);inner.rotation.y=Math.PI/2;inner.scale.setScalar(k);const ch=new T3.Group();ch.add(inner);g.add(ch);const H=info.h*k,Wm=info.wid*k;
   if(!this.shTex){this.shTex=this.glowTex('rgba(0,0,0,.85)');this.shGeo=new T3.PlaneGeometry(1,1);this.shGeo.rotateX(-Math.PI/2);this.shMat=new T3.MeshBasicMaterial({map:this.shTex,transparent:true,depthWrite:false})}
   const sh=new T3.Mesh(this.shGeo,this.shMat);sh.scale.set(L*1.5,1,Wm*1.9);sh.position.y=.7;g.add(sh);const beam=new T3.Mesh(this.beamGeo,this.beamMat);beam.position.set(L/2,1.6,0);g.add(beam);
-  for(const sd of[-1,1]){const h=new T3.Mesh(this.carBox,this.hlMat);h.scale.set(.8,1.8,3.2);h.position.set(L/2+.3,H*.42,sd*Wm*.32);ch.add(h);const tl=new T3.Mesh(this.carBox,this.tlMat);tl.scale.set(.8,2,3.6);tl.position.set(-L/2-.3,H*.48,sd*Wm*.32);ch.add(tl)}
+  for(const sd of[-1,1]){const h=new T3.Mesh(this.carBox,this.hlMat);h.scale.set(.2,.9,2.2);h.position.set(L/2-.02,H*.42,sd*Wm*.32);ch.add(h);const tl=new T3.Mesh(this.carBox,this.tlMat);tl.scale.set(.2,1,2.4);tl.position.set(-L/2+.02,H*.48,sd*Wm*.32);ch.add(tl)}
   let bar=null;if(nm==='police_car'){const lr=new T3.Mesh(this.carBox,this.redMat),lb=new T3.Mesh(this.carBox,this.bluMat);lr.scale.set(3,2,Wm*.3);lb.scale.set(3,2,Wm*.3);lr.position.set(-L*.04,H+.6,-Wm*.18);lb.position.set(-L*.04,H+.6,Wm*.18);ch.add(lr,lb);bar=[lr,lb]}
   let glow=null;if(c.kind==='player'||c.kind==='rival'){if(!this.ugTex)this.ugTex=this.glowTex('rgba(255,255,255,.9)');glow=new T3.Mesh(this.shGeo,new T3.MeshBasicMaterial({map:this.ugTex,color:c.kind==='player'?0xff2e88:c.col,transparent:true,blending:T3.AdditiveBlending,depthWrite:false}));glow.scale.set(L*2,1,Wm*2.6);glow.position.y=1;g.add(glow)}
   if(!this.flG){this.flG=new T3.ConeGeometry(3.2,16,8);this.flG.rotateZ(Math.PI/2);this.flM=new T3.MeshBasicMaterial({color:new T3.Color(0x66aaff).multiplyScalar(3),transparent:true,opacity:.85,blending:T3.AdditiveBlending,depthWrite:false})}
@@ -381,7 +381,11 @@ const R3={ok:false,off:/[?&]2d/.test(location.search),chunks:new Map(),CH:16,PX:
   const rim=new T3.MeshStandardMaterial({color:sp.rim,metalness:1,roughness:.16,envMapIntensity:1.4});
   const tint=sp.tint?new T3.MeshPhysicalMaterial({color:0x020305,metalness:.3,roughness:.04,transparent:true,opacity:.93,envMapIntensity:1.6,side:T3.DoubleSide}):null;
   const anc=(o,re)=>{for(let q=o;q;q=q.parent)if(re.test(q.name||''))return true;return false};
-  const wheels=[];m.traverse(o=>{if(o.isMesh&&o.material){const n=o.material.name||'';if(/^Paint 1/.test(n))o.material=paint;else if(/^Paint 2/.test(n))o.material=paint2;else if(n==='Rim2')o.material=rim;else if(n==='Brake'&&sp.cal){o.material=this.calM(sp.cal)}else if(n==='Dashboard')o.material=this.dashMat(o.material);else if(tint&&n==='Glass'&&!anc(o,/Windshield/))o.material=tint}
+  const pm=(col)=>new T3.MeshPhysicalMaterial({color:col,metalness:f[0],roughness:f[1],clearcoat:f[2],clearcoatRoughness:f[3]}),roofM=sp.roof?pm(sp.roof):null,hoodM=sp.hood?pm(sp.hood):null,mirM=sp.mir?pm(sp.mir):null;
+  const trimM=sp.trim==='chrome'?(this.chromeM||(this.chromeM=new T3.MeshStandardMaterial({color:0xd8dbe0,metalness:1,roughness:.15}))):sp.trim==='black'?(this.trimBlk||(this.trimBlk=new T3.MeshStandardMaterial({color:0x0c0c0e,metalness:.3,roughness:.5}))):null;
+  const wheels=[];m.traverse(o=>{if(o.isMesh&&o.material){const n=o.material.name||'',painted=/^Paint [12]/.test(n);
+   if(painted&&roofM&&anc(o,/^BodyRoofPanel$/)){o.material=roofM;return}if(painted&&hoodM&&anc(o,/^BodyHood$/)){o.material=hoodM;return}if(painted&&mirM&&anc(o,/Mirror/)){o.material=mirM;return}
+   if(trimM&&anc(o,/Gasket|Handle/)){o.material=trimM;return}if(/^Paint 1/.test(n))o.material=paint;else if(/^Paint 2/.test(n))o.material=paint2;else if(n==='Rim2')o.material=rim;else if(n==='Brake'&&sp.cal){o.material=this.calM(sp.cal)}else if(n==='Dashboard')o.material=this.dashMat(o.material);else if(tint&&n==='Glass'&&!anc(o,/Windshield/))o.material=tint}
    if(/^Wheel(Front|Rear)[LR]$/.test(o.name)){o.userData.front=/Front/.test(o.name);wheels.push(o)}});
   let swSpin=null;{const parts=[];m.traverse(o=>{if(/^InteriorSteering(Wheel0\d|Handle[LR]|Emblem|Base)$/.test(o.name))parts.push(o)});
    if(parts.length){m.updateMatrixWorld(true);const bb=new T3.Box3();for(const o of parts)bb.expandByObject(o);const ct=bb.getCenter(new T3.Vector3());
@@ -410,8 +414,8 @@ const R3={ok:false,off:/[?&]2d/.test(location.search),chunks:new Map(),CH:16,PX:
   if(K.includes('flaps'))for(const z of[-10,10])box(paint2,.4,3.6,3.4,-21.8,2.6,z);
   {const id=(c.st&&c.st.id)||'z',num=sp.plate||('5U'+((id.charCodeAt(0)*7+id.length*3)%9+1)+' '+String(1000+(id.charCodeAt(1)||0)*37%9000).slice(0,4)),pm=this.plateMat(num);
    for(const[x,y,ry]of[[-23.15,5.6,-Math.PI/2],[23.2,3.3,Math.PI/2]]){const pl=new T3.Mesh(this.plateGeo||(this.plateGeo=new T3.PlaneGeometry(5.2,1.15)),pm);pl.position.set(x,y,0);pl.rotation.y=ry;kit.add(pl)}
-   if(!this.chromeM)this.chromeM=new T3.MeshStandardMaterial({color:0xd8dbe0,metalness:1,roughness:.15});if(!this.exG){this.exG=new T3.CylinderGeometry(.62,.62,1.6,14,1,true);this.exG.rotateZ(Math.PI/2)}
-   for(const z of(K.includes('wing')||K.includes('duck')?[-6.2,-4.6,4.6,6.2]:[-5.4,5.4])){const e=new T3.Mesh(this.exG,this.chromeM);e.position.set(-22.9,2.7,z);kit.add(e)}
+   if(!this.chromeM)this.chromeM=new T3.MeshStandardMaterial({color:0xd8dbe0,metalness:1,roughness:.15});if(!this.exG){this.exG=new T3.CylinderGeometry(.42,.42,.9,14,1,true);this.exG.rotateZ(Math.PI/2)}
+   for(const z of(K.includes('wing')||K.includes('duck')?[-6.2,-4.6,4.6,6.2]:[-5.4,5.4])){const e=new T3.Mesh(this.exG,this.chromeM);e.position.set(-22.7,2.7,z*.9);kit.add(e)}
    if(!this.brkM)this.brkM=new T3.MeshBasicMaterial({color:new T3.Color(0xff1a2a).multiplyScalar(3.2)});var brk=new T3.Group();for(const z of[-7.2,7.2]){const b=new T3.Mesh(this.carBox,this.brkM);b.scale.set(.3,.7,4.4);b.position.set(-20.4,11.85,z);brk.add(b)}brk.visible=false;kit.add(brk)}
   if(sp.hl==='led'||sp.hl==='angel'){if(!this.hlM2)this.hlM2=new T3.MeshBasicMaterial({color:new T3.Color(0xdff2ff).multiplyScalar(3)});
    for(const sd of[-1,1]){if(sp.hl==='led'){const b=new T3.Mesh(this.carBox,this.hlM2);b.scale.set(.25,.14,3.6);b.position.set(21.35,8.12,sd*6.4);b.rotation.y=sd*.12;kit.add(b)}
