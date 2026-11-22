@@ -16,7 +16,7 @@
   "scoop",
   "flaps"
  ],
- "hl": "oval",
+ "hl": "slim",
  "cls": "rally",
  "parts": {
   "body": "models/koncept/CarConcept.gltf (Khronos CarConcept, CC-BY 4.0)",

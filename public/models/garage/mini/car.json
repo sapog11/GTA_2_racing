@@ -16,5 +16,6 @@
  "cls": "hatch",
  "parts": {
   "notes": "Body proportions (sx = length, sy = height, w = width) live in R3.ZB; override them here."
- }
+ },
+ "rims": "five"
 }

@@ -11,7 +11,7 @@
  "w": 1,
  "sy": 1.09,
  "kit": [],
- "hl": "led",
+ "hl": "slim",
  "cls": "sport",
  "parts": {
   "body": "models/koncept/CarConcept.gltf (Khronos CarConcept, CC-BY 4.0)",

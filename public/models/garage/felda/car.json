@@ -24,5 +24,6 @@
   ],
   "notes": "Drop body.glb / wheel.glb / kit_*.glb here later to replace the shared Z-platform parts."
  },
- "rims": "deep"
+ "rims": "deep",
+ "hl": "slim"
 }

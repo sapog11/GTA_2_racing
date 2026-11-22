@@ -15,7 +15,7 @@
   "lip",
   "duck"
  ],
- "hl": "oval",
+ "hl": "slim",
  "cls": "hatch",
  "parts": {
   "body": "models/koncept/CarConcept.gltf (Khronos CarConcept, CC-BY 4.0)",
@@ -24,5 +24,6 @@
    "duck"
   ],
   "notes": "Drop body.glb / wheel.glb / kit_*.glb here later to replace the shared Z-platform parts."
- }
+ },
+ "rims": "multi"
 }

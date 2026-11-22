@@ -15,9 +15,10 @@
   "flaps"
  ],
  "rails": 1,
- "hl": "blade",
+ "hl": "slim",
  "cls": "wagon",
  "parts": {
   "notes": "Body proportions (sx = length, sy = height, w = width) live in R3.ZB; override them here."
- }
+ },
+ "rims": "multi"
 }
