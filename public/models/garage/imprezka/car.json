@@ -1,0 +1,26 @@
+{
+ "id": "imprezka",
+ "name": "Imprezka WRX",
+ "p1": "#2448c8",
+ "p2": "#1a2a8a",
+ "rim": "#c9a227",
+ "fin": "gloss",
+ "glow": "#2ef0ff",
+ "w": 1,
+ "kit": [
+  "wing",
+  "scoop",
+  "flaps"
+ ],
+ "plate": "5U1 2002",
+ "platform": "koncept-z",
+ "parts": {
+  "body": "models/koncept/CarConcept.gltf (Khronos CarConcept, CC-BY 4.0)",
+  "kit": [
+   "wing",
+   "scoop",
+   "flaps"
+  ],
+  "notes": "Drop body.glb / wheel.glb / kit_*.glb here later to replace the shared Z-platform parts."
+ }
+}

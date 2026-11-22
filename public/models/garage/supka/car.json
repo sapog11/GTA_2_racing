@@ -1,0 +1,26 @@
+{
+ "id": "supka",
+ "name": "Toyda Supka",
+ "p1": "#e8a21a",
+ "p2": "#14151a",
+ "rim": "#1a1a1e",
+ "fin": "gloss",
+ "glow": "#ff8a2e",
+ "w": 1.02,
+ "kit": [
+  "wing",
+  "splitter",
+  "skirts"
+ ],
+ "plate": "5U8 0998",
+ "platform": "koncept-z",
+ "parts": {
+  "body": "models/koncept/CarConcept.gltf (Khronos CarConcept, CC-BY 4.0)",
+  "kit": [
+   "wing",
+   "splitter",
+   "skirts"
+  ],
+  "notes": "Drop body.glb / wheel.glb / kit_*.glb here later to replace the shared Z-platform parts."
+ }
+}

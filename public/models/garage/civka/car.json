@@ -1,0 +1,24 @@
+{
+ "id": "civka",
+ "name": "Drago",
+ "p1": "#141519",
+ "p2": "#2a2c33",
+ "rim": "#9aa0a8",
+ "fin": "metal",
+ "glow": "#ff2e88",
+ "w": 0.95,
+ "kit": [
+  "lip",
+  "duck"
+ ],
+ "plate": "5U2 0261",
+ "platform": "koncept-z",
+ "parts": {
+  "body": "models/koncept/CarConcept.gltf (Khronos CarConcept, CC-BY 4.0)",
+  "kit": [
+   "lip",
+   "duck"
+  ],
+  "notes": "Drop body.glb / wheel.glb / kit_*.glb here later to replace the shared Z-platform parts."
+ }
+}

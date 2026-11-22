@@ -1,0 +1,24 @@
+{
+ "id": "golfik",
+ "name": "Golfík IV GTI",
+ "p1": "#c8ccd2",
+ "p2": "#c8102e",
+ "rim": "#2a2a2e",
+ "fin": "metal",
+ "glow": "#2ef0ff",
+ "w": 0.97,
+ "kit": [
+  "lip",
+  "skirts"
+ ],
+ "plate": "5U4 4421",
+ "platform": "koncept-z",
+ "parts": {
+  "body": "models/koncept/CarConcept.gltf (Khronos CarConcept, CC-BY 4.0)",
+  "kit": [
+   "lip",
+   "skirts"
+  ],
+  "notes": "Drop body.glb / wheel.glb / kit_*.glb here later to replace the shared Z-platform parts."
+ }
+}

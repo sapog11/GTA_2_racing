@@ -1,0 +1,18 @@
+{
+ "id": "koncept",
+ "name": "Koncept Z",
+ "p1": "#c8102e",
+ "p2": "#14151a",
+ "rim": "#d8dbe0",
+ "fin": "gloss",
+ "glow": "#2ef0ff",
+ "w": 1,
+ "kit": [],
+ "plate": "ZRX 2026",
+ "platform": "koncept-z",
+ "parts": {
+  "body": "models/koncept/CarConcept.gltf (Khronos CarConcept, CC-BY 4.0)",
+  "kit": [],
+  "notes": "Drop body.glb / wheel.glb / kit_*.glb here later to replace the shared Z-platform parts."
+ }
+}

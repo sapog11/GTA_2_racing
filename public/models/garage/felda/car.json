@@ -1,0 +1,24 @@
+{
+ "id": "felda",
+ "name": "Škodovka Felda Turbo",
+ "p1": "#2d6b3a",
+ "p2": "#e8e4d8",
+ "rim": "#e8e4d8",
+ "fin": "gloss",
+ "glow": "#9dff00",
+ "w": 0.95,
+ "kit": [
+  "rally",
+  "flaps"
+ ],
+ "plate": "5U7 1993",
+ "platform": "koncept-z",
+ "parts": {
+  "body": "models/koncept/CarConcept.gltf (Khronos CarConcept, CC-BY 4.0)",
+  "kit": [
+   "rally",
+   "flaps"
+  ],
+  "notes": "Drop body.glb / wheel.glb / kit_*.glb here later to replace the shared Z-platform parts."
+ }
+}
