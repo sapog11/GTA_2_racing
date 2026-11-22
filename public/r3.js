@@ -17,7 +17,11 @@ const R3={ok:false,off:/[?&]2d/.test(location.search),chunks:new Map(),CH:16,PX:
   {const sg=new T3.SphereGeometry(4000,24,16),sm=new T3.ShaderMaterial({side:T3.BackSide,depthWrite:false,fog:false,uniforms:{uStars:{value:null},uSt:{value:0},uTop:{value:new T3.Color(.05,.02,.12)},uMid:{value:new T3.Color(.28,.06,.32)},uHor:{value:new T3.Color(1,.32,.45)},uSun:{value:new T3.Color(1,.62,.3)}},
     vertexShader:'varying vec3 vP;void main(){vP=normalize(position);gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',
     fragmentShader:'uniform vec3 uTop,uMid,uHor,uSun;uniform sampler2D uStars;uniform float uSt;varying vec3 vP;void main(){float h=vP.y;vec3 top=uTop,mid=uMid,hor=uHor,sun=uSun;vec3 c=mix(mid,top,smoothstep(.05,.6,h));c=mix(hor,c,smoothstep(-.02,.16,h));c+=sun*.55*exp(-pow((h-.02)*14.,2.));if(uSt>0.){float u=atan(vP.z,vP.x)/6.2832+.5;u=abs(fract(u*2.)-.5)*2.;float v=1.-clamp(h,0.,1.);vec3 st=texture2D(uStars,vec2(u,1.-v*.92)).rgb;st=pow(st,vec3(1.2))*1.1;c=mix(c,st+c*.25,uSt*smoothstep(-.01,.12,h));}gl_FragColor=vec4(c,1.);}'});
-   new T3.TextureLoader().load('art/tex/sky_night.jpg',t=>{t.colorSpace=T3.SRGBColorSpace;t.wrapS=T3.MirroredRepeatWrapping;sm.uniforms.uStars.value=t;sm.uniforms.uSt.value=this.tod==='night'||!this.tod?1:0});this.sky=new T3.Mesh(sg,sm);this.sky.renderOrder=-1;S.add(this.sky)}
+   new T3.TextureLoader().load('art/tex/sky_night.jpg',t=>{t.colorSpace=T3.SRGBColorSpace;t.wrapS=T3.MirroredRepeatWrapping;sm.uniforms.uStars.value=t;sm.uniforms.uSt.value=this.tod==='night'||!this.tod?1:0});{const R=3600,seg=8,H=(2*Math.PI*R/seg)/3,ring=this.skyline=new T3.Group();ring.userData.H=H;const L=new T3.TextureLoader();this.slMats=[];
+   for(let i=0;i<seg;i++){const g=new T3.CylinderGeometry(R,R,H,24,1,true,i*Math.PI*2/seg,Math.PI*2/seg),m=new T3.MeshBasicMaterial({transparent:true,alphaTest:.04,depthWrite:false,fog:false,side:T3.BackSide,color:0xffffff,visible:false});
+    L.load('art/tex/skyline_'+(i%4+1)+'.webp',t=>{t.colorSpace=T3.SRGBColorSpace;if(i>=4){t.wrapS=T3.RepeatWrapping;t.repeat.x=-1}m.map=t;m.visible=true;m.needsUpdate=true});this.slMats.push(m);
+    const me=new T3.Mesh(g,m);me.position.y=H/2;me.renderOrder=-.5;ring.add(me)}S.add(ring)}
+   this.sky=new T3.Mesh(sg,sm);this.sky.renderOrder=-1;S.add(this.sky)}
   this.cam=new T3.PerspectiveCamera(50,VW/VH,8,5200);
   // neon environment map for glossy reflections
   {const pm=new T3.PMREMGenerator(this.renderer),es=new T3.Scene();es.background=new T3.Color(0x04050a);
@@ -58,7 +62,7 @@ const R3={ok:false,off:/[?&]2d/.test(location.search),chunks:new Map(),CH:16,PX:
  TODS:{night:{sky:[[.05,.02,.12],[.28,.06,.32],[1,.32,.45],[1,.62,.3]],fog:0x2a1238,fd:1,hemi:[0x7f90d0,0x141626,.6],sun:[0x9fb0ff,.35,-400,900,-300],em:1.2,neon:2.2,pool:1,exp:.85,bloom:.7,lamp:1},
   golden:{sky:[[.16,.3,.6],[.95,.62,.42],[1,.82,.55],[1,.92,.6]],fog:0xd49a78,fd:.75,hemi:[0xffdcb8,0x5a4030,1.05],sun:[0xffb070,1.4,900,380,-200],em:.15,neon:1.1,pool:0,exp:1,bloom:.35,lamp:0},
   day:{sky:[[.2,.45,.85],[.55,.75,.95],[.88,.93,.98],[1,1,1]],fog:0xa9c4dd,fd:.7,hemi:[0xe8f2ff,0x6b6455,1.25],sun:[0xffffff,1.35,400,1200,300],em:0,neon:.5,pool:0,exp:1.05,bloom:.2,lamp:0}},
- setTOD(k){const D=this.TODS[k]||this.TODS.night;this.tod=k;const U=this.sky.material.uniforms;['uTop','uMid','uHor','uSun'].forEach((n,i)=>U[n].value.setRGB(...D.sky[i]));U.uSt.value=U.uStars.value?(k==='night'?1:0):0;
+ setTOD(k){const D=this.TODS[k]||this.TODS.night;this.tod=k;const U=this.sky.material.uniforms;['uTop','uMid','uHor','uSun'].forEach((n,i)=>U[n].value.setRGB(...D.sky[i]));U.uSt.value=U.uStars.value?(k==='night'?1:0):0;if(this.slMats)for(const m of this.slMats)m.color.setRGB(...(k==='night'?[1,1,1]:k==='golden'?[.8,.72,.7]:[.62,.68,.78]));
   this.scene.fog.color.set(D.fog);this.scene.background.set(D.fog);this.fogMul=D.fd;this.hemi.color.set(D.hemi[0]);this.hemi.groundColor.set(D.hemi[1]);this.hemiBase=D.hemi[2];
   this.sun.color.set(D.sun[0]);this.sun.intensity=D.sun[1];this.sun.position.set(D.sun[2],D.sun[3],D.sun[4]);for(const k2 in this.facMats)this.facMats[k2].emissiveIntensity=D.em;this.wallMat.emissiveIntensity=D.em*1.3;
   if(this.neonM){this.neonM.pink.emissive.set(0x1a120c).multiplyScalar(D.neon>1?1:.3);this.neonM.orange.emissive.set(0x1a120c).multiplyScalar(D.neon>1?1:.3)}this.neonMul=D.neon;
@@ -470,7 +474,7 @@ const R3={ok:false,off:/[?&]2d/.test(location.search),chunks:new Map(),CH:16,PX:
   this.lampL.forEach((L,i)=>{const n=near[i];if(n){L.position.set(n[1].x,44,n[1].y);L.intensity=this.lampOn?1:0}else L.intensity=0});
   let pol=null,pd=1e12;for(const c of w.cars)if(c.st&&c.st.police&&!c.wreck){const d=(c.x-cx)**2+(c.y-cy)**2;if(d<pd){pd=d;pol=c}}
   const ph=Math.floor(t*8)%2;if(pol&&pd<700*700){this.polL[0].position.set(pol.x,30,pol.y);this.polL[1].position.set(pol.x,30,pol.y);this.polL[0].intensity=ph?2.2:0;this.polL[1].intensity=ph?0:2.6}else{this.polL[0].intensity=this.polL[1].intensity=0}
-  this.sky.position.copy(this.cam.position);this.perf(dt);if(this.comp)this.comp.render();else this.renderer.render(this.scene,this.cam)},
+  this.sky.position.copy(this.cam.position);if(this.skyline){const c=this.cam.position;this.skyline.position.set(c.x,Math.min(c.y,120)-this.skyline.userData.H*.16,c.z)}this.perf(dt);if(this.comp)this.comp.render();else this.renderer.render(this.scene,this.cam)},
  shared(m){return m===this.hlMat||m===this.tlMat||m===this.redMat||m===this.bluMat||m===this.offMat||m===this.beamMat||this.skin.includes(m)},
  reset(){for(const[c,g]of this.cars){this.scene.remove(g)}this.cars.clear();for(const[p,g]of this.peds)this.scene.remove(g);this.peds.clear()}
 };

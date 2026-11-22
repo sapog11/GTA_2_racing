@@ -113,8 +113,8 @@ h1,h2,h3{margin:0}
 #zoomB{position:fixed;right:12px;bottom:max(16px,env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:8px}#zoomB .btn{width:48px!important;font-family:Oswald;font-size:26px!important;text-align:center!important;padding:2px 0!important}
 #djsub{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(170px + env(safe-area-inset-bottom));max-width:min(92vw,560px);background:rgba(5,6,12,.82);border:1px solid rgba(255,204,26,.5);border-radius:8px;padding:7px 12px;font-size:14px;line-height:1.3;color:#f3efe6;z-index:12;display:none;pointer-events:none}
 body.driving #djsub{left:auto;right:76px;transform:none;top:calc(64% - 4px);bottom:auto;max-width:min(58vw,360px);font-size:12px;padding:5px 9px;background:rgba(5,6,12,.62);border-color:rgba(255,204,26,.3)}
-#rbtn{position:fixed;right:12px;top:64%;width:56px;height:56px;border-radius:50%;border:2px solid rgba(255,204,26,.45);background:rgba(8,9,16,.55);color:#fff;font-size:22px;z-index:12;display:none;padding:0;pointer-events:auto}
-#rbtn:before{content:'📻'}body.driving #rbtn{display:block}body.driving:not(.cock) #rbtn{top:48%}body.driving:not(.cock) #djsub{top:calc(48% - 4px)}#rbtn i{position:absolute;inset:-2px;border-radius:50%;border:2px solid rgba(255,204,26,.5);opacity:0;pointer-events:none}
+#rbtn{position:fixed;right:14px;top:64%;width:38px;height:38px;border-radius:8px;border:0;background:rgba(8,9,16,.35);color:#fff;font-size:20px;z-index:12;display:none;padding:0;pointer-events:auto}
+#rbtn:before{content:'📻'}body.driving #rbtn{display:block}body.driving:not(.cock) #rbtn{top:48%}body.driving:not(.cock) #djsub{top:calc(48% - 4px)}body.driving.cock #rbtn{top:auto;bottom:calc(max(16px,env(safe-area-inset-bottom)) + 92px);right:18px}body.driving.cock #djsub{top:auto;bottom:calc(max(16px,env(safe-area-inset-bottom)) + 140px);right:14px}#rbtn i{position:absolute;inset:-2px;border-radius:8px;border:1px solid rgba(255,204,26,.35);opacity:0;pointer-events:none}
 #rbtn.play i{animation:rbeat .5s ease-out infinite}#rbtn.play{animation:rthump .5s ease-out infinite}
 #rbtn span{position:absolute;top:100%;left:50%;transform:translateX(-50%);margin-top:3px;white-space:nowrap;font-family:Oswald;font-size:10px;color:rgba(255,255,255,.6);letter-spacing:.5px}
 @keyframes rbeat{0%{transform:scale(1);opacity:.55}100%{transform:scale(1.45);opacity:0}}@keyframes rthump{0%{transform:scale(1.05)}25%{transform:scale(1)}}
@@ -1572,7 +1572,7 @@ import {KTX2Loader} from './vendor/jsm/loaders/KTX2Loader.js';
 import {MeshoptDecoder} from './vendor/jsm/libs/meshopt_decoder.module.js';
 import * as SkeletonUtils from './vendor/jsm/utils/SkeletonUtils.js';
 window.THREE=THREE;window.TADD={EffectComposer,RenderPass,UnrealBloomPass,OutputPass,GLTFLoader,RGBELoader,SkeletonUtils,DRACOLoader,KTX2Loader,MeshoptDecoder};
-const s=document.createElement('script');s.src='r3.js?v=20';document.body.appendChild(s);
+const s=document.createElement('script');s.src='r3.js?v=21';document.body.appendChild(s);
 </script>
 </body>
 </html>
