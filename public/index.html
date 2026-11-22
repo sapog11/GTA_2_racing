@@ -623,6 +623,8 @@ const WHO_NAME={pepa:'PEPA',denis:'DENIS',lucie:'LUCIE',marek:'MAREK',kaja:'KÁJ
 
 /* ---------------- AUDIO ---------------- */
 const STY={
+ noc:{name:'NOC NA KLÍŠI',bpm:88,file:'music/noc_na_klisi.mp3',vol:.9},
+ chem174:{name:'CHEMIČKA 174',bpm:174,file:'music/chemicka_174.mp3',vol:.85},
  labe:{name:'LABE FM',bpm:92},
  synth:{name:'NOČNÍ ÚSTÍ',bpm:108,kick:[0,4,8,12],snare:[4,12],hat:'off',bass:'8',pad:1,lead:'arp16',ch:[[57,60,64],[53,57,60],[48,52,55],[55,59,62]]},
  dnb:{name:'CHEMIČKA DnB',bpm:174,kick:[0,10],snare:[4,12],ghost:[7,15],hat:1,bass:'reese',bcut:750,harm:1,stab:[6],so:12,sw:'sawtooth',pad:1,pcut:700,ch:[[50,53,57],[50,53,57],[46,50,53],[48,52,55]],vol:.42},
@@ -636,7 +638,7 @@ const STY={
  oldschool:{name:'OLDSCHOOL HIP-HOP',bpm:96,kick:[0,6,8],snare:[4,12],hat:2,bass:'funk',harm:1,stab:[14],so:0,sw:'sawtooth',scratch:1,ch:[[55,58,62],[53,57,60],[51,55,58],[53,57,60]],vol:.38},
  classic:{name:'KLASIKA FM',bpm:66,classic:1,vol:.5},
  off:{name:'VYPNUTO',bpm:92}};
-const RADIO=['labe','rap','trap','oldschool','synth','dnb','liquid','jungle','classic','polka','off'];
+const RADIO=['noc','chem174','labe','rap','trap','oldschool','synth','dnb','liquid','jungle','classic','polka','off'];
 const BACH=[[48,52,55,60,64],[48,50,57,62,65],[47,50,55,62,65],[48,52,55,60,64],[48,52,57,64,69],[48,50,54,57,62],[47,50,55,62,67],[47,48,52,55,60],[45,48,52,55,60],[38,45,50,54,60],[43,47,50,55,59],[43,46,52,55,61],[41,45,50,57,62],[41,44,50,53,59],[40,43,48,55,60],[40,41,45,48,53]];
 const Snd={ctx:null,
  init(oc){if(this.ctx){this.ctx.resume&&this.ctx.resume();return}
@@ -702,7 +704,7 @@ const Snd={ctx:null,
  // ---- music: original dark boom-bap / synth loop ----
  CH:[[57,60,64],[53,57,60],[50,53,57],[52,56,59]],
  startMusic(lead,fresh){if(!this.ctx)return;this.lead=lead;if(fresh&&this.timer){this.stopMusic()}this.mus.gain.setTargetAtTime(lead?.5:.32,this.ctx.currentTime,.3);if(this.timer)return;this.step=0;this.spb=60/92/4;this.nextT=this.ctx.currentTime+.1;this.timer=setInterval(()=>this.sched(),25)},
- setStyle(n){this.style=n;const S=STY[n];this.spb=60/(S?S.bpm:92)/4;if(n!=='labe')this.lead=false;if(this.mus&&this.ctx)this.mus.gain.setTargetAtTime(n==='off'?0:(S&&S.vol)||.34,this.ctx.currentTime,.2)},
+ setStyle(n){this.style=n;const S=STY[n];this.fileTrack(S&&S.file?S:null);if(S&&S.file){if(this.mus&&this.ctx)this.mus.gain.setTargetAtTime(0,this.ctx.currentTime,.1);return}this.spb=60/(S?S.bpm:92)/4;if(n!=='labe')this.lead=false;if(this.mus&&this.ctx)this.mus.gain.setTargetAtTime(n==='off'?0:(S&&S.vol)||.34,this.ctx.currentTime,.2)},
  play2(s,t){const S=STY[this.style];if(S&&S.classic){this.playClassic(s,t);return}if(!S||!S.ch)return;const st=s%16,bar=Math.floor(s/16)%4,ch=S.ch[bar],M=this.mus,c=this.ctx,m=this.mtof,root=ch[0];
   if(S.kick&&S.kick.includes(st)){this.tone(S.kf||140,40,.28,'sine',.95,M,t);this.tone(180,60,.05,'square',.12,M,t)}
   if(S.ghost&&S.ghost.includes(st))this.nz(.07,'bandpass',2300,.14,t);
@@ -732,6 +734,9 @@ const Snd={ctx:null,
  playClassic(s,t){const st=s%16,bar=Math.floor(s/16)%BACH.length,v=BACH[bar],c=this.ctx,M=this.mus;const pat=[0,1,2,3,4,2,3,4],n=v[pat[st%8]];
   const f=this.mtof(n),o=c.createOscillator(),o2=c.createOscillator();o.type='triangle';o2.type='sine';o.frequency.value=f;o2.frequency.value=f*2;const g=c.createGain(),g2=c.createGain();g.gain.setValueAtTime(.13,t);g.gain.exponentialRampToValueAtTime(.001,t+1.6);g2.gain.setValueAtTime(.03,t);g2.gain.exponentialRampToValueAtTime(.001,t+.6);o.connect(g);o2.connect(g2);g.connect(M);g2.connect(M);if(this.dl&&st%4===0)g.connect(this.dl);o.start(t);o2.start(t);o.stop(t+1.7);o2.stop(t+.7)},
  stopMusic(){clearInterval(this.timer);this.timer=null},
+ fileTrack(S){const c=this.ctx;if(!c)return;if(!this.fa){this.fa=new Audio();this.fa.loop=true;this.fa.crossOrigin='anonymous';this.fa.preload='auto';try{this.fsrc=c.createMediaElementSource(this.fa);this.fg=c.createGain();this.fg.gain.value=0;this.fsrc.connect(this.fg);this.fg.connect(this.master)}catch(e){}}
+  if(!S){if(this.fg)this.fg.gain.setTargetAtTime(0,c.currentTime,.15);setTimeout(()=>{if(!this.fa.dataset.keep)this.fa.pause()},300);this.fa.dataset.keep='';return}
+  const url=S.file;this.fa.dataset.keep='1';if(!this.fa.src.endsWith(url)){this.fa.src=url;this.fa.currentTime=0}this.fa.play().catch(()=>{});if(this.fg)this.fg.gain.setTargetAtTime(S.vol||.85,c.currentTime,.3)},
  sched(){const c=this.ctx;while(this.nextT<c.currentTime+.12){this.play(this.step,this.nextT);this.nextT+=this.spb;this.step++}},
  mtof:m=>440*Math.pow(2,(m-69)/12),
  play(s,t){if(this.style&&this.style!=='labe'){this.play2(s,t);return}const st=s%16,bar=Math.floor(s/16)%4,ch=this.CH[bar],M=this.mus,c=this.ctx;
