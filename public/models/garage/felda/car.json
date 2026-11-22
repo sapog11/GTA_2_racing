@@ -23,9 +23,12 @@
   ],
   "notes": "Drop body.glb / wheel.glb / kit_*.glb here later to replace the shared Z-platform parts."
  },
- "rims": "deep",
- "hl": "eye",
+ "rims": "ai:felda_rim",
+ "hl": "stock",
  "rt": 0.27,
  "rl": 1.6,
- "tl": "vertical"
+ "tl": "stock",
+ "hlAI": "felda_headlight",
+ "tlAI": "felda_taillight",
+ "tlLen": 2.6
 }

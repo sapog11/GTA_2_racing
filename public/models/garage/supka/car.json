@@ -13,7 +13,7 @@
   "wing",
   "skirts"
  ],
- "hl": "popup",
+ "hl": "stock",
  "cls": "sport",
  "parts": {
   "body": "models/koncept/CarConcept.gltf (Khronos CarConcept, CC-BY 4.0)",
@@ -24,9 +24,11 @@
   ],
   "notes": "Drop body.glb / wheel.glb / kit_*.glb here later to replace the shared Z-platform parts."
  },
- "rims": "five",
- "tl": "round",
+ "rims": "ai:common_rim",
+ "tl": "stock",
  "cal": "#7a1e2a",
  "rt": 0.14,
- "rl": 0.6
+ "rl": 0.6,
+ "hlAI": "supka_headlight",
+ "tlAI": "supka_taillight"
 }

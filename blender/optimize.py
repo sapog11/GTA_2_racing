@@ -2,7 +2,7 @@
 # python3 blender/optimize.py  (reads design/parts/raw3d/*.glb -> public/models/parts/ai/*.glb)
 import bpy, os, glob, math, mathutils
 ROOT=os.path.join(os.path.dirname(__file__),'..');SRC=os.path.join(ROOT,'design','parts','raw3d');DST=os.path.join(ROOT,'public','models','parts','ai');os.makedirs(DST,exist_ok=True)
-TARGET={'rim':6000,'headlight':5000,'taillight':4000,'mirror':3000,'wing':4000,'hood':5000,'bumper_front':7000,'bumper_rear':7000}
+TARGET={'rim':9000,'headlight':8000,'taillight':6000,'mirror':3000,'wing':4000,'hood':5000,'bumper_front':7000,'bumper_rear':7000}
 for f in sorted(glob.glob(os.path.join(SRC,'*_*.glb'))):
     name=os.path.splitext(os.path.basename(f))[0];out=os.path.join(DST,name+'.glb')
     if 'tripo' in name or (os.path.exists(out) and os.path.getmtime(out)>os.path.getmtime(f)):continue

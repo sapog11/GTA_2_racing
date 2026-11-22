@@ -10,16 +10,18 @@
  "w": 1,
  "sy": 1.09,
  "kit": [],
- "hl": "slim",
+ "hl": "stock",
  "cls": "sport",
  "parts": {
   "body": "models/koncept/CarConcept.gltf (Khronos CarConcept, CC-BY 4.0)",
   "kit": [],
   "notes": "Drop body.glb / wheel.glb / kit_*.glb here later to replace the shared Z-platform parts."
  },
- "rims": "turbine",
+ "rims": "ai:koncept_rim",
  "cal": "#7a1e2a",
  "rt": 0.1,
  "rl": 0.6,
- "tl": "bar"
+ "tl": "bar",
+ "hlAI": "koncept_headlight",
+ "hlF": "-z"
 }

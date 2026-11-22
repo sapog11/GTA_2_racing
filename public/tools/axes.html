@@ -1,0 +1,9 @@
+<!doctype html><html><head><meta charset="utf-8"><script type="importmap">{"imports":{"three":"../vendor/three.module.min.js"}}</script></head><body style="margin:0;background:#222">
+<canvas id="c" width="800" height="200"></canvas>
+<script type="module">
+import * as THREE from 'three';import {GLTFLoader} from '../vendor/jsm/loaders/GLTFLoader.js';
+const n=new URLSearchParams(location.search).get('n');const r=new THREE.WebGLRenderer({canvas:c,antialias:true,preserveDrawingBuffer:true});r.setScissorTest(true);
+const s=new THREE.Scene();s.background=new THREE.Color(0x30323a);s.add(new THREE.HemisphereLight(0xffffff,0x444444,2.5));
+new GLTFLoader().load('../models/parts/ai/'+n+'.glb',g=>{s.add(g.scene);const b=new THREE.Box3().setFromObject(g.scene);window.size=b.getSize(new THREE.Vector3()).toArray();
+ const V=[[0,0,2],[0,0,-2],[2,0,0],[-2,0,0]];const gl=r.getContext(),px=new Uint8Array(200*200*4);window.lum=[];V.forEach((v,i)=>{const cam=new THREE.PerspectiveCamera(35,1,.01,10);cam.position.set(...v);cam.lookAt(0,0,0);r.setViewport(i*200,0,200,200);r.setScissor(i*200,0,200,200);r.render(s,cam);gl.readPixels(i*200,0,200,200,gl.RGBA,gl.UNSIGNED_BYTE,px);let L=0,n=0;for(let k=0;k<px.length;k+=4){const d=Math.abs(px[k]-48)+Math.abs(px[k+1]-50)+Math.abs(px[k+2]-58);if(d>12){L+=px[k]*.3+px[k+1]*.59+px[k+2]*.11;n++}}window.lum.push([Math.round(n?L/n:0),n])});window.done=1})
+</script></body></html>
