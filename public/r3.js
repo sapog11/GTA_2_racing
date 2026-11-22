@@ -338,12 +338,14 @@ const R3={ok:false,off:/[?&]2d/.test(location.search),chunks:new Map(),CH:16,PX:
    const t=this.navTex=new T3.CanvasTexture(cv);t.wrapS=T3.RepeatWrapping;t.colorSpace=T3.SRGBColorSpace;this.navMat=new T3.MeshBasicMaterial({map:t,color:new T3.Color(1,1,1).multiplyScalar(1.4),transparent:true,depthWrite:false,side:T3.DoubleSide,fog:false})}
   this.navM=new T3.Mesh(g,this.navMat);this.navM.renderOrder=3;this.scene.add(this.navM)},
  // parked cars: real Kenney models, instanced per (model, colour) so the whole city costs a few draw calls
+ parkedCull(){if(!this.pkG||!this.focus)return;const now=performance.now();if(now-(this.pkT||0)<600)return;this.pkT=now;const T3=THREE,M=new T3.Matrix4(),Q=new T3.Quaternion(),V=new T3.Vector3(),ONE=new T3.Vector3(1,1,1),AX=new T3.Vector3(0,1,0),fx=this.focus.x,fy=this.focus.y,R2=900*900;
+  for(const G of this.pkG){let n=0;for(const p of G.list){if((p.x-fx)**2+(p.y-fy)**2>R2)continue;Q.setFromAxisAngle(AX,-p.a);M.compose(V.set(p.x,0,p.y),Q,ONE);for(const e of G.ims){const MM=M.clone().multiply(e.local);e.im.setMatrixAt(n,MM)}n++}for(const e of G.ims){e.im.count=n;e.im.instanceMatrix.needsUpdate=true}}},
  parkedKenney(){if(this.pkDone||!this.kReady||!parked.length)return;this.pkDone=1;const T3=THREE,mods=['sedan','hatchback_sports','suv','sedan_sports','van'].filter(n=>this.km[n]);if(!mods.length)return;
   const cols=['#8a1c1c','#d8d8d8','#2a3d6b','#3b3b3b','#1f5a4f','#c9a227'],grp=new Map();parked.forEach((p,i)=>{const k=mods[(i*7)%mods.length]+'|'+cols[(i*5+3)%cols.length];if(!grp.has(k))grp.set(k,[]);grp.get(k).push(p)});
   const M=new T3.Matrix4(),Q=new T3.Quaternion(),V=new T3.Vector3(),ONE=new T3.Vector3(1,1,1),AX=new T3.Vector3(0,1,0);
   for(const[k,list]of grp){const[nm,col]=k.split('|');const proto=this.kenneyMesh({L:38,Wd:19,col,kind:'civ',st:{}},nm);this.scene.remove(proto);proto.updateMatrixWorld(true);const U=proto.userData;
-   proto.traverse(o=>{if(!o.isMesh||o===U.beam||o===U.fl||o===U.glow||o.material===this.hlMat)return;const im=new T3.InstancedMesh(o.geometry,o.material,list.length);
-    list.forEach((p,i)=>{Q.setFromAxisAngle(AX,-p.a);M.compose(V.set(p.x,0,p.y),Q,ONE);M.multiply(o.matrixWorld);im.setMatrixAt(i,M)});im.computeBoundingSphere&&im.computeBoundingSphere();this.scene.add(im)})}
+   const ims=[];proto.traverse(o=>{if(!o.isMesh||o===U.beam||o===U.fl||o===U.glow||o.material===this.hlMat||o.geometry===this.shGeo)return;const im=new T3.InstancedMesh(o.geometry,o.material,list.length);im.frustumCulled=false;im.count=0;ims.push({im,local:o.matrixWorld.clone()});this.scene.add(im)});
+   (this.pkG=this.pkG||[]).push({list,ims})}
   if(this.parkedBox){for(const m of this.parkedBox)this.scene.remove(m)}},
  // number plates (Czech style, region U = Ústí), made once per text
  plateMat(txt){this.plates=this.plates||{};if(this.plates[txt])return this.plates[txt];const T3=THREE,cv=document.createElement('canvas');cv.width=256;cv.height=56;const x=cv.getContext('2d');
@@ -453,6 +455,7 @@ const R3={ok:false,off:/[?&]2d/.test(location.search),chunks:new Map(),CH:16,PX:
    m.traverse(o=>{if(!o.isMesh||anc(o,/^Wheel/))return;let ng=cache.get(o.geometry.uuid);if(!ng){ng=o.geometry.clone();const M=o.matrixWorld;inv.copy(M).invert();const a=ng.attributes.position;
      for(let i=0;i<a.count;i++){v.fromBufferAttribute(a,i).applyMatrix4(M);const t=Math.min(1,Math.max(0,(v.y-8.6)/5.2));v.y+=rl*t*t*(3-2*t)*Math.min(1,Math.max(0,(v.x+21)/4))*Math.min(1,Math.max(0,(21-v.x)/6));v.z*=TP(v.x);v.applyMatrix4(inv);a.setXYZ(i,v.x,v.y,v.z)}
      a.needsUpdate=true;ng.computeVertexNormals();ng.computeBoundingSphere();cache.set(o.geometry.uuid,ng)}o.geometry=ng})}
+  m.traverse(o=>{if(/^BodyWindshieldWipers/.test(o.name))o.visible=false});
   if(sp.hl==='eye')m.traverse(o=>{if(o.name==='BodyHeadlights')o.visible=false});
   if(sp.tl&&sp.tl!=='stock'&&sp.tl!=='bar')m.traverse(o=>{if(/^BodyTaillights(Panels)?$/.test(o.name))o.visible=false});
   const lo=sp.low?.8*zs:0,WG=new T3.Group();m.updateMatrixWorld(true);let wy=0;const P=new T3.Vector3(),knF=[],kn=[],ax={f:[],r:[]};
@@ -637,9 +640,15 @@ const R3={ok:false,off:/[?&]2d/.test(location.search),chunks:new Map(),CH:16,PX:
   {const hp=this.hot.geometry.attributes.position.array,hc=this.hot.geometry.attributes.color.array,sp=this.smoke.geometry.attributes.position.array,sc=this.smoke.geometry.attributes.color.array;let nh=0,ns=0;
    for(const q of w.parts){const a=q.life/q.max;if(q.type==='smoke'){if(ns>=520)continue;sp.set([q.x,12+q.z*this.HK+(1-a)*40,q.y],ns*3);const v=q.col?.55:.3;sc.set([v*a+.1,v*a+.1,v*a+.12],ns*3);ns++}
     else{if(nh>=520)continue;hp.set([q.x,q.type==='fire'?10+(1-a)*25:6,q.y],nh*3);if(q.type==='fire')hc.set([1,.45+a*.4,.15],nh*3);else hc.set([1,.85,.45],nh*3);nh++}}
-   for(const b of w.bullets){if(nh>=520)break;hp.set([b.x,10,b.y],nh*3);hc.set([1,.95,.6],nh*3);nh++}
+   for(const b of w.bullets){if(nh>=520)break;hp.set([b.x,12,b.y],nh*3);hc.set([1,.95,.6],nh*3);nh++}
    if(w.muzzle>0&&w.player){const p=w.player;hp.set([p.x+Math.cos(p.a)*(p.L*.5+8),14,p.y+Math.sin(p.a)*(p.L*.5+8)],nh*3);hc.set([1,.9,.5],nh*3);nh++}
    this.hot.geometry.setDrawRange(0,nh);this.smoke.geometry.setDrawRange(0,ns);this.hot.geometry.attributes.position.needsUpdate=this.hot.geometry.attributes.color.needsUpdate=true;this.smoke.geometry.attributes.position.needsUpdate=this.smoke.geometry.attributes.color.needsUpdate=true}
+  // tracers (visible from the cockpit too): glowing stretched bolts
+  {if(!this.trc){this.trc=new T3.InstancedMesh(new T3.BoxGeometry(1,1,1),new T3.MeshBasicMaterial({color:new T3.Color(1,.8,.35).multiplyScalar(3.5),transparent:true,opacity:.95,blending:T3.AdditiveBlending,depthWrite:false}),300);this.trc.frustumCulled=false;this.trc.count=0;this.scene.add(this.trc);
+    this.mzl=new T3.Mesh(new T3.SphereGeometry(1,10,8),new T3.MeshBasicMaterial({color:new T3.Color(1,.75,.3).multiplyScalar(4),transparent:true,blending:T3.AdditiveBlending,depthWrite:false}));this.mzl.visible=false;this.scene.add(this.mzl);this.mzlL=new T3.PointLight(0xffb050,0,260,1.5);this.scene.add(this.mzlL);this._tm=new T3.Matrix4();this._tq=new T3.Quaternion();this._tv=new T3.Vector3();this._ts=new T3.Vector3();this._ay=new T3.Vector3(0,1,0)}
+   const cock=this.camMode==='cockpit',H=cock?9.5:12;let n=0;for(const b of w.bullets){if(n>=300)break;const ang=Math.atan2(b.vy,b.vx);this._tq.setFromAxisAngle(this._ay,-ang);this._tm.compose(this._tv.set(b.x-Math.cos(ang)*18,H,b.y-Math.sin(ang)*18),this._tq,this._ts.set(cock?60:36,cock?2.2:1.4,cock?2.2:1.4));this.trc.setMatrixAt(n++,this._tm)}
+   this.trc.count=n;this.trc.instanceMatrix.needsUpdate=true;
+   const mz=w.muzzle>0&&w.player;this.mzl.visible=!!mz;this.mzlL.intensity=mz?3:0;if(mz){const p=w.player,ca=Math.cos(p.a),sa=Math.sin(p.a),fw=cock?p.L*.62:p.L*.52,x=p.x+ca*fw-sa*6,y=p.y+sa*fw+ca*6;this.mzl.position.set(cock?x-sa*4:x,cock?13.5:13,cock?y+ca*4:y);this.mzl.scale.setScalar((cock?1.4:2.2)+Math.random()*1.2);this.mzlL.position.set(x,16,y)}}
   // skids
   {const a=this.skid.geometry.attributes.position.array,n=Math.min(w.skids.length,1300);for(let i=0;i<n;i++){const s=w.skids[w.skids.length-n+i];a.set([s[0],.8,s[1],s[2],.8,s[3]],i*6)}this.skid.geometry.setDrawRange(0,n*2);this.skid.geometry.attributes.position.needsUpdate=true}
   // markers & route
@@ -651,7 +660,7 @@ const R3={ok:false,off:/[?&]2d/.test(location.search),chunks:new Map(),CH:16,PX:
   const tg=opts.arrowTo||(rt?w.route[Math.min(w.player.seg+1,w.route.length-1)]:null);this.arrow.visible=!!(tg&&w.player);
   if(this.arrow.visible){const p=w.player,a=Math.atan2(tg.y-p.y,tg.x-p.x);if(this.camMode==='cockpit'&&(G.mode==='roam'||G.mode==='race')){this.arrow.position.set(p.x+Math.cos(p.a)*110,30+Math.sin(t*4)*1.5,p.y+Math.sin(p.a)*110);this.arrow.scale.setScalar(.55);this.arrow.rotation.y=-a;this.arrow.visible=true}else this.arrow.position.set(p.x,40+Math.sin(t*4)*2,p.y);this.arrow.rotation.y=-a;const s=this.camMode==='chase'?1:this.camMode==='cockpit'?.55:1.5;this.arrow.scale.setScalar(s)}
   if(this.navTex)this.navTex.offset.x=-(t*1.6%1);
-  this.parkedKenney();if(this.wU)this.wU.uT.value=t;
+  this.parkedKenney();this.parkedCull();if(this.wU)this.wU.uT.value=t;
   // lights
   const p=w.player;if(p&&!p.wreck&&!G.engineOff){const ca=Math.cos(p.a),sa=Math.sin(p.a);this.head.position.set(p.x+ca*p.L*.4,16,p.y+sa*p.L*.4);this.head.target.position.set(p.x+ca*260,0,p.y+sa*260);this.head.intensity=p.boost?2:1.5}else this.head.intensity=0;
   const fx=this.focus.x,fy=this.focus.y,cx=p?p.x:w.cam.x,cy=p?p.y:w.cam.y;const near=[];for(const l of lamps){const d=(l.x-cx)*(l.x-cx)+(l.y-cy)*(l.y-cy);if(d<640000)near.push([d,l])}near.sort((a,b)=>a[0]-b[0]);
