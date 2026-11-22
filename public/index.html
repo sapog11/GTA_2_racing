@@ -1333,6 +1333,7 @@ const WH={id:null,ang:0,last:0,cx:0,cy:0,lx:0},WMAX=1.7;
  pd.addEventListener('pointerdown',e=>{e.preventDefault();pid=e.pointerId;zone=null;try{pd.setPointerCapture(pid)}catch(_){}enter(zoneOf(e))});
  pd.addEventListener('pointermove',e=>{if(e.pointerId===pid)enter(zoneOf(e))});
  pd.addEventListener('pointerup',off);pd.addEventListener('pointercancel',off);pd.addEventListener('lostpointercapture',off);pd.addEventListener('contextmenu',e=>e.preventDefault())}
+function effSteer(){if(SAVE.steer!=='wheel')return SAVE.steer;return(SAVE.cam==='cockpit'&&typeof R3!=='undefined'&&R3.ok)?'wheel':'drag'}
 function pedUI(){$('pG').classList.toggle('on',!!G.keys.u);$('pB').classList.toggle('on',!!G.keys.d)}
 function wheelOn(){return effSteer()==='wheel'&&isTouch&&(G.mode==='race'||G.mode==='roam')}
 function wheelCenter(){if(document.body.classList.contains('cock')&&typeof R3!=='undefined'&&R3.swScr)return R3.swScr;const r=$('wheel').getBoundingClientRect();return{x:r.left+r.width/2,y:r.top+r.height/2}}
