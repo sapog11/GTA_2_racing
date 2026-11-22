@@ -242,6 +242,19 @@ const R3={ok:false,off:/[?&]2d/.test(location.search),chunks:new Map(),CH:16,PX:
   imprezka:{p1:'#2448c8',p2:'#1a2a8a',rim:'#c9a227',fin:'gloss',glow:'#2ef0ff',w:1,kit:['wing','scoop','flaps']},
   koncept:{p1:'#c8102e',p2:'#14151a',rim:'#d8dbe0',fin:'gloss',glow:'#2ef0ff',w:1,kit:[]},
   supka:{p1:'#e8a21a',p2:'#14151a',rim:'#1a1a1e',fin:'gloss',glow:'#ff8a2e',w:1.02,kit:['wing','splitter','skirts']}},
+ dashMat(orig){if(this.dMat)return this.dMat;const T3=THREE,cv=this.dCv=document.createElement('canvas');cv.width=1024;cv.height=256;const t=this.dTex=new T3.CanvasTexture(cv);t.flipY=false;t.colorSpace=T3.SRGBColorSpace;
+  const m=this.dMat=orig.clone();m.emissiveMap=t;m.emissive=new T3.Color(1,1,1);m.emissiveIntensity=1.5;this.dashDraw(0,1,0);return m},
+ dashDraw(k,gear,rpm){const cv=this.dCv;if(!cv)return;const key=k+'|'+gear+'|'+Math.round(rpm*12);if(key===this.dKey)return;this.dKey=key;const x=cv.getContext('2d');
+  x.fillStyle='#000';x.fillRect(0,0,1024,256);const O='#ff7a1a',C='#2ef0ff';
+  // rpm segments (left)
+  const n=12,lit=Math.round(rpm*n);for(let i=0;i<n;i++){x.fillStyle=i<lit?(i>=10?'#ff2040':i>=8?'#ffd02e':O):'#2a1608';x.fillRect(70+i*24,170-i*9,18,40+i*9)}
+  x.fillStyle=O;x.font='bold 30px Oswald,Arial';x.textAlign='left';x.fillText('RPM ×1000',70,236);
+  // speed (center)
+  x.textAlign='center';x.fillStyle='#fff';x.shadowColor=O;x.shadowBlur=18;x.font='bold 150px Audiowide,Oswald,Arial';x.fillText(String(k),560,178);x.shadowBlur=0;
+  x.fillStyle=O;x.font='bold 30px Oswald,Arial';x.fillText('km/h',560,232);
+  // gear (right)
+  x.strokeStyle=C;x.lineWidth=6;x.strokeRect(800,50,150,150);x.fillStyle=C;x.font='bold 120px Audiowide,Oswald,Arial';x.fillText(gear?String(gear):'N',875,172);
+  x.font='bold 26px Oswald,Arial';x.fillText('GEAR',875,236);this.dTex.needsUpdate=true},
  tuneKey(id){const t=typeof SAVE!=='undefined'&&SAVE.tune&&SAVE.tune[id];return t?JSON.stringify(t):''},
  zSpec(id,tune){const b=this.ZB[id]||this.ZB.koncept,t=tune||{},o=Object.assign({},b,t);let kit=b.kit.slice();if(t.wing===1&&!kit.includes('wing'))kit=kit.filter(k=>k!=='duck').concat('wing');if(t.wing===0)kit=kit.filter(k=>k!=='wing');o.kit=kit;return o},
  zMesh(c,sp,noAdd){const T3=THREE,L=c.L,zs=L/46,zw=sp.w||1,g=new T3.Group(),m=this.concept.clone(true),B=this.zB;
@@ -251,7 +264,7 @@ const R3={ok:false,off:/[?&]2d/.test(location.search),chunks:new Map(),CH:16,PX:
   const rim=new T3.MeshStandardMaterial({color:sp.rim,metalness:1,roughness:.16,envMapIntensity:1.4});
   const tint=sp.tint?new T3.MeshPhysicalMaterial({color:0x020305,metalness:.3,roughness:.04,transparent:true,opacity:.93,envMapIntensity:1.6,side:T3.DoubleSide}):null;
   const anc=(o,re)=>{for(let q=o;q;q=q.parent)if(re.test(q.name||''))return true;return false};
-  const wheels=[];m.traverse(o=>{if(o.isMesh&&o.material){const n=o.material.name||'';if(/^Paint 1/.test(n))o.material=paint;else if(/^Paint 2/.test(n))o.material=paint2;else if(n==='Rim2')o.material=rim;else if(tint&&n==='Glass'&&!anc(o,/Windshield/))o.material=tint}
+  const wheels=[];m.traverse(o=>{if(o.isMesh&&o.material){const n=o.material.name||'';if(/^Paint 1/.test(n))o.material=paint;else if(/^Paint 2/.test(n))o.material=paint2;else if(n==='Rim2')o.material=rim;else if(n==='Dashboard')o.material=this.dashMat(o.material);else if(tint&&n==='Glass'&&!anc(o,/Windshield/))o.material=tint}
    if(/^Wheel(Front|Rear)[LR]$/.test(o.name)){o.userData.front=/Front/.test(o.name);wheels.push(o)}});
   m.scale.set(zs,zs,zs*zw);const lo=sp.low?1.6*zs:0;
   if(lo){m.position.y=-lo;m.updateMatrixWorld(true);const a=new T3.Vector3(),b=new T3.Vector3();for(const wn of wheels){const pa=wn.parent;a.set(0,-lo,0);b.set(0,0,0);pa.worldToLocal(a);pa.worldToLocal(b);wn.position.add(b.sub(a))}}
@@ -351,6 +364,7 @@ const R3={ok:false,off:/[?&]2d/.test(location.search),chunks:new Map(),CH:16,PX:
   const seen=new Set();for(const c of w.cars){let g=this.cars.get(c);if(g&&((c.kind==='player'&&this.concept&&c.st&&(!g.userData.concept||g.userData.tk!==this.tuneKey(c.st.id)))||(!g.userData.k&&!g.userData.concept&&this.kReady&&this.kModelFor(c)))){this.scene.remove(g);this.cars.delete(c);g=null}if(!g){g=this.carMesh(c);this.cars.set(c,g)}seen.add(c);g.position.set(c.x,0,c.y);g.rotation.y=-c.a;
    if(g.userData.paint.isMaterial)g.userData.paint.color.set(c.wreck?0x2a2522:(c.st&&c.st.police)?0xe9ecef:c.hitT>0?0xffffff:(g.userData.pc||c.col));g.userData.beam.visible=!c.wreck;for(const wg of g.userData.wheels)wg.rotation.z-=(c.v||0)*dt/5.6;
    {const U=g.userData,sp=Math.abs(c.v||0),lat=(c.steer||0)*Math.min(1,sp/260)*(c.v<0?-1:1)*(c.drift?1.6:1),dv=dt>0?((c.v||0)-(c.pv===undefined?c.v||0:c.pv))/dt:0;c.pv=c.v;
+    if(c.kind==='player'&&U.concept&&this.dCv){const k=Math.round(sp*.42),gb=c.v<-5?'R':(sp<3?'N':(c.gear||1));this.dashDraw(k,gb==='N'?0:gb,clamp(c.rpm||0,0,1)*(sp<3?.08:1))}
     U.ch.rotation.x=lerp(U.ch.rotation.x,lat*.075,Math.min(1,dt*7));U.ch.rotation.z=lerp(U.ch.rotation.z,clamp(dv/5000,-.05,.035),Math.min(1,dt*6));
     for(const wg of U.wheels)if(wg.position.x>0)wg.rotation.y=-(c.steer||0)*.45;
     if(U.kw){for(const wn of U.kw){wn.rotation.x+=(c.v||0)*dt/5.5;if(wn.userData.front)wn.rotation.y=(c.steer||0)*.45}}if(U.cw){const ax=this.cAxis;for(const wn of U.cw){wn.rotation[ax]-=(c.v||0)*dt/5.5*(ax==='x'?1:1)}}U.fl.visible=!!c.boost;if(c.boost){const k=.8+Math.random()*.5;U.fl.scale.set(k,1,1)}if(U.glow)U.glow.material.opacity=.55+.1*Math.sin(t*3)}
