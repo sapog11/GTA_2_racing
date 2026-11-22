@@ -452,7 +452,13 @@ const R3={ok:false,off:/[?&]2d/.test(location.search),chunks:new Map(),CH:16,PX:
   if(S===undefined){this.aiCars[id]=null;new TADD.GLTFLoader().load('models/cars/ai/'+id+'.glb',g=>{g.scene.traverse(o=>{if(o.isMesh&&o.material){o.material.envMapIntensity=1.2}});this.aiCars[id]=g.scene;this.partsV=(this.partsV||0)+1},undefined,()=>{this.aiCars[id]=false});return null}
   if(!S)return null;
   return c=>{const T3=THREE,g=new T3.Group(),m=S.clone(true),L=c.L;m.scale.setScalar(L);const ch=new T3.Group();ch.add(m);g.add(ch);const aw=[];
-   m.traverse(o=>{if(/^Wheel_/.test(o.name)){o.userData.front=/_F/.test(o.name);aw.push(o)}});
+   const rimStyle=(this.ZB[c.st&&c.st.id]||{}).rims||'five',rimM=this.aiRimM||(this.aiRimM=new T3.MeshStandardMaterial({color:0xb8bcc4,metalness:.75,roughness:.28})),tyM=this.aiTyM||(this.aiTyM=new T3.MeshStandardMaterial({color:0x151517,roughness:.85,metalness:0}));
+   m.updateMatrixWorld(true);m.traverse(o=>{if(/^Wheel_/.test(o.name)){o.userData.front=/_F/.test(o.name);aw.push(o);
+     const bb=new T3.Box3();o.traverse(q=>{if(q.isMesh)bb.expandByObject(q)});const inv=new T3.Matrix4().copy(o.matrixWorld).invert();bb.applyMatrix4(inv);const sz=bb.getSize(new T3.Vector3());
+     const r=Math.min(Math.max(o.position.y*.93,.06),.13),wd=r*.62,side=o.position.z>0?1:-1;
+     const hid=this.aiHid||(this.aiHid=new T3.MeshBasicMaterial({visible:false}));o.traverse(q=>{if(q.isMesh)q.material=hid});
+     const tg=this.aiTyG||(this.aiTyG=new T3.CylinderGeometry(1,1,1,28,1).rotateX(Math.PI/2));const ty=new T3.Mesh(tg,tyM);ty.scale.set(r,r,wd);o.add(ty);
+     const rg=new T3.Group();rg.rotation.y=-side*Math.PI/2;rg.position.z=side*wd*.38;const rs=this.rimSet(rimStyle==='stock'?'five':rimStyle,rimM);rs.scale.setScalar(r*.74/.292);rg.add(rs);o.add(rg)}});
    if(!this.shTex){this.shTex=this.glowTex('rgba(0,0,0,.85)');this.shGeo=new T3.PlaneGeometry(1,1);this.shGeo.rotateX(-Math.PI/2);this.shMat=new T3.MeshBasicMaterial({map:this.shTex,transparent:true,depthWrite:false})}
    const sh=new T3.Mesh(this.shGeo,this.shMat);sh.scale.set(L*1.12,1,L*.55);sh.position.y=.25;g.add(sh);const beam=new T3.Mesh(this.beamGeo,this.beamMat);beam.position.set(L/2,1.6,0);g.add(beam);
    if(!this.flG){this.flG=new T3.ConeGeometry(3.2,16,8);this.flG.rotateZ(Math.PI/2);this.flM=new T3.MeshBasicMaterial({color:new T3.Color(0x66aaff).multiplyScalar(3),transparent:true,opacity:.85,blending:T3.AdditiveBlending,depthWrite:false})}
@@ -588,9 +594,9 @@ const R3={ok:false,off:/[?&]2d/.test(location.search),chunks:new Map(),CH:16,PX:
   const c={L:def.L,Wd:def.Wd,col:(tune&&tune.p1)||def.col,st:{id:def.id},kind:'player'};let g;const AC=!def.soon&&!def.kenney&&this.aiCar(def.id);if(AC){c.noAdd=1;g=AC(c)}else if(def.soon){g=this.soonMesh(def);if(!g)return false}else if(def.kenney){if(!this.kReady||!this.km[def.kenney])return false;g=this.kenneyMesh(c,def.kenney);g.userData.beam.visible=false}else g=this.zMesh(c,this.zSpec(def.id,tune),true);g.position.y=2.45;if(g.userData.beam)g.userData.beam.visible=false;g.traverse(o=>{if(o.isMesh&&(o.geometry===this.shGeo||o.geometry===this.beamGeo))o.visible=false});this.gDisc.add(g);this.gCar=g;return true},
  garageRender(dt){if(!this.gRoom||!this.gCar)return false;const C=this.cam;this.gRoom.visible=true;this.sky.visible=false;const fogD=this.scene.fog.density;this.scene.fog.density=0;
   if(!this.gDrag)this.gYaw+=this.gVel*dt;this.gVel=lerp(this.gVel,.25,Math.min(1,dt*1.5));this.gDisc.rotation.y=this.gYaw;
-  const V=this.gView||{x:VW/2,y:VH/2,w:VW,h:VH},fov=40,tn=Math.tan(fov*Math.PI/360),av=Math.max(120,Math.min(V.w*.92,V.h*1.75)),d=clamp(74*VH/(2*tn*av),80,340),el=.13;
+  const V=this.gView||{x:VW/2,y:VH/2,w:VW,h:VH},fov=40,tn=Math.tan(fov*Math.PI/360),av=Math.max(120,Math.min(V.w*.92,V.h*1.75)),d=clamp(45*VH/(2*tn*av),52,300),el=.13;
   C.near=2;C.fov=fov;C.setViewOffset(VW,VH,VW/2-V.x,VH/2-V.y,VW,VH);
-  const cx=this.GX,cz=this.GZ;C.position.set(cx+d*Math.cos(el)*.45,d*Math.sin(el)+9,cz+d*Math.cos(el)*.9);C.lookAt(cx,13,cz);
+  const cx=this.GX,cz=this.GZ;C.position.set(cx+d*Math.cos(el)*.45,d*Math.sin(el)+8,cz+d*Math.cos(el)*.9);C.lookAt(cx,4,cz);
   const bs=this.bloom?this.bloom.strength:0;if(this.bloom)this.bloom.strength=.28;const env=this.scene.environment;if(this.env)this.scene.environment=this.env;
   if(this.comp)this.comp.render();else this.renderer.render(this.scene,C);
   if(this.bloom)this.bloom.strength=bs;this.scene.environment=env;this.scene.fog.density=fogD;this.gRoom.visible=false;this.sky.visible=true;C.clearViewOffset();C.near=8;C.updateProjectionMatrix();return true},
