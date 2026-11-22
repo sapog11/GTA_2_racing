@@ -353,7 +353,7 @@ const R3={ok:false,off:/[?&]2d/.test(location.search),chunks:new Map(),CH:16,PX:
  loadGarageSpecs(){for(const id in this.ZB)fetch('models/garage/'+id+'/car.json').then(r=>r.ok?r.json():null).then(j=>{if(j){const o=Object.assign({},j);delete o.parts;delete o.id;delete o.platform;delete o.name;Object.assign(this.ZB[id],o)}}).catch(()=>{})},
  calM(col){this.cals=this.cals||{};return this.cals[col]||(this.cals[col]=new THREE.MeshStandardMaterial({color:col,metalness:.3,roughness:.35}))},
  // procedural rims in the Koncept wheel's local space (axle = x, radius 0.30, outer face at +x)
- rimSet(style,face){const T3=THREE,g=new T3.Group();const BP=this.parts&&this.parts['rim_'+style];if(BP){const r=BP.clone(true);r.scale.setScalar(.292);r.traverse(o=>{if(o.isMesh&&o.material&&o.material.name==='Face')o.material=face});const out=new T3.Group(),mir=r.clone(true);mir.scale.x=-.292;out.add(r,mir);return out}const k=style;this.rimG=this.rimG||{};const RG=this.rimG;
+ rimSet(style,face){const T3=THREE,g=new T3.Group();const BP=this.parts&&this.parts['rim_'+style];if(BP){const r=BP.clone(true);r.scale.setScalar(.292);r.traverse(o=>{if(o.isMesh&&o.material&&o.material.name==='Face')o.material=face});const out=new T3.Group();out.add(r);return out}const k=style;this.rimG=this.rimG||{};const RG=this.rimG;
   if(!RG.barrel){RG.barrel=new T3.CylinderGeometry(.292,.292,.2,32,1,true);RG.barrel.rotateZ(Math.PI/2);RG.lip=new T3.TorusGeometry(.292,.014,6,40);RG.lip.rotateY(Math.PI/2);RG.hub=new T3.CylinderGeometry(.065,.075,.05,16);RG.hub.rotateZ(Math.PI/2);RG.nut=new T3.CylinderGeometry(.012,.012,.03,6);RG.nut.rotateZ(Math.PI/2);
    RG.dish=new T3.CylinderGeometry(.292,.22,.07,32,1,true);RG.dish.rotateZ(-Math.PI/2);RG.box=new T3.BoxGeometry(1,1,1)}
   const inner=this.rimIn||(this.rimIn=new T3.MeshStandardMaterial({color:0x2a2b30,metalness:.8,roughness:.4,side:T3.DoubleSide})),chrome=this.chromeM||(this.chromeM=new T3.MeshStandardMaterial({color:0xd8dbe0,metalness:1,roughness:.15}));
@@ -446,7 +446,7 @@ const R3={ok:false,off:/[?&]2d/.test(location.search),chunks:new Map(),CH:16,PX:
   let scrM=null;if(c.kind==='player'){const scr=this.infoScreen();if(scr){m.add(scr);scrM=scr.userData.sc}}
   let diceG=null;{const it=this.interior(sp);if(it){m.add(it);diceG=it.userData.dice||null}}
   if(sp.seat){const sm=new T3.MeshStandardMaterial({color:sp.seat,roughness:.7,metalness:0});m.traverse(o=>{if(o.isMesh&&o.material&&/^Interior 3/.test(o.material.name||''))o.material=sm})}
-  if(sp.rims&&sp.rims!=='stock')for(const wn of wheels){wn.traverse(o=>{if(/Rim$/.test(o.name))o.visible=false});wn.add(this.rimSet(sp.rims,rim))}
+  if(sp.rims&&sp.rims!=='stock'){m.updateMatrixWorld(true);for(const wn of wheels){wn.traverse(o=>{if(/Rim$/.test(o.name)||(o.isMesh&&o.material&&/^Rim[12]$/.test(o.material.name)))o.visible=false});const rs=this.rimSet(sp.rims,rim);wn.add(rs);const c=new T3.Vector3(),a=new T3.Vector3(1,0,0);wn.getWorldPosition(c);wn.localToWorld(a).sub(c);{const sg=/R$/.test(wn.name)?-1:1;rs.scale.x=sg*1.25;rs.position.x=sg*.06}}}
   // chassis: wheels hang on knuckles, knuckles on front/rear axles under the body; the body rolls on top
   const rt=sp.rt||0,rl=sp.rl||0,TP=x=>1-rt*Math.min(1,Math.max(0,(2-x)/25))**1.15;
   if(rt||rl){const key=rt+'|'+rl,cache=(this.shapeC=this.shapeC||{})[key]||(this.shapeC[key]=new Map());m.updateMatrixWorld(true);const v=new T3.Vector3(),inv=new T3.Matrix4();
@@ -456,7 +456,7 @@ const R3={ok:false,off:/[?&]2d/.test(location.search),chunks:new Map(),CH:16,PX:
   if(sp.hl==='eye')m.traverse(o=>{if(o.name==='BodyHeadlights')o.visible=false});
   if(sp.tl&&sp.tl!=='stock'&&sp.tl!=='bar')m.traverse(o=>{if(/^BodyTaillights(Panels)?$/.test(o.name))o.visible=false});
   const lo=sp.low?.8*zs:0,WG=new T3.Group();m.updateMatrixWorld(true);let wy=0;const P=new T3.Vector3(),knF=[],kn=[],ax={f:[],r:[]};
-  for(const wn of wheels){wn.getWorldPosition(P);wy=P.y;const k=new T3.Group();k.position.set(P.x*bx,P.y,P.z*zw*1.05*TP(P.x));k.scale.z=1.15;const h=new T3.Group();wn.parent.matrixWorld.decompose(h.position,h.quaternion,h.scale);h.position.sub(P);h.add(wn);k.add(h);WG.add(k);kn.push(k);(wn.userData.front?ax.f:ax.r).push(k);if(wn.userData.front)knF.push(k)}
+  for(const wn of wheels){wn.getWorldPosition(P);wy=P.y;const k=new T3.Group();k.position.set(P.x*bx,P.y,P.z*zw*1.05*TP(P.x));const h=new T3.Group();wn.parent.matrixWorld.decompose(h.position,h.quaternion,h.scale);h.position.sub(P);h.add(wn);k.add(h);WG.add(k);kn.push(k);(wn.userData.front?ax.f:ax.r).push(k);if(wn.userData.front)knF.push(k)}
   {if(!this.chasM){this.chasM=new T3.MeshStandardMaterial({color:0x1a1b1e,metalness:.7,roughness:.45});this.chasL=new T3.MeshStandardMaterial({color:0x3a3d44,metalness:.85,roughness:.3})}const B=(m2,sx,sy,sz,x,y,z,ry)=>{const q=new T3.Mesh(this.carBox,m2);q.scale.set(sx,sy,sz);q.position.set(x,y,z);if(ry)q.rotation.y=ry;WG.add(q);return q};
    for(const k of['f','r']){const L2=ax[k];if(L2.length<2)continue;const a=L2[0].position,b=L2[1].position,cx=(a.x+b.x)/2,w2=Math.abs(a.z-b.z)-2.6;
     const shaft=new T3.Mesh(this.axG||(this.axG=new T3.CylinderGeometry(.32,.32,1,10)),this.chasL);shaft.rotation.x=Math.PI/2;shaft.scale.y=w2;shaft.position.set(cx,a.y,0);WG.add(shaft);
