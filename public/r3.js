@@ -60,7 +60,7 @@ const R3={ok:false,off:/[?&]2d/.test(location.search),chunks:new Map(),CH:16,PX:
   this.loadAssets();
   this.ok=true;document.body.classList.add('r3on');this.setTOD(SAVE.tod||'night');
  },
- TODS:{night:{sky:[[.05,.02,.12],[.28,.06,.32],[1,.32,.45],[1,.62,.3]],fog:0x2a1238,fd:1,hemi:[0x7f90d0,0x141626,.6],sun:[0x9fb0ff,.35,-400,900,-300],em:1.2,neon:2.2,pool:1,exp:.85,bloom:.7,lamp:1},
+ TODS:{night:{sky:[[.05,.02,.12],[.28,.06,.32],[1,.32,.45],[1,.62,.3]],fog:0x3a2448,fd:.7,hemi:[0x9aa8e0,0x3a3448,1.05],sun:[0xb8c4ff,.6,-400,900,-300],em:1.2,neon:2.2,pool:1,exp:1.05,bloom:.7,lamp:1},
   golden:{sky:[[.16,.3,.6],[.95,.62,.42],[1,.82,.55],[1,.92,.6]],fog:0xd49a78,fd:.75,hemi:[0xffdcb8,0x5a4030,1.05],sun:[0xffb070,1.4,900,380,-200],em:.15,neon:1.1,pool:0,exp:1,bloom:.35,lamp:0},
   day:{sky:[[.2,.45,.85],[.55,.75,.95],[.88,.93,.98],[1,1,1]],fog:0xa9c4dd,fd:.7,hemi:[0xe8f2ff,0x6b6455,1.25],sun:[0xffffff,1.35,400,1200,300],em:0,neon:.5,pool:0,exp:1.05,bloom:.2,lamp:0}},
  setTOD(k){const D=this.TODS[k]||this.TODS.night;this.tod=k;const U=this.sky.material.uniforms;['uTop','uMid','uHor','uSun'].forEach((n,i)=>U[n].value.setRGB(...D.sky[i]));U.uSt.value=U.uStars.value?(k==='night'?1:0):0;if(this.slMats)for(const m of this.slMats)m.color.setRGB(...(k==='night'?[1,1,1]:k==='golden'?[.8,.72,.7]:[.62,.68,.78]));
@@ -375,7 +375,7 @@ const R3={ok:false,off:/[?&]2d/.test(location.search),chunks:new Map(),CH:16,PX:
   const fl=new T3.Mesh(this.flG,this.flM);fl.position.set(-L/2-8,5*zs,0);fl.visible=false;g.add(fl);
   g.userData={beam,paint,pc:sp.p1,wheels:[],cw:wheels,ch,glow,fl,concept:true,sw:swSpin,dice:diceG,scr:scrM,brk,zs,zw,lo,tk:c.st?this.tuneKey(c.st.id):''};if(!noAdd)this.scene.add(g);return g},
  // ---------- 3D garage studio (far away in the same scene, so bloom + reflections work) ----------
- ck:{back:7.6,up:4.8,upP:5.8,pitchL:10,pitchP:3,fovL:64,fovP:74},
+ ck:{back:10,up:5.4,upP:5.7,pitchL:-6,pitchP:-9,fovL:60,fovP:74},
  GX:-60000,GZ:-60000,
  garageBuild(){const T3=THREE,S=this.scene,gr=this.gRoom=new T3.Group();gr.position.set(this.GX,0,this.GZ);gr.visible=false;S.add(gr);
   const fc=document.createElement('canvas');fc.width=fc.height=512;const x=fc.getContext('2d');const gd=x.createRadialGradient(256,256,20,256,256,256);gd.addColorStop(0,'#2a2438');gd.addColorStop(.55,'#120f1c');gd.addColorStop(1,'#050409');x.fillStyle=gd;x.fillRect(0,0,512,512);
@@ -450,7 +450,7 @@ const R3={ok:false,off:/[?&]2d/.test(location.search),chunks:new Map(),CH:16,PX:
  proj(x,y,h){const v=this.tmp||(this.tmp=new THREE.Vector3());v.set(x,h||0,y).project(this.cam);return[(v.x+1)/2*VW,(1-v.y)/2*VH,v.z<1&&v.z>-1]},
  // ---------- per-frame ----------
  render(w,opts,dt){const T3=THREE,t=w.t;this.camFor(w,dt);this.updChunks(this.focus.x,this.focus.y,this.focus.r);
-  this.hemi.intensity=(this.hemiBase||.6)+w.flash*1.6;this.scene.fog.density=(G.mode==='roam'||G.mode==='race'?(this.camMode==='chase'?.00055:.00035):.0003)*(this.fogMul||1);
+  this.hemi.intensity=(this.hemiBase||.6)*(this.camMode==='cockpit'&&(G.mode==='roam'||G.mode==='race')?1.35:1)+w.flash*1.6;this.scene.fog.density=(G.mode==='roam'||G.mode==='race'?(this.camMode==='chase'?.00055:.00035):.0003)*(this.fogMul||1);
   // cars
   const seen=new Set();for(const c of w.cars){let g=this.cars.get(c);if(g&&((c.kind==='player'&&this.concept&&c.st&&(!g.userData.concept||g.userData.tk!==this.tuneKey(c.st.id)))||(!g.userData.k&&!g.userData.concept&&this.kReady&&this.kModelFor(c)))){this.scene.remove(g);this.cars.delete(c);g=null}if(!g){g=this.carMesh(c);this.cars.set(c,g)}seen.add(c);g.position.set(c.x,0,c.y);g.rotation.y=-c.a;
    if(g.userData.paint.isMaterial)g.userData.paint.color.set(c.wreck?0x2a2522:(c.st&&c.st.police)?0xe9ecef:c.hitT>0?0xffffff:(g.userData.pc||c.col));g.userData.beam.visible=!c.wreck;for(const wg of g.userData.wheels)wg.rotation.z-=(c.v||0)*dt/5.6;
