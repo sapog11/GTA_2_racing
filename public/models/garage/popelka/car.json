@@ -1,0 +1,8 @@
+{
+ "id": "popelka",
+ "name": "Popelka",
+ "platform": "kenney:garbage_truck",
+ "parts": {
+  "body": "models/cars/garbage_truck.glb (Kenney Car Kit, CC0)"
+ }
+}

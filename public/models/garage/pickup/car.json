@@ -1,0 +1,8 @@
+{
+ "id": "pickup",
+ "name": "Farmář Pickup",
+ "platform": "kenney:truck",
+ "parts": {
+  "body": "models/cars/truck.glb (Kenney Car Kit, CC0)"
+ }
+}

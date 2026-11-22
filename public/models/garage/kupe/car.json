@@ -1,0 +1,9 @@
+{
+ "id": "kupe",
+ "name": "Zéčko Kupé",
+ "plate": "5U6 6666",
+ "platform": "koncept-z",
+ "parts": {
+  "notes": "Body proportions (sx = length, sy = height, w = width) live in R3.ZB; override them here."
+ }
+}
