@@ -12,5 +12,12 @@
  "drago_taillight": "759df7c3-2163-4f3e-8c5f-ec2a96fdee32",
  "common_taillight": "12c8bee4-4a09-4736-aca4-09691fb6094f",
  "common_wing": "e418e818-9762-4f5b-b572-33a40b1f2a7a",
- "drago_rim": "1423fa54-a073-4549-b2ed-0541b312ca01"
+ "drago_rim": "1423fa54-a073-4549-b2ed-0541b312ca01",
+ "felda_headlight": "d77e93d7-c8c8-419b-825b-b1a951bd6ca6",
+ "felda_rim": "e3605524-c5e3-4642-b230-cd6aa20c5d5f",
+ "felda_taillight": "d32915a2-0212-4999-a78b-9709f1e7058e",
+ "golfik_headlight": "4281c36a-2b7a-4c9b-a3a9-ed6a6ee2bd07",
+ "golfik_rim": "312c5442-f690-4ffd-9e8f-10b51c11ae49",
+ "golfik_taillight": "a7bd1e33-fcaf-4bca-857c-9cf1479300d4",
+ "imprezka_headlight": "9c43fa20-b149-4be3-afac-7ca0d61a01ef"
 }
