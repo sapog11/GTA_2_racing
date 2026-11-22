@@ -225,3 +225,37 @@ jobs={'labe':st_labe,'rap':st_rap,'trap':st_trap,'old':st_old,'synth':st_synth,'
  'classic':st_classic,'polka':st_polka,'chase':st_chase,'race':st_race,'sfx':sfx}
 for k,f in jobs.items():
     if 'all' in which or k in which:f()
+
+# ================== MACHT FM: hard techno / rave for racing (own composition) ==================
+def st_macht():
+    bpm=150;b=60/bpm;bars=72;N=int((bars*4*b+3)*SR);D=np.zeros(N);RB=np.zeros(N);AC=np.zeros(N);ST=np.zeros(N);FX=np.zeros(N)
+    K=np.tanh(kick(190,46,6,3.2,.4)*1.2);H=hat(lvl=.12);HO=hat(True,.09);CL=clap()
+    def rumble(d):  # reverb-tail rumble bass under the kick
+        t=T(d);x=F(rng.standard_normal(len(t)),120)*np.exp(-t*7)*3;return np.tanh(x*2)*.5
+    R=rumble(b*.9)
+    acid=[0,0,12,0,3,0,15,12,0,7,0,10,0,12,3,0]
+    for bar in range(bars):
+        t0=bar*4*b;sec=bar//8;brk=sec in(4,)   # breakdown section
+        if not brk:
+            for x in range(4):put(D,K,t0+x*b);put(RB,R,t0+x*b+b*.22)
+            for x in range(4):put(D,HO,t0+x*b+b/2)
+            if bar>=8:
+                for i in range(16):put(D,H,t0+i*b/4,.5 if i%2 else .8)
+            if bar>=16:
+                for x in(1,3):put(D,CL,t0+x*b,.7)
+        # acid line, filter opens over sections
+        if bar>=8:
+            cut=600+900*((bar%16)/16)+(1200 if sec>=5 else 0)
+            for i,n in enumerate(acid):
+                f=mtof(45+n);t=T(b/4*.9);s=np.tanh((2*((f*t)%1)-1)*4)*np.exp(-t*(6 if i%3 else 2))
+                put(AC,F(s,cut)*.22,t0+i*b/4)
+        # rave stab chords
+        if bar>=24 or brk:
+            for i,x in enumerate((0,.75,2,2.75)):
+                for m in(57,60,64,69):put(ST,inst('saw',mtof(m),b*.3,.05),t0+x*b)
+        if bar%8==7:  # riser into the next section
+            t=T(4*b);put(FX,F(rng.standard_normal(len(t)),300,True)*(t/(4*b))**2*.25,t0)
+    out=F(D,14000)+F(RB,160)*1.2+AC+verb(ST,1.4,.3)+verb(FX,2,.4)
+    master(out,'macht_fm',tgt=-12)
+jobs['macht']=st_macht
+if 'macht' in sys.argv[1:]:st_macht()

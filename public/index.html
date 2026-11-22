@@ -358,7 +358,7 @@ const $=id=>document.getElementById(id);
 const SAVEKEY='usti_mesto_andelu_v1';
 let SAVE={steer:'drag',resp:0,cash:0,hero:null,car:'civka',owned:['civka'],done:{},seenIntro:false,comics:['intro'],mute:false,autoGas:null};
 try{const s=JSON.parse(localStorage.getItem(SAVEKEY)||'null');if(s)SAVE=Object.assign(SAVE,s)}catch(e){}
-if(!SAVE.owned.includes('koncept'))SAVE.owned.push('koncept');if(!SAVE.kcMig){SAVE.kcMig=1;SAVE.cash=(SAVE.cash||0)+(SAVE.resp||0)*50}if(!SAVE.camCk){SAVE.camCk=1;SAVE.cam='cockpit'}if(!SAVE.tune)SAVE.tune={};if(!SAVE.tuned)SAVE.tuned=[];if(!SAVE.unl){SAVE.unl={};for(const id of SAVE.tuned)SAVE.unl[id]=['*']}
+if(!SAVE.owned.includes('koncept'))SAVE.owned.push('koncept');if(!SAVE.kcMig){SAVE.kcMig=1;SAVE.cash=(SAVE.cash||0)+(SAVE.resp||0)*50}if(!SAVE.machtCk){SAVE.machtCk=1;SAVE.radio='macht'}if(!SAVE.camCk){SAVE.camCk=1;SAVE.cam='cockpit'}if(!SAVE.tune)SAVE.tune={};if(!SAVE.tuned)SAVE.tuned=[];if(!SAVE.unl){SAVE.unl={};for(const id of SAVE.tuned)SAVE.unl[id]=['*']}
 if((('ontouchstart' in window)||matchMedia('(pointer:coarse)').matches)&&!SAVE.steer3){SAVE.steer2=SAVE.steer3=1;SAVE.steer='wheel'}if(SAVE.steer==='two')SAVE.steer='wheel';if(!SAVE.arrCk&&matchMedia('(pointer:coarse)').matches){SAVE.arrCk=1;SAVE.steer='arrows'}
 function save(){try{localStorage.setItem(SAVEKEY,JSON.stringify(SAVE))}catch(e){}}
 const isTouch=('ontouchstart' in window)||matchMedia('(pointer:coarse)').matches;
@@ -626,6 +626,7 @@ const WHO_NAME={pepa:'PEPA',denis:'DENIS',lucie:'LUCIE',marek:'MAREK',kaja:'KÁJ
 
 /* ---------------- AUDIO ---------------- */
 const STY={
+ macht:{name:'MACHT FM',bpm:150,file:'music/macht_fm.mp3',vol:.9},
  noc:{name:'NOC NA KLÍŠI',bpm:88,file:'music/noc_na_klisi.mp3',vol:.9},
  chem174:{name:'CHEMIČKA 174',bpm:174,file:'music/chemicka_174.mp3',vol:.85},
  labe:{name:'LABE FM',bpm:92,file:'music/labe_fm.mp3',vol:.85},
@@ -641,7 +642,7 @@ const STY={
  oldschool:{name:'OLDSCHOOL HIP-HOP',bpm:96,file:'music/oldschool.mp3',vol:.85,kick:[0,6,8],snare:[4,12],hat:2,bass:'funk',harm:1,stab:[14],so:0,sw:'sawtooth',scratch:1,ch:[[55,58,62],[53,57,60],[51,55,58],[53,57,60]],vol:.38},
  classic:{name:'KLASIKA FM',bpm:66,file:'music/klasika_fm.mp3',vol:.85,classic:1,vol:.5},
  off:{name:'VYPNUTO',bpm:92}};
-const RADIO=['noc','chem174','labe','rap','trap','oldschool','synth','dnb','liquid','jungle','classic','polka','off'];
+const RADIO=['macht','noc','chem174','labe','rap','trap','oldschool','synth','dnb','liquid','jungle','classic','polka','off'];
 const BACH=[[48,52,55,60,64],[48,50,57,62,65],[47,50,55,62,65],[48,52,55,60,64],[48,52,57,64,69],[48,50,54,57,62],[47,50,55,62,67],[47,48,52,55,60],[45,48,52,55,60],[38,45,50,54,60],[43,47,50,55,59],[43,46,52,55,61],[41,45,50,57,62],[41,44,50,53,59],[40,43,48,55,60],[40,41,45,48,53]];
 const Snd={ctx:null,
  init(oc){if(this.ctx){this.ctx.resume&&this.ctx.resume();return}
@@ -1281,7 +1282,7 @@ function startRoam(at,target){AN.ev('roam_start');hideAll();G.engineOff=false;$(
   $('hud').classList.add('on');if(isTouch)$('ctrl').classList.add('on');$('kU').style.display=SAVE.autoGas?'none':'block';$('kAt').textContent='NITRO';$('kA').classList.remove('hot');
   $('hMainL').textContent='ČTVRŤ';$('hMain').classList.add('small');$('bust').style.display='none';$('center').textContent='';$('obj').classList.add('on');
   $('hint').textContent=isTouch?'':'←→ řízení • ↑ plyn • ↓ brzda • MEZERNÍK nitro • SHIFT smyk • C kamera • R rádio • P pauza';if(isTouch&&effSteer()==='wheel'&&!SAVE.wheelTip){SAVE.wheelTip=1;save();floatMsg('🛞 TOČ VOLANTEM PRSTEM',3);}
-  Snd.setCar&&Snd.setCar(SAVE.car);Snd.startMusic(false);Snd.setStyle(SAVE.radio||'labe');Snd.rain(w.rain);drawMinimapBg();setTimeout(()=>{const a=$('area');if(G.mode==='roam'){a.textContent='📻 '+STY[Snd.style].name;a.classList.add('on');areaT=2.2}},2600)}
+  Snd.setCar&&Snd.setCar(SAVE.car);Snd.startMusic(false);Snd.setStyle(SAVE.radio||'macht');Snd.rain(w.rain);drawMinimapBg();setTimeout(()=>{const a=$('area');if(G.mode==='roam'){a.textContent='📻 '+STY[Snd.style].name;a.classList.add('on');areaT=2.2}},2600)}
 let areaT=0;
 function updateRoam(dt){const w=G.world,p=w.player;
   const ctl=playerCtl();const act=G.keys.a;
