@@ -479,9 +479,17 @@ const CARS=[
  {id:'kombi',name:'Zéčko Kombi',desc:'Na chatu, na hokej, na útěk. Vejde se tam všechno.',col:'#2d6b3a',max:280,acc:215,turn:2.8,grip:6.4,hp:135,price:90000,L:51,Wd:21},
  {id:'vitka',name:'Dodávka Vitka',desc:'Řemeslnická dodávka. Žebřík na střeše, kafe v držáku, nikdo tě nezastaví.',col:'#d8d8d8',max:250,acc:185,turn:2.55,grip:6,hp:170,price:70000,L:52,Wd:23},
  {id:'pickup',name:'Farmář Pickup',desc:'Korba vzadu, blato na kolech. Pro kluky z Trmic.',col:'#a8321e',max:255,acc:200,turn:2.6,grip:6.2,hp:160,price:60000,L:48,Wd:22,kenney:'truck'},
- {id:'popelka',name:'Popelka',desc:'Popelářský auto. Pomalý, obří, ale co mu stojí v cestě, to odveze.',col:'#ff8a1a',max:205,acc:150,turn:2.3,grip:6,hp:300,price:120000,L:62,Wd:26,kenney:'garbage_truck'},
+ {id:'popelka',name:'Popelka',desc:'Popelářský auto. Pomalý, obří, ale co mu stojí v cestě, to odveze.',col:'#ff8a1a',max:205,acc:150,turn:2.3,grip:6,hp:300,price:120000,L:62,Wd:26,kenney:'garbage_truck',soon:'kenney'},
+ {id:'tank',name:'Tank',desc:'Na Mírový náměstí? Jednou možná. Zatím zamčeno.',col:'#3a4a2a',max:150,acc:120,turn:2,grip:8,hp:900,price:0,L:50,Wd:28,soon:'tank'},
+ {id:'obrnak',name:'Obrněnec',desc:'Pancéřovaný transportér. Kulky odráží jak déšť.',col:'#2a2d24',max:220,acc:160,turn:2.3,grip:7,hp:500,price:0,L:44,Wd:24,soon:'armor'},
+ {id:'heli',name:'Vrtulník',desc:'Nad Labem, nad Střekovem, nad policií. Brzy.',col:'#111',max:400,acc:300,turn:3,grip:9,hp:150,price:0,L:60,Wd:16,soon:'heli'},
+ {id:'stihacka',name:'Stíhačka',desc:'Nadzvukový lítání nad Ústím. Sousedi budou nadšení.',col:'#555',max:900,acc:600,turn:2,grip:9,hp:200,price:0,L:50,Wd:30,soon:'jet'},
+ {id:'cessna',name:'Letadýlko',desc:'Malý vrtulový letadlo z letiště ve Všebořicích.',col:'#ddd',max:350,acc:200,turn:2.5,grip:8,hp:100,price:0,L:34,Wd:48,soon:'plane'},
+ {id:'motorka',name:'Sportovní motorka',desc:'Rychlá jak blesk, nebezpečná jak tchýně.',col:'#c8102e',max:360,acc:330,turn:3.6,grip:6,hp:60,price:0,L:24,Wd:8,soon:'moto'},
+ {id:'chopper',name:'Chopper',desc:'Na pohodu po nábřeží. Vousy povinný.',col:'#111',max:260,acc:220,turn:2.8,grip:6,hp:80,price:0,L:28,Wd:9,soon:'chopper'},
  {id:'supka',name:'Toyda Supka',desc:'Legenda nočních závodů. Kdo ji má, ten je někdo.',col:'#e8a21a',max:345,acc:270,turn:3.0,grip:6,hp:110,price:400000,L:44,Wd:21,spoiler:1},
 ];
+for(const c of CARS)if(c.soon&&SAVE.owned.includes(c.id)){SAVE.owned=SAVE.owned.filter(x=>x!==c.id);if(c.price)SAVE.cash+=c.price;if(SAVE.car===c.id)SAVE.car='civka'}
 const POLICE={col:'#e9ecef',max:236,acc:235,turn:2.8,grip:6,hp:60,L:44,Wd:20,police:1};
 const CIV_COLS=['#7a2222','#3a4a6a','#bdbdbd','#5a5a5a','#7a6a3a','#2f5f5a','#6a3a6a','#9a9a8a'];
 const RIVALS=[{n:'Kája',c:'#9dff00'},{n:'Pepa Turbo',c:'#ff2ec8'},{n:'Denis',c:'#ff7a00'},{n:'Žanetka',c:'#00e5ff'}];
@@ -1114,9 +1122,9 @@ function g3d(){return typeof R3!=='undefined'&&R3.ok&&!!R3.concept}
 function garage3D(){const c=CARS[gIdx];if(g3d()){R3.garageSet(c,SAVE.tune[c.id]||null);G.g3=c.id+R3.tuneKey(c.id)}}
 function renderGarage(){const el=$('scr-garage'),c=CARS[gIdx],own=SAVE.owned.includes(c.id),is3=typeof R3!=='undefined'&&R3.ok;el.classList.toggle('dim',!is3);el.classList.toggle('g3d',is3);
   const bar=(l,v)=>`<div class="stat"><span>${l}</span><div class="bar"><i style="width:${clamp(v,5,100)}%"></i></div></div>`;
-  let btn=own?(SAVE.car===c.id?`<button class="btn" disabled>VYBRÁNO</button>`:`<button class="btn" data-pick="${c.id}">VYBRAT</button>`):`<button class="btn pink" data-buy="${c.id}" ${SAVE.cash<c.price?'disabled':''}>KOUPIT • ${c.price.toLocaleString('cs-CZ')} Kč</button>`;
+  let btn=c.soon?`<button class="btn" disabled>🔒 BRZY</button>`:own?(SAVE.car===c.id?`<button class="btn" disabled>VYBRÁNO</button>`:`<button class="btn" data-pick="${c.id}">VYBRAT</button>`):`<button class="btn pink" data-buy="${c.id}" ${SAVE.cash<c.price?'disabled':''}>KOUPIT • ${c.price.toLocaleString('cs-CZ')} Kč</button>`;
   const Z=(typeof R3!=='undefined'&&R3.ZB&&R3.ZB[c.id])||{},T=Object.assign({},Z,SAVE.tune[c.id]||{}),hasW=(T.wing===1)||(T.wing!==0&&(Z.kit||[]).includes('wing'));
-  let tn='';if(!own)tn=`<p class="note">Tuning až po odemčení auta.</p>`;
+  let tn='';if(c.soon)tn=`<p class="note">Tohle vozidlo zatím nejde koupit. Brzy ve hře.</p>`;else if(!own)tn=`<p class="note">Tuning až po odemčení auta.</p>`;
   else{const U=SAVE.unl[c.id]||[],all=U.includes('*'),has=k=>all||U.includes(k),pr=n=>n.toLocaleString('cs-CZ')+' Kč',cur={...T,wing:hasW?1:0,low:T.low?1:0,tint:T.tint?1:0,sw:T.sw||'sport',rims:T.rims||'stock',hl:T.hl||'stock',tl:T.tl||'stock',cal:T.cal||'#2a2a2e',dice:T.dice||'off',amb:T.amb||'off',seat:T.seat||'#1a1a1e'};
    tn='<div class="tn"><p class="note" style="margin:4px 0 0">Kupuješ jednou pro tohle auto, pak měníš zdarma.</p>';
    for(const o of TOPT){const v0=cur[o.k];if(o.type==='sw'){const ok=!o.price||has(o.k);
@@ -1474,7 +1482,7 @@ document.addEventListener('click',e=>{const t=e.target.closest('button,[data-lvl
   if(t.dataset.tbuy){const key=t.dataset.tbuy,id=CARS[gIdx].id,p=tunePrice(key);if(SAVE.cash<p){floatMsg('Málo prachů',1.5);return}SAVE.cash-=p;(SAVE.unl[id]||(SAVE.unl[id]=[])).push(key);AN.ev('tune_buy',{car:id,item:key,price:p});Snd.unlock&&Snd.unlock();save();
     if(key.includes(':')){const[k,v]=key.split(':');tuneSet(id,k,v)}else{const sc=$('scr-garage').scrollTop;renderGarage();$('scr-garage').scrollTop=sc}return}
   if(t.dataset.pick){SAVE.car=t.dataset.pick;save();renderGarage();return}
-  if(t.dataset.buy){const c=CARS.find(x=>x.id===t.dataset.buy);if(SAVE.cash>=c.price){AN.ev('car_unlock',{car:c.id});SAVE.cash-=c.price;SAVE.owned.push(c.id);SAVE.car=c.id;save();renderGarage()}return}
+  if(t.dataset.buy){const c=CARS.find(x=>x.id===t.dataset.buy);if(c.soon)return;if(SAVE.cash>=c.price){AN.ev('car_unlock',{car:c.id});SAVE.cash-=c.price;SAVE.owned.push(c.id);SAVE.car=c.id;save();renderGarage()}return}
 });
 const pv=$('pv');
 if(!location.search.includes('rec')){const v=innerWidth<innerHeight?'vertical':'landscape';pv.poster='promo/'+v+'.jpg';pv.src='promo/'+v+'.mp4';pv.play&&pv.play().catch(()=>{})}
@@ -1583,7 +1591,7 @@ import {KTX2Loader} from './vendor/jsm/loaders/KTX2Loader.js';
 import {MeshoptDecoder} from './vendor/jsm/libs/meshopt_decoder.module.js';
 import * as SkeletonUtils from './vendor/jsm/utils/SkeletonUtils.js';
 window.THREE=THREE;window.TADD={EffectComposer,RenderPass,UnrealBloomPass,OutputPass,GLTFLoader,RGBELoader,SkeletonUtils,DRACOLoader,KTX2Loader,MeshoptDecoder};
-const s=document.createElement('script');s.src='r3.js?v=26';document.body.appendChild(s);
+const s=document.createElement('script');s.src='r3.js?v=27';document.body.appendChild(s);
 </script>
 </body>
 </html>
