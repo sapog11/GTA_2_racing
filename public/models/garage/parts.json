@@ -1,0 +1,135 @@
+{
+ "parts": {
+  "pat": {
+   "name": "Vzor laku",
+   "fits": "all"
+  },
+  "fin": {
+   "name": "Povrch laku",
+   "fits": "all"
+  },
+  "p1": {
+   "name": "Lak",
+   "fits": "all"
+  },
+  "rims": {
+   "name": "Styl disků",
+   "fits": "all"
+  },
+  "cal": {
+   "name": "Brzdové třmeny",
+   "fits": "all"
+  },
+  "hl:oval": {
+   "name": "Oválky s očima",
+   "fits": [
+    "hatch",
+    "rally",
+    "muscle",
+    "sport",
+    "sedan"
+   ]
+  },
+  "hl:blade": {
+   "name": "Čepel",
+   "fits": [
+    "hatch",
+    "wagon",
+    "van",
+    "sedan",
+    "sport"
+   ]
+  },
+  "hl:rings": {
+   "name": "Tři kroužky",
+   "fits": [
+    "sedan",
+    "wagon",
+    "sport"
+   ]
+  },
+  "hl:angel": {
+   "name": "Angel eyes",
+   "fits": [
+    "sedan",
+    "sport",
+    "hatch"
+   ]
+  },
+  "hl:popup": {
+   "name": "Výklopné světla",
+   "fits": [
+    "sport",
+    "muscle",
+    "hatch"
+   ]
+  },
+  "hl:led": {
+   "name": "LED pásky",
+   "fits": "all"
+  },
+  "wing": {
+   "name": "Křídlo",
+   "fits": [
+    "sport",
+    "rally",
+    "hatch",
+    "muscle",
+    "sedan"
+   ]
+  },
+  "grill": {
+   "name": "Mříže",
+   "fits": "all"
+  },
+  "armor": {
+   "name": "Pancíř",
+   "fits": "all"
+  },
+  "low": {
+   "name": "Podvozek",
+   "fits": [
+    "sport",
+    "hatch",
+    "sedan",
+    "rally",
+    "muscle",
+    "wagon"
+   ]
+  },
+  "spz": {
+   "name": "SPZ",
+   "fits": "all"
+  }
+ },
+ "classes": {
+  "hatch": [
+   "civka",
+   "felda",
+   "golfik",
+   "mini"
+  ],
+  "sedan": [
+   "bavorak",
+   "sedan"
+  ],
+  "rally": [
+   "imprezka"
+  ],
+  "sport": [
+   "koncept",
+   "kupe",
+   "supka"
+  ],
+  "wagon": [
+   "kombi"
+  ],
+  "van": [
+   "vitka"
+  ],
+  "muscle": [
+   "muscle",
+   "blower"
+  ]
+ }
+}
