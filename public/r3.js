@@ -427,26 +427,30 @@ const R3={ok:false,off:/[?&]2d/.test(location.search),chunks:new Map(),CH:16,PX:
  // ---------- 3D garage studio (far away in the same scene, so bloom + reflections work) ----------
  ck:{back:10,up:5.4,upP:5.7,pitchL:-6,pitchP:-9,fovL:60,fovP:74},
  GX:-60000,GZ:-60000,
- garageBuild(){const T3=THREE,S=this.scene,gr=this.gRoom=new T3.Group();gr.position.set(this.GX,0,this.GZ);gr.visible=false;S.add(gr);
-  const fc=document.createElement('canvas');fc.width=fc.height=512;const x=fc.getContext('2d');const gd=x.createRadialGradient(256,256,20,256,256,256);gd.addColorStop(0,'#2a2438');gd.addColorStop(.55,'#120f1c');gd.addColorStop(1,'#050409');x.fillStyle=gd;x.fillRect(0,0,512,512);
-  x.strokeStyle='rgba(255,46,136,.18)';x.lineWidth=2;for(let i=0;i<=512;i+=32){x.beginPath();x.moveTo(i,0);x.lineTo(i,512);x.stroke();x.beginPath();x.moveTo(0,i);x.lineTo(512,i);x.stroke()}
-  const ft=new T3.CanvasTexture(fc);ft.colorSpace=T3.SRGBColorSpace;const floor=new T3.Mesh(new T3.CircleGeometry(260,64),new T3.MeshStandardMaterial({map:ft,metalness:.35,roughness:.55}));floor.rotation.x=-Math.PI/2;gr.add(floor);
-  const wall=new T3.Mesh(new T3.CylinderGeometry(260,260,170,64,1,true),new T3.MeshStandardMaterial({color:0x07060c,roughness:.9,side:T3.BackSide}));wall.position.y=85;gr.add(wall);
-  const cap=new T3.Mesh(new T3.CircleGeometry(260,48),new T3.MeshBasicMaterial({color:0x020205}));cap.rotation.x=Math.PI/2;cap.position.y=170;gr.add(cap);
-  const disc=this.gDisc=new T3.Mesh(new T3.CylinderGeometry(46,47,2,64),new T3.MeshStandardMaterial({color:0x15141c,metalness:.85,roughness:.22}));disc.position.y=1;gr.add(disc);
-  const ringM=new T3.MeshBasicMaterial({color:new T3.Color(0xff2e88).multiplyScalar(1.3)}),ring2=new T3.MeshBasicMaterial({color:new T3.Color(0x2ef0ff).multiplyScalar(1.3)});
-  const r1=new T3.Mesh(new T3.TorusGeometry(47,.7,8,96),ringM);r1.rotation.x=Math.PI/2;r1.position.y=2;gr.add(r1);
-  for(let i=0;i<10;i++){const a=i/10*Math.PI*2,tube=new T3.Mesh(new T3.CylinderGeometry(.9,.9,110,8),i%2?ring2:ringM);tube.position.set(Math.cos(a)*250,70,Math.sin(a)*250);gr.add(tube)}
-  const hal=new T3.Mesh(new T3.TorusGeometry(70,1,8,96),new T3.MeshBasicMaterial({color:new T3.Color(0xffffff).multiplyScalar(1.6)}));hal.rotation.x=Math.PI/2;hal.position.y=120;gr.add(hal);
-  const pl=[[0xff2e88,-120,110,-90],[0x2ef0ff,120,110,90],[0xffffff,0,150,0],[0xffffff,60,40,140]];this.gLights=pl.map(([c,a,b,d])=>{const L=new T3.PointLight(c,c===0xffffff?.9:1,520,1);L.position.set(a,b,d);gr.add(L);return L});
+ garageBuild(){const T3=THREE,S=this.scene,gr=this.gRoom=new T3.Group();gr.position.set(this.GX,0,this.GZ);gr.visible=false;S.add(gr);const TL=new T3.TextureLoader();
+  // hangar floor: polished concrete with yellow guide lines
+  const ft=TL.load('art/tex/hangar_floor.jpg');ft.colorSpace=T3.SRGBColorSpace;ft.wrapS=ft.wrapT=T3.RepeatWrapping;ft.repeat.set(5,5);ft.anisotropy=8;
+  const floor=new T3.Mesh(new T3.CircleGeometry(340,64),new T3.MeshStandardMaterial({map:ft,color:0x8a8a8a,metalness:.3,roughness:.4}));floor.rotation.x=-Math.PI/2;gr.add(floor);
+  // hangar walls (Figma panorama) on the arc behind the car, dark steel elsewhere
+  const R=330,arc=2.9,H=R*arc/3,ht=TL.load('art/tex/hangar.jpg');ht.colorSpace=T3.SRGBColorSpace;const back=Math.atan2(-.45,-.9);
+  const wall=new T3.Mesh(new T3.CylinderGeometry(R,R,H,64,1,true,back-arc/2,arc),new T3.MeshBasicMaterial({map:ht,side:T3.BackSide,color:new T3.Color(1,1,1).multiplyScalar(.95)}));wall.position.y=H/2-6;gr.add(wall);
+  const rest=new T3.Mesh(new T3.CylinderGeometry(R,R,H,48,1,true,back+arc/2,Math.PI*2-arc),new T3.MeshStandardMaterial({color:0x1b1e1f,metalness:.6,roughness:.6,side:T3.BackSide}));rest.position.y=H/2-6;gr.add(rest);
+  const cap=new T3.Mesh(new T3.CircleGeometry(R,48),new T3.MeshBasicMaterial({color:0x07080a}));cap.rotation.x=Math.PI/2;cap.position.y=H-6;gr.add(cap);
+  // turntable: dark steel with a hazard ring
+  const disc=this.gDisc=new T3.Mesh(new T3.CylinderGeometry(46,48,2.4,64),new T3.MeshStandardMaterial({color:0x2a2d31,metalness:.85,roughness:.3}));disc.position.y=1.2;gr.add(disc);
+  {const c=document.createElement('canvas');c.width=512;c.height=16;const x=c.getContext('2d');for(let i=0;i<32;i++){x.fillStyle=i%2?'#111':'#ffc21a';x.beginPath();x.moveTo(i*16,0);x.lineTo(i*16+16,0);x.lineTo(i*16+8,16);x.lineTo(i*16-8,16);x.fill()}
+   const t=new T3.CanvasTexture(c);t.wrapS=T3.RepeatWrapping;t.repeat.set(3,1);t.colorSpace=T3.SRGBColorSpace;const ring=new T3.Mesh(new T3.CylinderGeometry(48.2,48.2,2.4,96,1,true),new T3.MeshStandardMaterial({map:t,roughness:.6}));ring.position.y=1.2;gr.add(ring)}
+  // work lights
+  const pl=[[0xffd9a0,-110,150,-60,1.1],[0xffe6c0,110,150,40,.9],[0xffffff,0,190,0,.7],[0xbfd4ff,70,50,150,.6]];this.gLights=pl.map(([c,a,b,d,i])=>{const L=new T3.PointLight(c,i,700,1);L.position.set(a,b,d);gr.add(L);return L});
+  {const lg=new T3.CylinderGeometry(0,40,70,24,1,true),lm=new T3.MeshBasicMaterial({color:0xffe2a8,transparent:true,opacity:.06,blending:T3.AdditiveBlending,depthWrite:false,side:T3.DoubleSide});for(const[x,z]of[[-60,-40],[60,-30],[0,50]]){const c=new T3.Mesh(lg,lm);c.position.set(x,150,z);gr.add(c)}}
   this.gYaw=.6;this.gVel=.25},
  garageSet(def,tune){if(!this.concept)return false;if(!this.gRoom)this.garageBuild();if(this.gCar){this.gDisc.remove(this.gCar);this.gCar=null}
   const c={L:def.L,Wd:def.Wd,col:(tune&&tune.p1)||def.col,st:{id:def.id},kind:'player'};let g;if(def.soon){g=this.soonMesh(def);if(!g)return false}else if(def.kenney){if(!this.kReady||!this.km[def.kenney])return false;g=this.kenneyMesh(c,def.kenney);g.userData.beam.visible=false}else g=this.zMesh(c,this.zSpec(def.id,tune),true);g.position.y=1;if(g.userData.beam)g.userData.beam.visible=false;this.gDisc.add(g);this.gCar=g;return true},
  garageRender(dt){if(!this.gRoom||!this.gCar)return false;const C=this.cam;this.gRoom.visible=true;this.sky.visible=false;const fogD=this.scene.fog.density;this.scene.fog.density=0;
   if(!this.gDrag)this.gYaw+=this.gVel*dt;this.gVel=lerp(this.gVel,.25,Math.min(1,dt*1.5));this.gDisc.rotation.y=this.gYaw;
-  const V=this.gView||{x:VW/2,y:VH/2,w:VW,h:VH},fov=40,tn=Math.tan(fov*Math.PI/360),av=Math.max(120,Math.min(V.w*.92,V.h*1.75)),d=clamp(74*VH/(2*tn*av),80,340),el=.3;
+  const V=this.gView||{x:VW/2,y:VH/2,w:VW,h:VH},fov=40,tn=Math.tan(fov*Math.PI/360),av=Math.max(120,Math.min(V.w*.92,V.h*1.75)),d=clamp(74*VH/(2*tn*av),80,340),el=.13;
   C.near=2;C.fov=fov;C.setViewOffset(VW,VH,VW/2-V.x,VH/2-V.y,VW,VH);
-  const cx=this.GX,cz=this.GZ;C.position.set(cx+d*Math.cos(el)*.45,d*Math.sin(el)+6,cz+d*Math.cos(el)*.9);C.lookAt(cx,6,cz);
+  const cx=this.GX,cz=this.GZ;C.position.set(cx+d*Math.cos(el)*.45,d*Math.sin(el)+9,cz+d*Math.cos(el)*.9);C.lookAt(cx,13,cz);
   const bs=this.bloom?this.bloom.strength:0;if(this.bloom)this.bloom.strength=.28;const env=this.scene.environment;if(this.env)this.scene.environment=this.env;
   if(this.comp)this.comp.render();else this.renderer.render(this.scene,C);
   if(this.bloom)this.bloom.strength=bs;this.scene.environment=env;this.scene.fog.density=fogD;this.gRoom.visible=false;this.sky.visible=true;C.clearViewOffset();C.near=8;C.updateProjectionMatrix();return true},
