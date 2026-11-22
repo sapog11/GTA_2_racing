@@ -1096,9 +1096,12 @@ const TOPT=[{k:'p1',ic:'🎨',l:'Lak',price:3000,type:'sw'},{k:'fin',ic:'✨',l:
  {k:'rim',ic:'🛞',l:'Disky',price:3500,type:'sw'},{k:'glow',ic:'💡',l:'Neon pod autem',price:6000,type:'sw'},
  {k:'wing',ic:'🏁',l:'Křídlo',type:'ch',vals:[[1,'Křídlo',7500],[0,'Bez křídla',0]]},{k:'low',ic:'⬇️',l:'Podvozek',type:'ch',vals:[[0,'Normál',0],[1,'Snížený',4500]]},{k:'tint',ic:'🕶️',l:'Skla',type:'ch',vals:[[0,'Čistý',0],[1,'Tónovaný',2500]]},
  {k:'sw',ic:'🎡',l:'Volant (kabina)',type:'ch',vals:[['sport','Sport',0],['fur','Chlupatej',2000],['wood','Dřevo',4000],['race','Závodní',6500]]},
+ {k:'rims',ic:'⚙️',l:'Styl disků',type:'ch',vals:[['stock','Originál',0],['five','5 paprsků',4000],['mesh','Síťové',6000],['deep','Hluboké',8000],['turbine','Turbína',7000]]},
+ {k:'cal',ic:'🛑',l:'Brzdové třmeny',price:2500,type:'sw'},{k:'hl',ic:'🔦',l:'Přední světla',type:'ch',vals:[['stock','Standard',0],['led','LED pásky',3500],['angel','Angel eyes',5000]]},
+ {k:'tl',ic:'🚨',l:'Zadní světla',type:'ch',vals:[['stock','Standard',0],['bar','LED pás',3000]]},
  {k:'dice',ic:'🎲',l:'Plyšový kostky na zrcátku',price:1500,type:'sw'},{k:'amb',ic:'🌈',l:'Světlo v kabině',price:3500,type:'sw'},{k:'seat',ic:'💺',l:'Sedačky',price:3000,type:'sw'}];
 const TPAL=['#141519','#e9ecef','#8a8f98','#c8102e','#ff2e88','#e8a21a','#ffd400','#9dff00','#2d6b3a','#2ef0ff','#1d3f8a','#6a2cc8'],TRIM=['#d8dbe0','#1a1a1e','#c9a227','#ff2e88','#2ef0ff','#c8102e','#9dff00'],TGLOW=['off','#ff2e88','#2ef0ff','#9dff00','#ff8a2e','#6a2cc8','#ffffff'];
-{const V={p1:TPAL,rim:TRIM,glow:TGLOW,dice:['off','#ff4fa3','#ffffff','#ffd400','#2ef0ff','#e01020'],amb:['off','#ff2e88','#2ef0ff','#9dff00','#ff8a2e','#ffffff'],seat:['#1a1a1e','#7a1018','#d8cfc0','#ff4fa3','#2a3f8a','#c97a2a']};for(const o of TOPT)if(V[o.k])o.vals=V[o.k]}
+{const V={p1:TPAL,rim:TRIM,glow:TGLOW,dice:['off','#ff4fa3','#ffffff','#ffd400','#2ef0ff','#e01020'],cal:['#2a2a2e','#d4142a','#ffd400','#1d6bff','#9dff00','#ff6a00'],amb:['off','#ff2e88','#2ef0ff','#9dff00','#ff8a2e','#ffffff'],seat:['#1a1a1e','#7a1018','#d8cfc0','#ff4fa3','#2a3f8a','#c97a2a']};for(const o of TOPT)if(V[o.k])o.vals=V[o.k]}
 function tunePrice(key){const[k,v]=key.split(':'),o=TOPT.find(x=>x.k===k);if(!o)return 0;if(v===undefined)return o.price||0;const r=o.vals.find(q=>String(q[0])===v);return r?r[2]:0}
 function g3d(){return typeof R3!=='undefined'&&R3.ok&&!!R3.concept}
 function garage3D(){const c=CARS[gIdx];if(g3d()){R3.garageSet(c,SAVE.tune[c.id]||null);G.g3=c.id+R3.tuneKey(c.id)}}
@@ -1107,7 +1110,7 @@ function renderGarage(){const el=$('scr-garage'),c=CARS[gIdx],own=SAVE.owned.inc
   let btn=own?(SAVE.car===c.id?`<button class="btn" disabled>VYBRÁNO</button>`:`<button class="btn" data-pick="${c.id}">VYBRAT</button>`):`<button class="btn pink" data-buy="${c.id}" ${SAVE.cash<c.price?'disabled':''}>KOUPIT • ${c.price.toLocaleString('cs-CZ')} Kč</button>`;
   const Z=(typeof R3!=='undefined'&&R3.ZB&&R3.ZB[c.id])||{},T=Object.assign({},Z,SAVE.tune[c.id]||{}),hasW=(T.wing===1)||(T.wing!==0&&(Z.kit||[]).includes('wing'));
   let tn='';if(!own)tn=`<p class="note">Tuning až po odemčení auta.</p>`;
-  else{const U=SAVE.unl[c.id]||[],all=U.includes('*'),has=k=>all||U.includes(k),pr=n=>n.toLocaleString('cs-CZ')+' Kč',cur={...T,wing:hasW?1:0,low:T.low?1:0,tint:T.tint?1:0,sw:T.sw||'sport',dice:T.dice||'off',amb:T.amb||'off',seat:T.seat||'#1a1a1e'};
+  else{const U=SAVE.unl[c.id]||[],all=U.includes('*'),has=k=>all||U.includes(k),pr=n=>n.toLocaleString('cs-CZ')+' Kč',cur={...T,wing:hasW?1:0,low:T.low?1:0,tint:T.tint?1:0,sw:T.sw||'sport',rims:T.rims||'stock',hl:T.hl||'stock',tl:T.tl||'stock',cal:T.cal||'#2a2a2e',dice:T.dice||'off',amb:T.amb||'off',seat:T.seat||'#1a1a1e'};
    tn='<div class="tn"><p class="note" style="margin:4px 0 0">Kupuješ jednou pro tohle auto, pak měníš zdarma.</p>';
    for(const o of TOPT){const v0=cur[o.k];if(o.type==='sw'){const ok=!o.price||has(o.k);
      tn+=`<div class="tl">${o.ic} ${o.l} ${ok?'':`<button class="tbuy" data-tbuy="${o.k}" ${SAVE.cash<o.price?'disabled':''}>🔓 ${pr(o.price)}</button>`}</div><div class="sw ${ok?'':'lk'}">${o.vals.map(v=>`<button data-tune="${o.k}:${v}" class="${String(v0).toLowerCase()===v.toLowerCase()?'on':''}" style="background:${v==='off'?'repeating-linear-gradient(45deg,#222 0 4px,#444 4px 8px)':v}"></button>`).join('')}</div>`}
@@ -1573,7 +1576,7 @@ import {KTX2Loader} from './vendor/jsm/loaders/KTX2Loader.js';
 import {MeshoptDecoder} from './vendor/jsm/libs/meshopt_decoder.module.js';
 import * as SkeletonUtils from './vendor/jsm/utils/SkeletonUtils.js';
 window.THREE=THREE;window.TADD={EffectComposer,RenderPass,UnrealBloomPass,OutputPass,GLTFLoader,RGBELoader,SkeletonUtils,DRACOLoader,KTX2Loader,MeshoptDecoder};
-const s=document.createElement('script');s.src='r3.js?v=24';document.body.appendChild(s);
+const s=document.createElement('script');s.src='r3.js?v=25';document.body.appendChild(s);
 </script>
 </body>
 </html>

@@ -14,5 +14,8 @@
   "body": "models/koncept/CarConcept.gltf (Khronos CarConcept, CC-BY 4.0)",
   "kit": [],
   "notes": "Drop body.glb / wheel.glb / kit_*.glb here later to replace the shared Z-platform parts."
- }
+ },
+ "rims": "turbine",
+ "hl": "led",
+ "cal": "#d4142a"
 }

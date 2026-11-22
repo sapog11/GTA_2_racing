@@ -20,5 +20,7 @@
    "skirts"
   ],
   "notes": "Drop body.glb / wheel.glb / kit_*.glb here later to replace the shared Z-platform parts."
- }
+ },
+ "rims": "five",
+ "cal": "#d4142a"
 }
