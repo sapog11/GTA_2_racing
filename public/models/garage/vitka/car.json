@@ -16,5 +16,8 @@
  "cls": "van",
  "parts": {
   "notes": "Body proportions (sx = length, sy = height, w = width) live in R3.ZB; override them here."
- }
+ },
+ "rt": 0.04,
+ "rl": 0,
+ "tl": "vertical"
 }

@@ -114,3 +114,63 @@ def rear():
 for s in('five','multi','mesh','deep','turbine'):rim(s)
 slim_headlight();rear()
 print('ok',sorted(os.listdir(OUT)))
+
+# ---------------- ALMOND "EYE" HEADLIGHT (game units, faces +X, inner end at z=0, outer at z=+4.6) ----------------
+def eye_headlight():
+    reset();H=mat('Housing',(.015,.015,.02),.9,.12);L=mat('Light',(1,1,1),0,.3,(1,.97,.92));C=mat('Chrome',(.92,.92,.95),1,.06);B=mat('Amber',(1,.5,.05),0,.3,(1,.45,0))
+    import mathutils
+    def almond(n=40,sx=2.3,sy=.62,lift=.55):
+        pts=[]
+        for i in range(n):
+            t=i/n*2*math.pi;x=math.cos(t);y=math.sin(t)*(1 if math.sin(t)>0 else .55)
+            z=(x+1)/2*sx*2;yy=y*sy*(.65+.35*(x+1)/2)+lift*(x+1)/2
+            pts.append((z,yy))
+        return pts
+    def slab(pts,x0,x1,m,name,shrink=1.0,dy=0):
+        bm=bmesh.new();cz=sum(p[0] for p in pts)/len(pts);cy=sum(p[1] for p in pts)/len(pts)
+        P=[(cz+(z-cz)*shrink,cy+(y-cy)*shrink+dy) for z,y in pts]
+        f=[bm.verts.new((x1,y,z)) for z,y in P];b=[bm.verts.new((x0,y,z)) for z,y in P]
+        bm.faces.new(f);bm.faces.new(b[::-1])
+        for i in range(len(P)):j=(i+1)%len(P);bm.faces.new((f[i],b[i],b[j],f[j]))
+        return obj(name,bm,m,0,True)
+    A=almond();slab(A,-.6,.02,H,'housing')
+    slab(A,.02,.06,C,'bezel',.9)
+    slab(A,.05,.09,H,'inner',.82)
+    # projector eye at outer end, small one inner
+    for z,y,r in((3.2,.55,.42),(1.55,.32,.3)):
+        o=cyl(r,.16,.12,36);bmesh.ops.translate(o,verts=o.verts,vec=(0,y,z));obj('eye',o,L,.01)
+        t=torus(r+.03,.035,.18,36,8);bmesh.ops.translate(t,verts=t.verts,vec=(0,y,z));obj('ring',t,C)
+    # LED DRL hook along the lower lid
+    bm=bmesh.new();seg=[(0.35,-.05),(1.2,-.22),(2.4,-.18),(3.6,.05),(4.4,.42)]
+    for (z0,y0),(z1,y1) in zip(seg,seg[1:]):
+        v=[bm.verts.new((x,y+dy,z)) for z,y in((z0,y0),(z1,y1)) for x in(.1,.16) for dy in(-.05,.05)]
+        for f in[(0,1,3,2),(4,6,7,5),(0,4,5,1),(2,3,7,6),(0,2,6,4),(1,5,7,3)]:bm.faces.new([v[i] for i in f])
+    obj('drl',bm,L,0,False)
+    o=cyl(.12,.1,.12,16);bmesh.ops.translate(o,verts=o.verts,vec=(0,.05,4.25));obj('blink',o,B)
+    export('headlight_eye')
+eye_headlight()
+
+# ---------------- HONEYCOMB INTAKE GRILLE (faces +X, width along Z = 1, height Y = 1) ----------------
+def intake():
+    reset();F=mat('Frame',(.05,.05,.055),.6,.35);M=mat('Mesh',(.12,.12,.13),.8,.3);D=mat('Back',(.005,.005,.005),0,.9)
+    bm=bmesh.new();r=.045;h=r*math.sqrt(3)
+    row=0;y=-.5+h/2
+    while y<.5-h/2:
+        z=-.5+r+(r*1.5 if row%2 else 0)
+        while z<.5-r:
+            c=bmesh.ops.create_circle(bm,cap_ends=False,segments=6,radius=r*.92)['verts']
+            for v in c:v.co=(.0,v.co.y+y,v.co.x+z)
+            inner=[bm.verts.new((.0,y+(v.co.y-y)*.72,z+(v.co.z-z)*.72)) for v in c]
+            back=[bm.verts.new((-.06,y+(v.co.y-y)*.72,z+(v.co.z-z)*.72)) for v in c]
+            for i in range(6):j=(i+1)%6;bm.faces.new((c[i],c[j],inner[j],inner[i]));bm.faces.new((inner[i],inner[j],back[j],back[i]))
+            z+=r*3
+        y+=h/2;row+=1
+    obj('cells',bm,M,0,False)
+    b=bmesh.new();v=[b.verts.new((-.08,y,z)) for y in(-.5,.5) for z in(-.5,.5)];b.faces.new((v[0],v[1],v[3],v[2]));obj('back',b,D,0,False)
+    fr=bmesh.new()
+    for (y0,y1,z0,z1) in((-.53,-.47,-.53,.53),(.47,.53,-.53,.53),(-.53,.53,-.53,-.47),(-.53,.53,.47,.53)):
+        vv=[fr.verts.new((x,y,z)) for x in(-.08,.04) for y in(y0,y1) for z in(z0,z1)]
+        for f in[(0,1,3,2),(4,6,7,5),(0,4,5,1),(2,3,7,6),(0,2,6,4),(1,5,7,3)]:fr.faces.new([vv[i] for i in f])
+    obj('frame',fr,F,0,False)
+    export('intake_honeycomb')
+intake()

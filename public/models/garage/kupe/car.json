@@ -19,5 +19,8 @@
  "cls": "sport",
  "parts": {
   "notes": "Body proportions (sx = length, sy = height, w = width) live in R3.ZB; override them here."
- }
+ },
+ "rt": 0.14,
+ "rl": 0.5,
+ "tl": "split"
 }

@@ -18,5 +18,8 @@
   "notes": "Drop body.glb / wheel.glb / kit_*.glb here later to replace the shared Z-platform parts."
  },
  "rims": "turbine",
- "cal": "#7a1e2a"
+ "cal": "#7a1e2a",
+ "rt": 0.1,
+ "rl": 0.6,
+ "tl": "bar"
 }

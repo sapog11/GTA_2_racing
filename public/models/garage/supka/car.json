@@ -25,6 +25,8 @@
   "notes": "Drop body.glb / wheel.glb / kit_*.glb here later to replace the shared Z-platform parts."
  },
  "rims": "five",
- "tl": "bar",
- "cal": "#7a1e2a"
+ "tl": "round",
+ "cal": "#7a1e2a",
+ "rt": 0.14,
+ "rl": 0.6
 }

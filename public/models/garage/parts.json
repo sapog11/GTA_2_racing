@@ -100,6 +100,14 @@
   "spz": {
    "name": "SPZ",
    "fits": "all"
+  },
+  "hl:eye": {
+   "name": "Mandlové oči",
+   "fits": "all"
+  },
+  "hl:slim": {
+   "name": "Štíhlé",
+   "fits": "all"
   }
  },
  "classes": {

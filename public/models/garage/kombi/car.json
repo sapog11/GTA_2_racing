@@ -19,5 +19,8 @@
  "parts": {
   "notes": "Body proportions (sx = length, sy = height, w = width) live in R3.ZB; override them here."
  },
- "rims": "multi"
+ "rims": "multi",
+ "rt": 0.06,
+ "rl": 1.8,
+ "tl": "vertical"
 }

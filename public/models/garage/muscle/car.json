@@ -19,5 +19,8 @@
  "roof": "#111214",
  "cal": "#c9a227",
  "hl": "oval",
- "cls": "muscle"
+ "cls": "muscle",
+ "rt": 0.12,
+ "rl": 0.8,
+ "tl": "split"
 }

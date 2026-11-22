@@ -35,3 +35,15 @@ Každý díl je samostatný objekt v `models/koncept/CarConcept.gltf`, takže se
 | Interiér | `InteriorSeats*`, `InteriorDash*`, `InteriorSteering*` | `seat`, `sw`, `amb`, `dice` |
 
 Až budou vlastní modely dílů, stačí je pojmenovat stejně a hra je použije místo původních.
+
+## Pravidla kvalitního auta (kontroluje se screenshoty ze 4 stran)
+
+1. **Podběhy:** mezi pneumatikou a okrajem podběhu musí být vždy mezera (min. ~1.5 jednotky). Kolo nikdy nesmí zajíždět do karoserie ani trčet ven z podběhu. Kontrola: `R3.archCheck(auto)` vrací mezery pro každé kolo.
+2. **Nic nevisí:** každý díl (světla, SPZ, výfuky, mřížky, difuzor) se přichytává na povrch karoserie paprskem (`kit.userData.snap`) — žádné díly ve vzduchu ani zapuštěné.
+3. **Žádné tyče:** spoilery, lišty a prahy jsou tenké a přilehlé ke karoserii; nic netrčí před nárazník ani pod práh.
+4. **Proporce:** křídlo max. ~85 % šířky zádi a max. ~1/3 výšky auta nad víkem kufru.
+5. **Záď:** zadní část se zužuje (`rt` = zúžení 0–0.3), každá třída má jiná zadní světla (`tl`: round / vertical / split / bar).
+6. **Střecha:** okna musí být vidět — `rl` zvedá střechu a okna (0–2).
+7. **Světla:** štíhlá s „velkýma očima“ (`hl`: eye / slim / blade …), sedí nízko v nárazníku, nikdy ne kostka.
+8. **Světlá kola a kontrast:** disky nesmí splývat s pneumatikou — jiná barva / kov.
+9. **Každá změna = 4 screenshoty** (zboku, 3/4 zepředu, 3/4 zezadu, zepředu) a oprava, dokud nic nevypadá špatně.

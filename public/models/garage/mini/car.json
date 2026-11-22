@@ -11,10 +11,13 @@
  "sx": 0.8,
  "sy": 1.16,
  "kit": [],
- "hl": "oval",
+ "hl": "eye",
  "cls": "hatch",
  "parts": {
   "notes": "Body proportions (sx = length, sy = height, w = width) live in R3.ZB; override them here."
  },
- "rims": "five"
+ "rims": "five",
+ "rt": 0.3,
+ "rl": 1.8,
+ "tl": "round"
 }

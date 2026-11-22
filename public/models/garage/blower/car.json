@@ -18,5 +18,8 @@
  "hood": "#8a5a2a",
  "cal": "#b8541a",
  "hl": "popup",
- "cls": "muscle"
+ "cls": "muscle",
+ "rt": 0.12,
+ "rl": 0.6,
+ "tl": "round"
 }

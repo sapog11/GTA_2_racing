@@ -15,7 +15,7 @@
   "scoop",
   "flaps"
  ],
- "hl": "slim",
+ "hl": "eye",
  "cls": "rally",
  "parts": {
   "body": "models/koncept/CarConcept.gltf (Khronos CarConcept, CC-BY 4.0)",
@@ -27,5 +27,8 @@
   "notes": "Drop body.glb / wheel.glb / kit_*.glb here later to replace the shared Z-platform parts."
  },
  "rims": "mesh",
- "cal": "#c9a227"
+ "cal": "#c9a227",
+ "rt": 0.14,
+ "rl": 1.1,
+ "tl": "round"
 }
