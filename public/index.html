@@ -192,7 +192,9 @@ body.drag #spd,#ctrl.on~#hud #spd{}
 #hMain.small{font-size:17px}
 #stick{position:fixed;width:120px;height:120px;margin:-60px 0 0 -60px;border-radius:50%;border:3px solid rgba(255,255,255,.35);background:rgba(10,12,20,.25);display:none;z-index:8;pointer-events:none}
 #stick i{position:absolute;left:50%;top:50%;width:46px;height:46px;margin:-23px 0 0 -23px;border-radius:50%;background:rgba(255,204,26,.75);border:2px solid #111}
-body.drag #kL,body.drag #kR{display:none}
+body.drag #kL,body.drag #kR{display:none}body.wheel #kL,body.wheel #kR{display:none!important}
+#wheel{position:fixed;left:max(14px,env(safe-area-inset-left));bottom:calc(max(14px,env(safe-area-inset-bottom)) + 4px);width:132px;height:132px;z-index:8;pointer-events:none;display:none;opacity:.88;filter:drop-shadow(0 4px 10px rgba(0,0,0,.6))}
+body.wheel.driving #wheel{display:block}body.wheel.driving.cock #wheel{display:none}#wheel svg{width:100%;height:100%;display:block;transition:none}
 body.two #kL,body.two #kR,body.two #kU,body.two #kD{display:none!important}
 .tw{position:fixed;width:120px;height:120px;margin:-60px 0 0 -60px;border-radius:50%;border:3px solid rgba(255,255,255,.3);background:rgba(10,12,20,.25);display:none;z-index:8;pointer-events:none}
 #stickL{border-radius:60px;height:70px;margin-top:-35px}#stickR{width:70px;margin-left:-35px;border-radius:60px}
@@ -285,6 +287,10 @@ body.two.driving #twHint{display:flex}
 </div>
 
 <div id="stick"><i></i></div><div id="stickL" class="tw"><i></i><span>◀ ▶</span></div><div id="stickR" class="tw"><i></i><span>▲<br>▼</span></div>
+<div id="wheel"><svg viewBox="-100 -100 200 200"><defs><radialGradient id="whg" cx="50%" cy="40%"><stop offset="0" stop-color="#3a3d48"/><stop offset="1" stop-color="#111217"/></radialGradient></defs>
+<circle r="88" fill="none" stroke="#14151b" stroke-width="22"/><circle r="88" fill="none" stroke="url(#whg)" stroke-width="18"/><circle r="97" fill="none" stroke="rgba(255,46,136,.55)" stroke-width="2"/>
+<path d="M-6-97h12v18h-12z" fill="#ff2e88"/><path d="M-80 8 L-30 14 L-22 40 L22 40 L30 14 L80 8" fill="none" stroke="#1b1c23" stroke-width="16" stroke-linejoin="round"/><path d="M0 34 L0 80" stroke="#1b1c23" stroke-width="16"/>
+<circle r="30" fill="#17181f" stroke="#2c2f3a" stroke-width="3"/><text y="11" text-anchor="middle" font-family="Audiowide,Bangers,sans-serif" font-size="30" fill="#ffcc1a">Z</text></svg></div>
 <div id="twHint"><span>◀ LEVÝ PRST: ZATÁČENÍ ▶</span><span>PRAVÝ: ▲ PLYN / ▼ BRZDA</span></div>
 <div id="ctrl">
   <button id="kL" data-k="l">◀</button>
@@ -313,7 +319,7 @@ const SAVEKEY='usti_mesto_andelu_v1';
 let SAVE={steer:'drag',resp:0,cash:0,hero:null,car:'civka',owned:['civka'],done:{},seenIntro:false,comics:['intro'],mute:false,autoGas:null};
 try{const s=JSON.parse(localStorage.getItem(SAVEKEY)||'null');if(s)SAVE=Object.assign(SAVE,s)}catch(e){}
 if(!SAVE.owned.includes('koncept'))SAVE.owned.push('koncept');if(!SAVE.tune)SAVE.tune={};if(!SAVE.tuned)SAVE.tuned=[];
-if((('ontouchstart' in window)||matchMedia('(pointer:coarse)').matches)&&!SAVE.steer2){SAVE.steer2=1;SAVE.steer='two'}
+if((('ontouchstart' in window)||matchMedia('(pointer:coarse)').matches)&&!SAVE.steer3){SAVE.steer2=SAVE.steer3=1;SAVE.steer='wheel'}if(SAVE.steer==='two')SAVE.steer='wheel';
 function save(){try{localStorage.setItem(SAVEKEY,JSON.stringify(SAVE))}catch(e){}}
 const isTouch=('ontouchstart' in window)||matchMedia('(pointer:coarse)').matches;
 if(SAVE.autoGas===null)SAVE.autoGas=isTouch;
@@ -579,19 +585,22 @@ const Snd={ctx:null,
     const a=new Audio(URL.createObjectURL(new Blob([ab],{type:'audio/wav'})));a.loop=true;a.setAttribute('playsinline','');a.volume=.01;a.play().then(()=>{this.keep=a}).catch(()=>{})}catch(e){}}
  },
  setMute(m){if(m)DJ.stop();SAVE.mute=m;save();if(this.master)this.master.gain.value=m?0:.8},
- engine(v,on,boost){if(!this.ctx)return;const p=G.world&&G.world.player,t=this.ctx.currentTime,gear=p&&p.gear||1,rpm=clamp(p&&p.rpm||0,0,1);if(p&&this.lg&&gear>this.lg&&on){this.nz(.35,'highpass',1800,.18);this.tone(900,300,.25,'sine',.04)}this.lg=gear;const f=(on?42:0)+rpm*150+gear*14+(boost?35:0);if(this.scr)this.scr.gain.setTargetAtTime(p&&p.drift&&on?.12:0,t,.05);this.eng.o1.frequency.setTargetAtTime(f,t,.05);this.eng.o2.frequency.setTargetAtTime(f,t,.05);this.eng.g.gain.setTargetAtTime(on?.05+Math.min(.05,Math.abs(v)/5000):0,t,.1)},
+ engine(v,on,boost){if(!this.ctx)return;const p=G.world&&G.world.player,t=this.ctx.currentTime,gear=p&&p.gear||1,rpm=clamp(p&&p.rpm||0,0,1);if(p&&this.lg&&gear>this.lg&&on){this.nz(.22,'bandpass',2600,.07)}this.lg=gear;const f=(on?42:0)+rpm*150+gear*14+(boost?35:0);if(this.scr)this.scr.gain.setTargetAtTime(p&&p.drift&&on?.12:0,t,.05);this.eng.o1.frequency.setTargetAtTime(f,t,.05);this.eng.o2.frequency.setTargetAtTime(f,t,.05);this.eng.g.gain.setTargetAtTime(on?.05+Math.min(.05,Math.abs(v)/5000):0,t,.1)},
  siren(level,tt){if(!this.ctx)return;const t=this.ctx.currentTime;this.sir.o.frequency.setTargetAtTime(Math.floor(tt/.42)%2?960:720,t,.02);this.sir.g.gain.setTargetAtTime(level*.045,t,.1)},
  rain(on){if(this.ctx)this.rainG.gain.setTargetAtTime(on?.07:0,this.ctx.currentTime,.4)},
  nz(dur,type,freq,vol,t0){const c=this.ctx;if(!c)return;const t=t0||c.currentTime;const s=c.createBufferSource();s.buffer=this.noise;const f=c.createBiquadFilter();f.type=type;f.frequency.value=freq;const g=c.createGain();g.gain.setValueAtTime(vol,t);g.gain.exponentialRampToValueAtTime(.001,t+dur);s.connect(f);f.connect(g);g.connect(this.sfx);s.start(t,Math.random()*1.5);s.stop(t+dur+.05)},
  tone(f0,f1,dur,type,vol,dest,t0){const c=this.ctx;if(!c)return;const t=t0||c.currentTime;const o=c.createOscillator();o.type=type;o.frequency.setValueAtTime(f0,t);o.frequency.exponentialRampToValueAtTime(Math.max(20,f1),t+dur);const g=c.createGain();g.gain.setValueAtTime(vol,t);g.gain.exponentialRampToValueAtTime(.001,t+dur);o.connect(g);g.connect(dest||this.sfx);o.start(t);o.stop(t+dur+.05)},
- shot(){this.nz(.07,'highpass',1200,.22);this.tone(180,60,.06,'square',.08)},
- crash(v){this.nz(.28,'lowpass',500,clamp(v,.05,.5))},
+ shot(){this.nz(.09,'bandpass',1500,.3);this.nz(.2,'lowpass',300,.25);this.tone(140,50,.08,'sine',.12)},
+ crash(v){const c=this.ctx;if(!c)return;v=clamp(v,.05,.6);const t=c.currentTime;
+  {const o=c.createOscillator(),g=c.createGain();o.type='sine';o.frequency.setValueAtTime(95,t);o.frequency.exponentialRampToValueAtTime(38,t+.25);g.gain.setValueAtTime(v*1.1,t);g.gain.exponentialRampToValueAtTime(.001,t+.3);o.connect(g);g.connect(this.sfx);o.start(t);o.stop(t+.35)}
+  this.nz(.18,'lowpass',420,v*.9);this.nz(.32,'bandpass',1300,v*.55,t+.01);if(v>.22){for(let i=0;i<3;i++)this.nz(.06,'highpass',4200,v*.22,t+.05+i*.045+Math.random()*.03)}},
  boom(){this.nz(1,'lowpass',260,.7);this.tone(120,30,.8,'sine',.5)},
  thunder(d){if(!this.ctx)return;const t=this.ctx.currentTime+(d===undefined?.4+Math.random():d);this.nz(2.2,'lowpass',160,.6,t)},
  hit(){this.tone(90,40,.5,'sine',.6);this.nz(.25,'lowpass',900,.35)},
  alarm(){const c=this.ctx;if(!c)return;for(let k=0;k<6;k++)this.tone(k%2?1400:1100,k%2?1400:1100,.22,'square',.05,null,c.currentTime+k*.25)},
- honk(){if(!this.ctx||this.honkT>this.ctx.currentTime)return;this.honkT=this.ctx.currentTime+1;this.tone(420,410,.35,'square',.05);this.tone(520,510,.35,'square',.04)},
- click(){this.tone(900,500,.06,'square',.05)},
+ honk(){const c=this.ctx;if(!c||this.honkT>c.currentTime)return;this.honkT=c.currentTime+1.2;const t=c.currentTime,d=.28+Math.random()*.25,f=c.createBiquadFilter();f.type='lowpass';f.frequency.value=1600;f.Q.value=2;const g=c.createGain();g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.045,t+.02);g.gain.setValueAtTime(.045,t+d);g.gain.linearRampToValueAtTime(0,t+d+.06);f.connect(g);g.connect(this.sfx);
+  for(const fr of[349,440]){const o=c.createOscillator();o.type='sawtooth';o.frequency.value=fr*(.98+Math.random()*.04);o.connect(f);o.start(t);o.stop(t+d+.1)}},
+ click(){this.nz(.03,'bandpass',3200,.08)},
  nitro(){this.nz(.5,'bandpass',900,.25)},
  // ---- music: original dark boom-bap / synth loop ----
  CH:[[57,60,64],[53,57,60],[50,53,57],[52,56,59]],
@@ -1136,7 +1145,7 @@ function startRoam(at,target){AN.ev('roam_start');hideAll();G.engineOff=false;$(
   RS={roam:true,nitro:.6,nitroFill:SAVE.hero==='lucie'?.098:.07,target:target||null,enterCD:2.5};G.roamDist='';
   $('hud').classList.add('on');if(isTouch)$('ctrl').classList.add('on');$('kU').style.display=SAVE.autoGas?'none':'block';$('kAt').textContent='NITRO';$('kA').classList.remove('hot');
   $('hMainL').textContent='ČTVRŤ';$('hMain').classList.add('small');$('bust').style.display='none';$('center').textContent='';$('obj').classList.add('on');
-  $('hint').textContent=isTouch?'':'←→ řízení • ↑ plyn • ↓ brzda • MEZERNÍK nitro • SHIFT smyk • C kamera • R rádio • P pauza';if(isTouch&&SAVE.steer==='two'&&!SAVE.twoTip){SAVE.twoTip=1;save();floatMsg('✌️ DVA PRSTY',3);}
+  $('hint').textContent=isTouch?'':'←→ řízení • ↑ plyn • ↓ brzda • MEZERNÍK nitro • SHIFT smyk • C kamera • R rádio • P pauza';if(isTouch&&SAVE.steer==='wheel'&&!SAVE.wheelTip){SAVE.wheelTip=1;save();floatMsg('🛞 TOČ VOLANTEM PRSTEM',3);}
   Snd.startMusic(false);Snd.setStyle(SAVE.radio||'labe');Snd.rain(w.rain);drawMinimapBg();setTimeout(()=>{const a=$('area');if(G.mode==='roam'){a.textContent='📻 '+STY[Snd.style].name;a.classList.add('on');areaT=2.2}},2600)}
 let areaT=0;
 function updateRoam(dt){const w=G.world,p=w.player;
@@ -1214,6 +1223,7 @@ function playerCtl(){const k=G.keys;const p=G.world&&G.world.player;
   if(G.engineOff)return{thr:p&&p.v>3?-1:0,steer:0};
   let thr=(k.u?1:0)+(k.d?-1:0);let steer=(k.r?1:0)-(k.l?1:0);
   const drag=SAVE.steer==='drag'&&isTouch,two=SAVE.steer==='two'&&isTouch;
+  if(SAVE.steer==='wheel'&&isTouch&&p){wheelUI();steer=WH.ang/WMAX;if(SAVE.autoGas&&!k.d)thr=1;return{thr,steer,hb:!!k.h}}
   if(two&&p){if(TW.L.id!==null){const x=clamp(TW.L.dx/62,-1,1);steer=Math.sign(x)*x*x*.35+x*.65}if(TW.R.id!==null){const dy=TW.R.dy;thr=dy<-6?clamp(-dy/50,.35,1):dy>18?-1:0}else if(!k.u&&!k.d)thr=-.3;if(k.d)thr=-1;return{thr,steer,hb:!!k.h}}
   if(SAVE.autoGas&&!k.d&&isTouch&&!drag)thr=1;
   const chaseCam=typeof R3!=='undefined'&&R3.ok&&(SAVE.cam||'chase')!=='top';
@@ -1221,6 +1231,14 @@ function playerCtl(){const k=G.keys;const p=G.world&&G.world.player;
   else if(STK.id!==null&&p){const L=Math.hypot(STK.dx,STK.dy);if(L>14){const want=Math.atan2(STK.dy,STK.dx);const d=wrapA(want-p.a);steer=clamp(d*2.4,-1,1);if(!k.d)thr=Math.max(thr,clamp(L/60,.35,1))}}
   else if(drag&&!k.d&&!k.u)thr=-.3;
   return{thr,steer,hb:!!k.h}}
+const WH={id:null,ang:0,last:0,cx:0,cy:0,lx:0},WMAX=2.2;
+function wheelOn(){return SAVE.steer==='wheel'&&isTouch&&(G.mode==='race'||G.mode==='roam')}
+function wheelCenter(){if(document.body.classList.contains('cock')&&typeof R3!=='undefined'&&R3.swScr)return R3.swScr;const r=$('wheel').getBoundingClientRect();return{x:r.left+r.width/2,y:r.top+r.height/2}}
+cv.addEventListener('pointerdown',e=>{if(!wheelOn()||WH.id!==null)return;if(e.clientX>VW*.62||e.clientY<VH*.35)return;const c=wheelCenter();WH.id=e.pointerId;WH.cx=c.x;WH.cy=c.y;WH.last=Math.atan2(e.clientY-c.y,e.clientX-c.x);WH.lx=e.clientX;try{cv.setPointerCapture(e.pointerId)}catch(_){}});
+cv.addEventListener('pointermove',e=>{if(e.pointerId!==WH.id)return;const dx=e.clientX-WH.cx,dy=e.clientY-WH.cy,r=Math.hypot(dx,dy),a=Math.atan2(dy,dx);
+  let d=r>34?wrapA(a-WH.last):0;d+=(e.clientX-WH.lx)/(r>34?260:75);WH.ang=clamp(WH.ang+d,-WMAX,WMAX);WH.last=a;WH.lx=e.clientX});
+const whEnd=e=>{if(e.pointerId===WH.id)WH.id=null};{const wt=e=>{if(WH.id!==null&&![...e.touches].some(t=>t.clientX<VW*.62))WH.id=null};addEventListener('touchend',wt);addEventListener('touchcancel',wt)}cv.addEventListener('pointerup',whEnd);cv.addEventListener('pointercancel',whEnd);cv.addEventListener('lostpointercapture',whEnd);
+let whDrawn=99;function wheelUI(){const now=performance.now(),dt=Math.min(.1,(now-(WH.t||now))/1000);WH.t=now;if(WH.id===null)WH.ang*=Math.exp(-dt*9);if(Math.abs(WH.ang)<.01)WH.ang=0;const p=G.world&&G.world.player,a=p?(p.steer||0)*WMAX:WH.ang;if(Math.abs(a-whDrawn)>.01){whDrawn=a;$('wheel').firstChild.style.transform='rotate('+a+'rad)'}}
 function stickOn(){return SAVE.steer==='drag'&&isTouch&&(G.mode==='race'||G.mode==='roam')}
 function twoOn(){return SAVE.steer==='two'&&isTouch&&(G.mode==='race'||G.mode==='roam')}
 const twEl=k=>$(k==='L'?'stickL':'stickR');
@@ -1243,7 +1261,7 @@ const panEnd=e=>{PTS.delete(e.pointerId);pinchD=0;if(e.pointerId===PAN.id){PAN.i
 cv.addEventListener('wheel',e=>{if(!menuOn())return;e.preventDefault();mzoom(e.deltaY>0?.9:1.1)},{passive:false});
 $('zIn').onclick=()=>mzoom(1.25);$('zOut').onclick=()=>mzoom(.8);
 cv.style.cursor='';setInterval(()=>{cv.style.cursor=menuOn()?(PAN.id!==null?'grabbing':'grab'):''},300);
-function applySteerMode(){document.body.classList.toggle('drag',SAVE.steer==='drag'&&isTouch);document.body.classList.toggle('two',SAVE.steer==='two'&&isTouch)}applySteerMode();
+function applySteerMode(){document.body.classList.toggle('wheel',SAVE.steer==='wheel'&&isTouch);document.body.classList.toggle('drag',SAVE.steer==='drag'&&isTouch);document.body.classList.toggle('two',SAVE.steer==='two'&&isTouch)}applySteerMode();
 function updateRace(dt){const w=G.world,p=w.player,L=RS.L;RS.t+=dt;
   if(RS.count>0){RS.count-=dt;const n=Math.ceil(RS.count-.4);$('center').textContent=RS.count>.4?(L.type==='race'?String(n):'JEĎ!'):'JEĎ!';if(RS.count<=0){for(const c of w.cars)c.frozen=false;floatMsg('JEĎ!',.8)}}
   else if(msgT>0){msgT-=dt;if(msgT<=0)$('center').textContent=''}
@@ -1329,12 +1347,12 @@ for(const b of document.querySelectorAll('#ctrl button')){const k=b.dataset.k;
   b.addEventListener('pointerdown',on);b.addEventListener('pointerup',off);b.addEventListener('pointercancel',off);b.addEventListener('lostpointercapture',off);b.addEventListener('contextmenu',e=>e.preventDefault())}
 function pause(){if(!(G.mode==='race'||G.mode==='roam')||(RS&&RS.end))return;DJ.stop();G.prevMode=G.mode;G.mode='paused';Snd.engine(0,false);Snd.siren(0,0);const el=$('scr-pause');
   el.innerHTML=`<h2 class="logo"><span class="b" style="font-size:44px">PAUZA</span></h2><button class="btn" id="pRes">POKRAČOVAT</button>${G.prevMode==='race'?`<button class="btn dark" data-lvlgo="${RS.L.id}">ZNOVU</button><button class="btn dark" data-go="city">VZDÁT → MĚSTO</button>`:''}
-  <div class="toggle">Grafika: <button class="btn sm dark" id="pGfx">${typeof R3!=='undefined'&&R3.q==='high'?'VYSOKÁ':'NÍZKÁ'}</button></div><div class="toggle">Řízení: <button class="btn sm dark" id="pSteer">${{two:'DVA PRSTY',drag:'JEDEN PRST',buttons:'TLAČÍTKA'}[SAVE.steer]||'TLAČÍTKA'}</button></div><div class="toggle">Auto-plyn (mobil): <button class="btn sm dark" id="pAuto">${SAVE.autoGas?'ZAP':'VYP'}</button></div><button class="btn sm dark" id="pTod">${TODN[SAVE.tod||'night']}</button><button class="btn sm dark" id="pRadio">📻 ${STY[Snd.style]?STY[Snd.style].name:'RÁDIO'}</button><button class="btn sm dark" id="pMute">${SAVE.mute?'🔇 Zvuk vyp':'🔊 Zvuk zap'}</button><button class="btn pink" data-go="menu">MENU</button>`;
+  <div class="toggle">Grafika: <button class="btn sm dark" id="pGfx">${typeof R3!=='undefined'&&R3.q==='high'?'VYSOKÁ':'NÍZKÁ'}</button></div><div class="toggle">Řízení: <button class="btn sm dark" id="pSteer">${{wheel:'VOLANT',drag:'JOYSTICK',buttons:'TLAČÍTKA'}[SAVE.steer]||'TLAČÍTKA'}</button></div><div class="toggle">Auto-plyn (mobil): <button class="btn sm dark" id="pAuto">${SAVE.autoGas?'ZAP':'VYP'}</button></div><button class="btn sm dark" id="pTod">${TODN[SAVE.tod||'night']}</button><button class="btn sm dark" id="pRadio">📻 ${STY[Snd.style]?STY[Snd.style].name:'RÁDIO'}</button><button class="btn sm dark" id="pMute">${SAVE.mute?'🔇 Zvuk vyp':'🔊 Zvuk zap'}</button><button class="btn pink" data-go="menu">MENU</button>`;
   $('ctrl').classList.remove('on');el.classList.add('on');
   $('pRes').onclick=()=>{el.classList.remove('on');if(isTouch)$('ctrl').classList.add('on');G.mode=G.prevMode;G.keys={}};
   $('pAuto').onclick=()=>{SAVE.autoGas=!SAVE.autoGas;save();$('pAuto').textContent=SAVE.autoGas?'ZAP':'VYP';$('kU').style.display=SAVE.autoGas?'none':'block'};
   $('pGfx').onclick=()=>{if(typeof R3==='undefined'||!R3.ok)return;R3.q=R3.q==='high'?'low':'high';SAVE.gfx=R3.q;save();R3.renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,R3.q==='high'?(isTouch?1.5:2):1));R3.renderer.setSize(VW,VH,false);R3.setupComposer();$('pGfx').textContent=R3.q==='high'?'VYSOKÁ':'NÍZKÁ'};
-  $('pSteer').onclick=()=>{const L=['two','drag','buttons'];SAVE.steer=L[(L.indexOf(SAVE.steer)+1)%3];save();applySteerMode();$('pSteer').textContent={two:'DVA PRSTY',drag:'JEDEN PRST',buttons:'TLAČÍTKA'}[SAVE.steer]};
+  $('pSteer').onclick=()=>{const L=['wheel','drag','buttons'];SAVE.steer=L[(L.indexOf(SAVE.steer)+1)%3];save();applySteerMode();$('pSteer').textContent={wheel:'VOLANT',drag:'JOYSTICK',buttons:'TLAČÍTKA'}[SAVE.steer]};
   $('pRadio').onclick=()=>nextRadio();$('pTod').onclick=nextTod;
   $('pMute').onclick=()=>{Snd.setMute(!SAVE.mute);$('pMute').textContent=SAVE.mute?'🔇 Zvuk vyp':'🔊 Zvuk zap'}}
 $('pauseB').addEventListener('click',pause);
@@ -1473,7 +1491,7 @@ import {KTX2Loader} from './vendor/jsm/loaders/KTX2Loader.js';
 import {MeshoptDecoder} from './vendor/jsm/libs/meshopt_decoder.module.js';
 import * as SkeletonUtils from './vendor/jsm/utils/SkeletonUtils.js';
 window.THREE=THREE;window.TADD={EffectComposer,RenderPass,UnrealBloomPass,OutputPass,GLTFLoader,RGBELoader,SkeletonUtils,DRACOLoader,KTX2Loader,MeshoptDecoder};
-const s=document.createElement('script');s.src='r3.js?v=14';document.body.appendChild(s);
+const s=document.createElement('script');s.src='r3.js?v=15';document.body.appendChild(s);
 </script>
 </body>
 </html>
