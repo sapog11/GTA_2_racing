@@ -214,7 +214,14 @@ body.drag #kL,body.drag #kR{display:none}body.wheel #kL,body.wheel #kR{display:n
 body.wheel.driving #wheel{display:block}body.wheel #kU,body.wheel #kD{display:none!important}
 #wheel{left:auto!important;right:max(14px,env(safe-area-inset-right))}
 #pedals{display:none;position:absolute;left:max(12px,env(safe-area-inset-left));bottom:max(16px,env(safe-area-inset-bottom));pointer-events:auto;touch-action:none;gap:8px}
-body.wheel #pedals{display:flex;flex-direction:column}#pedals button{position:static!important;width:96px;height:74px;border-radius:14px!important;font-size:19px!important;pointer-events:none!important}
+body.wheel #pedals{display:flex;flex-direction:column}
+#apad{display:none;position:absolute;left:max(14px,env(safe-area-inset-left));right:max(14px,env(safe-area-inset-right));bottom:max(18px,env(safe-area-inset-bottom));pointer-events:none}
+body.arrows #apad{display:block}body.arrows #kL,body.arrows #kR,body.arrows #kU,body.arrows #kD{display:none!important}
+#apad button{pointer-events:auto;position:absolute;width:86px;height:86px;border-radius:18px;border:2px solid rgba(255,255,255,.35);background:rgba(10,12,20,.32);color:rgba(255,255,255,.85);font-size:30px;touch-action:none;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1}
+#apad button small{font-size:10px;letter-spacing:1px;font-family:Oswald;margin-top:3px;opacity:.75}
+#apad [data-a=l]{left:0;bottom:0}#apad [data-a=r]{left:100px;bottom:0}#apad [data-a=u]{right:0;bottom:56px;height:76px}#apad [data-a=d]{right:0;bottom:-6px;height:54px;font-size:20px}
+#apad button.on{background:rgba(255,204,26,.45);border-color:#ffcc1a;color:#111}#apad [data-a=u].lat{background:rgba(255,204,26,.6);border-color:#ffcc1a;color:#111;box-shadow:0 0 16px rgba(255,204,26,.7)}
+body.arrows #kA{right:max(14px,env(safe-area-inset-right));bottom:calc(max(18px,env(safe-area-inset-bottom)) + 150px);width:72px;height:72px;font-size:17px}#pedals button{position:static!important;width:96px;height:74px;border-radius:14px!important;font-size:19px!important;pointer-events:none!important}
 #pedals button.on{background:rgba(255,204,26,.75)!important;color:#111!important;border-color:#ffcc1a!important;box-shadow:0 0 18px rgba(255,204,26,.8),inset 0 0 10px rgba(255,255,255,.4)}#pedals #pB.on{background:rgba(255,60,80,.6)!important;border-color:#ff4466!important}
 body.wheel #kA{right:auto;left:max(21px,env(safe-area-inset-left));bottom:calc(max(16px,env(safe-area-inset-bottom)) + 172px);width:78px;height:78px;font-size:20px}
 body.wheel.driving #spd{left:auto;right:0;transform:scale(.72);transform-origin:right bottom;bottom:calc(16px + env(safe-area-inset-bottom) + 146px)}body.wheel.driving.cock #wheel{display:none}#wheel svg{width:100%;height:100%;display:block;transition:none}
@@ -318,6 +325,7 @@ body.two.driving #twHint{display:flex}
 <div id="navm"></div>
 <div id="ctrl">
   <div id="pedals"><button id="pB">BRZDA</button><button id="pG">PLYN</button></div>
+  <div id="apad"><button data-a="l">◀</button><button data-a="u">▲<small>PLYN</small></button><button data-a="r">▶</button><button data-a="d">▼<small>BRZDA</small></button></div>
   <button id="kL" data-k="l">◀</button>
   <button id="kR" data-k="r">▶</button>
   <button id="kA" data-k="a"><span id="kAt">PAL</span></button>
@@ -344,7 +352,7 @@ const SAVEKEY='usti_mesto_andelu_v1';
 let SAVE={steer:'drag',resp:0,cash:0,hero:null,car:'civka',owned:['civka'],done:{},seenIntro:false,comics:['intro'],mute:false,autoGas:null};
 try{const s=JSON.parse(localStorage.getItem(SAVEKEY)||'null');if(s)SAVE=Object.assign(SAVE,s)}catch(e){}
 if(!SAVE.owned.includes('koncept'))SAVE.owned.push('koncept');if(!SAVE.kcMig){SAVE.kcMig=1;SAVE.cash=(SAVE.cash||0)+(SAVE.resp||0)*50}if(!SAVE.camCk){SAVE.camCk=1;SAVE.cam='cockpit'}if(!SAVE.tune)SAVE.tune={};if(!SAVE.tuned)SAVE.tuned=[];if(!SAVE.unl){SAVE.unl={};for(const id of SAVE.tuned)SAVE.unl[id]=['*']}
-if((('ontouchstart' in window)||matchMedia('(pointer:coarse)').matches)&&!SAVE.steer3){SAVE.steer2=SAVE.steer3=1;SAVE.steer='wheel'}if(SAVE.steer==='two')SAVE.steer='wheel';
+if((('ontouchstart' in window)||matchMedia('(pointer:coarse)').matches)&&!SAVE.steer3){SAVE.steer2=SAVE.steer3=1;SAVE.steer='wheel'}if(SAVE.steer==='two')SAVE.steer='wheel';if(!SAVE.arrCk&&matchMedia('(pointer:coarse)').matches){SAVE.arrCk=1;SAVE.steer='arrows'}
 function save(){try{localStorage.setItem(SAVEKEY,JSON.stringify(SAVE))}catch(e){}}
 const isTouch=('ontouchstart' in window)||matchMedia('(pointer:coarse)').matches;
 if(SAVE.autoGas===null)SAVE.autoGas=isTouch;
@@ -1139,7 +1147,7 @@ const TOPT=[{k:'p1',ic:'🎨',l:'Lak',price:3000,type:'sw'},{k:'pat',ic:'🐆',l
  {k:'cal',ic:'🛑',l:'Brzdové třmeny',price:2500,type:'sw'},{k:'hl',ic:'🔦',l:'Přední světla',type:'ch',vals:[['stock','Originál',0],['slim','Štíhlé s očima',3500],['oval','Oválky s očima',3000],['led','LED pásky',3500],['blade','Čepel',4500],['rings','Tři kroužky',4500],['angel','Angel eyes',5000],['popup','Výklopný',6500]]},
  {k:'grill',ic:'🛡️',l:'Mříže',type:'ch',vals:[['none','Bez',0],['front','Přední rám',4000],['both','Přední + zadní',6500]]},
  {k:'armor',ic:'🪖',l:'Pancíř',type:'ch',vals:[[0,'Bez',0],[1,'Pancéřování',15000]]},
- {k:'spz',ic:'🔤',l:'SPZ',type:'ch',vals:[['def','Původní',0],['VOLE 69','VOLE 69',800],['PIVO 0','PIVO 0',800],['ÚSTÍ 420','ÚSTÍ 420',800],['KÁRA 1','KÁRA 1',800],['LIDL 4X4','LIDL 4X4',800],['BRÁCHO 7','BRÁCHO 7',800],['ŠNEK 1','ŠNEK 1',800],['TCHÝNĚ','TCHÝNĚ',800]]},
+ {k:'spz',ic:'🔤',l:'SPZ',type:'ch',vals:[['def','Původní',0],['NEJLEPŠÍ ŠLAPKA','Nejlepší šlapka',800],['KOČKA','Kočka',800],['VOLE','Vole',800],['PIVO ZDARMA','Pivo zdarma',800],['TCHÝNĚ VEZE','Tchýně veze',800],['ŠNEK Z PŘEDLIC','Šnek z Předlic',800],['KRÁL ÚSTÍ','Král Ústí',800],['MÁŠ CIGO?','Máš cigo?',800],['DO PÁTKU VRÁTÍM','Do pátku vrátím',800],['LIDL 4X4','Lidl 4x4',800],['BRÁCHO','Brácho',800],['DÍTĚ NA PALUBĚ','Dítě na palubě',800]]},
  {k:'tl',ic:'🚨',l:'Zadní světla',type:'ch',vals:[['stock','Standard',0],['bar','LED pás',3000]]},
  {k:'roof',ic:'🏠',l:'Střecha (jiná barva)',price:2500,type:'sw'},{k:'hood',ic:'🔺',l:'Kapota (jiná barva)',price:2500,type:'sw'},{k:'mir',ic:'🪞',l:'Zrcátka',price:1200,type:'sw'},
  {k:'trim',ic:'✴️',l:'Lišty kolem oken a kliky',type:'ch',vals:[['body','Originál',0],['chrome','Chrom',2000],['black','Černé',1500]]},
@@ -1231,7 +1239,7 @@ function startRoam(at,target){AN.ev('roam_start');hideAll();G.engineOff=false;$(
 let areaT=0;
 function updateRoam(dt){const w=G.world,p=w.player;
   const ctl=playerCtl();const act=G.keys.a;
-  RS.nitro=Math.min(1,RS.nitro+RS.nitroFill*dt);if(act&&RS.nitro>.02){if(!p.boost)Snd.nitro();p.boost=true;RS.nitro=Math.max(0,RS.nitro-.42*dt)}else p.boost=false;$('kA').style.setProperty('--p',(RS.nitro*100)+'%');
+  if(act&&!RS.aPrev){RS.nLatch=!RS.nLatch&&RS.nitro>.08}RS.aPrev=act;if(RS.nLatch&&RS.nitro>.02){if(!p.boost)Snd.nitro();p.boost=true;RS.nitro=Math.max(0,RS.nitro-.42*dt)}else{p.boost=false;RS.nLatch=false;RS.nitro=Math.min(1,RS.nitro+RS.nitroFill*dt)}$('kA').style.setProperty('--p',(RS.nitro*100)+'%');$('kA').classList.toggle('hot',!!RS.nLatch);
   updateWorld(w,dt,ctl);driftUpdate(p,w,dt,true);if(p.hp<p.maxhp)p.hp=Math.min(p.maxhp,p.hp+dt*3);if(p.hp<=5)p.hp=5;
   const sp=Math.hypot(p.vx,p.vy);w.cam.x=lerp(w.cam.x,p.x+p.vx*.42,Math.min(1,dt*4));w.cam.y=lerp(w.cam.y,p.y+p.vy*.42,Math.min(1,dt*4));
   w.zoom=lerp(w.zoom||baseZoom(),baseZoom()*(1-clamp(sp/p.st.max,0,1.3)*.2),Math.min(1,dt*2));shakeA=Math.max(0,shakeA-dt*30);
@@ -1304,6 +1312,7 @@ function playerCtl(){const k=G.keys;const p=G.world&&G.world.player;
   if(G.engineOff)return{thr:p&&p.v>3?-1:0,steer:0};
   let thr=(k.u?1:0)+(k.d?-1:0);let steer=(k.r?1:0)-(k.l?1:0);
   const drag=effSteer()==='drag'&&isTouch,two=SAVE.steer==='two'&&isTouch;
+  if(effSteer()==='arrows'&&isTouch&&p){const A=APAD;steer=(A.r?1:0)-(A.l?1:0);thr=A.d?-1:(A.u||A.lat)?1:0;return{thr,steer,hb:!!k.h}}
   if(effSteer()==='wheel'&&isTouch&&p){wheelUI();steer=WH.ang/WMAX;return{thr,steer,hb:!!k.h}}
   if(two&&p){if(TW.L.id!==null){const x=clamp(TW.L.dx/62,-1,1);steer=Math.sign(x)*x*x*.35+x*.65}if(TW.R.id!==null){const dy=TW.R.dy;thr=dy<-6?clamp(-dy/50,.35,1):dy>18?-1:0}else if(!k.u&&!k.d)thr=-.3;if(k.d)thr=-1;return{thr,steer,hb:!!k.h}}
   if(SAVE.autoGas&&!k.d&&isTouch&&!drag)thr=1;
@@ -1364,7 +1373,12 @@ const WH={id:null,ang:0,last:0,cx:0,cy:0,lx:0},WMAX=1.7;
  pd.addEventListener('pointerdown',e=>{e.preventDefault();pid=e.pointerId;zone=null;try{pd.setPointerCapture(pid)}catch(_){}enter(zoneOf(e))});
  pd.addEventListener('pointermove',e=>{if(e.pointerId===pid)enter(zoneOf(e))});
  pd.addEventListener('pointerup',off);pd.addEventListener('pointercancel',off);pd.addEventListener('lostpointercapture',off);pd.addEventListener('contextmenu',e=>e.preventDefault())}
-function effSteer(){if(SAVE.steer!=='wheel')return SAVE.steer;return((SAVE.cam||'cockpit')==='cockpit'&&typeof R3!=='undefined'&&R3.ok)?'wheel':'drag'}
+const APAD={l:0,r:0,u:0,d:0,lat:0};
+{const pid=new Map();const sync=()=>{for(const b of document.querySelectorAll('#apad button')){const a=b.dataset.a;b.classList.toggle('on',!!APAD[a]);if(a==='u')b.classList.toggle('lat',!!APAD.lat)}};
+ const down=e=>{const b=e.target.closest('#apad button');if(!b)return;e.preventDefault();const a=b.dataset.a;pid.set(e.pointerId,a);APAD[a]=1;if(a==='u')APAD.lat=1;if(a==='d')APAD.lat=0;try{b.setPointerCapture(e.pointerId)}catch(_){}navigator.vibrate&&navigator.vibrate(8);sync()};
+ const up=e=>{const a=pid.get(e.pointerId);if(!a)return;pid.delete(e.pointerId);APAD[a]=0;sync()};
+ document.addEventListener('pointerdown',down);document.addEventListener('pointerup',up);document.addEventListener('pointercancel',up)}
+function effSteer(){if(SAVE.steer==='arrows')return'arrows';if(SAVE.steer!=='wheel')return SAVE.steer;return((SAVE.cam||'cockpit')==='cockpit'&&typeof R3!=='undefined'&&R3.ok)?'wheel':'drag'}
 function pedUI(){$('pG').classList.toggle('on',!!G.keys.u);$('pB').classList.toggle('on',!!G.keys.d)}
 function wheelOn(){return effSteer()==='wheel'&&isTouch&&(G.mode==='race'||G.mode==='roam')}
 function wheelCenter(){if(document.body.classList.contains('cock')&&typeof R3!=='undefined'&&R3.swScr)return R3.swScr;const r=$('wheel').getBoundingClientRect();return{x:r.left+r.width/2,y:r.top+r.height/2}}
@@ -1396,7 +1410,7 @@ const panEnd=e=>{PTS.delete(e.pointerId);pinchD=0;if(e.pointerId===PAN.id){PAN.i
 cv.addEventListener('wheel',e=>{if(!menuOn())return;e.preventDefault();mzoom(e.deltaY>0?.9:1.1)},{passive:false});
 $('zIn').onclick=()=>mzoom(1.25);$('zOut').onclick=()=>mzoom(.8);
 cv.style.cursor='';setInterval(()=>{cv.style.cursor=menuOn()?(PAN.id!==null?'grabbing':'grab'):''},300);
-let lastEff='';function applySteerMode(){const m=effSteer();lastEff=m;document.body.classList.toggle('wheel',m==='wheel'&&isTouch);document.body.classList.toggle('drag',m==='drag'&&isTouch);document.body.classList.toggle('two',SAVE.steer==='two'&&isTouch)}applySteerMode();
+let lastEff='';function applySteerMode(){const m=effSteer();lastEff=m;document.body.classList.toggle('arrows',m==='arrows'&&isTouch);document.body.classList.toggle('wheel',m==='wheel'&&isTouch);document.body.classList.toggle('drag',m==='drag'&&isTouch);document.body.classList.toggle('two',SAVE.steer==='two'&&isTouch)}applySteerMode();
 function updateRace(dt){const w=G.world,p=w.player,L=RS.L;RS.t+=dt;
   if(RS.count>0){RS.count-=dt;const n=Math.ceil(RS.count-.4);$('center').textContent=RS.count>.4?(L.type==='race'?String(n):'JEĎ!'):'JEĎ!';if(RS.count<=0){for(const c of w.cars)c.frozen=false;floatMsg('JEĎ!',.8)}}
   else if(msgT>0){msgT-=dt;if(msgT<=0)$('center').textContent=''}
@@ -1409,7 +1423,7 @@ function updateRace(dt){const w=G.world,p=w.player,L=RS.L;RS.t+=dt;
       w.bullets.push({x:p.x+ca*p.L*.4-sa*6,y:p.y+sa*p.L*.4+ca*6,vx:Math.cos(a)*950+p.vx,vy:Math.sin(a)*950+p.vy,life:.5,dmg:10*RS.dmgMul});w.muzzle=.05;Snd.shot();RS.heat+=RS.heatPer;if(RS.heat>=1){RS.heat=1;RS.over=true;floatMsg('PŘEHŘÁTO!',.7)}}
     w.muzzle=Math.max(0,(w.muzzle||0)-dt);
     $('kA').style.setProperty('--p',((1-RS.heat)*100)+'%');$('kA').classList.toggle('hot',RS.over);
-  }else{RS.nitro=Math.min(1,RS.nitro+RS.nitroFill*dt);if(act&&RS.nitro>.02){if(!p.boost)Snd.nitro();p.boost=true;RS.nitro=Math.max(0,RS.nitro-.42*dt)}else p.boost=false;$('kA').style.setProperty('--p',(RS.nitro*100)+'%')}
+  }else{if(act&&!RS.aPrev){RS.nLatch=!RS.nLatch&&RS.nitro>.08}RS.aPrev=act;if(RS.nLatch&&RS.nitro>.02){if(!p.boost)Snd.nitro();p.boost=true;RS.nitro=Math.max(0,RS.nitro-.42*dt)}else{p.boost=false;RS.nLatch=false;RS.nitro=Math.min(1,RS.nitro+RS.nitroFill*dt)}$('kA').style.setProperty('--p',(RS.nitro*100)+'%');$('kA').classList.toggle('hot',!!RS.nLatch);}
   updateWorld(w,dt,ctl);if(!RS.end&&RS.count<=0)driftUpdate(p,w,dt,false);
   for(const c of w.cars)if(w.route&&(c.kind!=='civ'))progress(w,c);
   // camera
@@ -1482,12 +1496,12 @@ for(const b of document.querySelectorAll('#ctrl button')){const k=b.dataset.k;
   b.addEventListener('pointerdown',on);b.addEventListener('pointerup',off);b.addEventListener('pointercancel',off);b.addEventListener('lostpointercapture',off);b.addEventListener('contextmenu',e=>e.preventDefault())}
 function pause(){if(!(G.mode==='race'||G.mode==='roam')||(RS&&RS.end))return;DJ.stop();G.prevMode=G.mode;G.mode='paused';Snd.engine(0,false);Snd.siren(0,0);const el=$('scr-pause');
   el.innerHTML=`<h2 class="logo"><span class="b" style="font-size:44px">PAUZA</span></h2><button class="btn" id="pRes">POKRAČOVAT</button>${G.prevMode==='race'?`<button class="btn dark" data-lvlgo="${RS.L.id}">ZNOVU</button><button class="btn dark" data-go="city">VZDÁT → MĚSTO</button>`:''}
-  <div class="toggle">Grafika: <button class="btn sm dark" id="pGfx">${typeof R3!=='undefined'&&R3.q==='high'?'VYSOKÁ':'NÍZKÁ'}</button></div><div class="toggle">Řízení: <button class="btn sm dark" id="pSteer">${{wheel:'VOLANT',drag:'JOYSTICK',buttons:'TLAČÍTKA'}[SAVE.steer]||'TLAČÍTKA'}</button></div><div class="toggle">Auto-plyn (mobil): <button class="btn sm dark" id="pAuto">${SAVE.autoGas?'ZAP':'VYP'}</button></div><button class="btn sm dark" id="pTod">${TODN[SAVE.tod||'night']}</button><button class="btn sm dark" id="pRadio">📻 ${STY[Snd.style]?STY[Snd.style].name:'RÁDIO'}</button><button class="btn sm dark" id="pMute">${SAVE.mute?'🔇 Zvuk vyp':'🔊 Zvuk zap'}</button><button class="btn pink" data-go="menu">MENU</button>`;
+  <div class="toggle">Grafika: <button class="btn sm dark" id="pGfx">${typeof R3!=='undefined'&&R3.q==='high'?'VYSOKÁ':'NÍZKÁ'}</button></div><div class="toggle">Řízení: <button class="btn sm dark" id="pSteer">${{wheel:'VOLANT',arrows:'ŠIPKY',drag:'JOYSTICK',buttons:'TLAČÍTKA'}[SAVE.steer]||'TLAČÍTKA'}</button></div><div class="toggle">Auto-plyn (mobil): <button class="btn sm dark" id="pAuto">${SAVE.autoGas?'ZAP':'VYP'}</button></div><button class="btn sm dark" id="pTod">${TODN[SAVE.tod||'night']}</button><button class="btn sm dark" id="pRadio">📻 ${STY[Snd.style]?STY[Snd.style].name:'RÁDIO'}</button><button class="btn sm dark" id="pMute">${SAVE.mute?'🔇 Zvuk vyp':'🔊 Zvuk zap'}</button><button class="btn pink" data-go="menu">MENU</button>`;
   $('ctrl').classList.remove('on');el.classList.add('on');
   $('pRes').onclick=()=>{el.classList.remove('on');if(isTouch)$('ctrl').classList.add('on');G.mode=G.prevMode;G.keys={}};
   $('pAuto').onclick=()=>{SAVE.autoGas=!SAVE.autoGas;save();$('pAuto').textContent=SAVE.autoGas?'ZAP':'VYP';$('kU').style.display=SAVE.autoGas?'none':'block'};
   $('pGfx').onclick=()=>{if(typeof R3==='undefined'||!R3.ok)return;R3.q=R3.q==='high'?'low':'high';SAVE.gfx=R3.q;save();R3.renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,R3.q==='high'?(isTouch?1.5:2):1));R3.renderer.setSize(VW,VH,false);R3.setupComposer();$('pGfx').textContent=R3.q==='high'?'VYSOKÁ':'NÍZKÁ'};
-  $('pSteer').onclick=()=>{const L=['wheel','drag','buttons'];SAVE.steer=L[(L.indexOf(SAVE.steer)+1)%3];save();applySteerMode();$('pSteer').textContent={wheel:'VOLANT',drag:'JOYSTICK',buttons:'TLAČÍTKA'}[SAVE.steer]};
+  $('pSteer').onclick=()=>{const L=['arrows','wheel','drag','buttons'];SAVE.steer=L[(L.indexOf(SAVE.steer)+1)%4];save();applySteerMode();$('pSteer').textContent={wheel:'VOLANT',arrows:'ŠIPKY',drag:'JOYSTICK',buttons:'TLAČÍTKA'}[SAVE.steer]};
   $('pRadio').onclick=()=>nextRadio();$('pTod').onclick=nextTod;
   $('pMute').onclick=()=>{Snd.setMute(!SAVE.mute);$('pMute').textContent=SAVE.mute?'🔇 Zvuk vyp':'🔊 Zvuk zap'}}
 $('pauseB').addEventListener('click',pause);

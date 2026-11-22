@@ -348,7 +348,7 @@ const R3={ok:false,off:/[?&]2d/.test(location.search),chunks:new Map(),CH:16,PX:
  // number plates (Czech style, region U = Ústí), made once per text
  plateMat(txt){this.plates=this.plates||{};if(this.plates[txt])return this.plates[txt];const T3=THREE,cv=document.createElement('canvas');cv.width=256;cv.height=56;const x=cv.getContext('2d');
   x.fillStyle='#f4f4f0';x.fillRect(0,0,256,56);x.strokeStyle='#111';x.lineWidth=3;x.strokeRect(2,2,252,52);x.fillStyle='#1d3fa8';x.fillRect(3,3,30,50);x.fillStyle='#ffd400';for(let i=0;i<8;i++){const a=i/8*6.283;x.fillRect(16+Math.cos(a)*8-1,16+Math.sin(a)*8-1,2.4,2.4)}
-  x.fillStyle='#fff';x.font='bold 13px Arial';x.textAlign='center';x.fillText('CZ',18,46);x.fillStyle='#111';x.font='bold 36px Arial';x.fillText(txt,146,42);
+  x.fillStyle='#fff';x.font='bold 13px Arial';x.textAlign='center';x.fillText('CZ',18,46);x.fillStyle='#111';let fs=36;do{x.font='bold '+fs+'px Arial';fs-=2}while(x.measureText(txt).width>212&&fs>12);x.fillText(txt,146,40);
   const t=new T3.CanvasTexture(cv);t.colorSpace=T3.SRGBColorSpace;t.anisotropy=4;return this.plates[txt]=new T3.MeshStandardMaterial({map:t,roughness:.45,metalness:.1})},
  loadGarageSpecs(){for(const id in this.ZB)fetch('models/garage/'+id+'/car.json').then(r=>r.ok?r.json():null).then(j=>{if(j){const o=Object.assign({},j);delete o.parts;delete o.id;delete o.platform;delete o.name;Object.assign(this.ZB[id],o)}}).catch(()=>{})},
  calM(col){this.cals=this.cals||{};return this.cals[col]||(this.cals[col]=new THREE.MeshStandardMaterial({color:col,metalness:.3,roughness:.35}))},
@@ -478,7 +478,7 @@ const R3={ok:false,off:/[?&]2d/.test(location.search),chunks:new Map(),CH:16,PX:
   if(K.includes('skirts'))for(const z of[-11.45,11.45])box(this.carbon,18,.6,.5,-1.2,3.1,z)
   if(K.includes('scoop')){box(paint,5,1.1,6,14.5,10.7,0,-.06);box(this.carbon,.4,.8,5,17,10.6,0)}
   if(K.includes('flaps'))for(const z of[-10,10])box(paint2,.4,3.6,3.4,-21.8,2.6,z);
-  {const id=(c.st&&c.st.id)||'z',num=(sp.spz&&sp.spz!=='def'?sp.spz:0)||sp.plate||('5U'+((id.charCodeAt(0)*7+id.length*3)%9+1)+' '+String(1000+(id.charCodeAt(1)||0)*37%9000).slice(0,4)),pm=this.plateMat(num);
+  {const id=(c.st&&c.st.id)||'z',num=(sp.spz&&sp.spz!=='def'?sp.spz:0)||({civka:'DRAGO',felda:'TURBO Z BAZARU',golfik:'KLÍŠE BOY',bavorak:'BOKEM',imprezka:'NA MOKRU KRÁL',koncept:'ZORYX',supka:'LEGENDA',mini:'MRŇOUS',kupe:'NOČNÍ MŮRA',sedan:'STAROSTA',kombi:'NA CHATU',vitka:'ŘEMESLO',muscle:'V8 NEBO NIC',blower:'SOUSEDI ŠÍLÍ'})[id]||sp.plate||('5U'+((id.charCodeAt(0)*7+id.length*3)%9+1)+' '+String(1000+(id.charCodeAt(1)||0)*37%9000).slice(0,4)),pm=this.plateMat(num);
    for(const[x,y,ry]of[[-23.15,5.6,-Math.PI/2],[23.2,3.3,Math.PI/2]]){const pl=new T3.Mesh(this.plateGeo||(this.plateGeo=new T3.PlaneGeometry(5.2,1.15)),pm);pl.position.set(x,y,0);pl.userData.snapX=x>0?1:-1;pl.rotation.y=ry;kit.add(pl)}
    if(!this.chromeM)this.chromeM=new T3.MeshStandardMaterial({color:0xd8dbe0,metalness:1,roughness:.15});if(!this.exG){this.exG=new T3.CylinderGeometry(.42,.42,.9,14,1,true);this.exG.rotateZ(Math.PI/2)}
    if(!kit.userData.rd)for(const z of(K.includes('wing')||K.includes('duck')?[-6.2,-4.6,4.6,6.2]:[-5.4,5.4])){const e=new T3.Mesh(this.exG,this.chromeM);e.position.set(-22.6,4.35,z*.9);e.scale.set(.7,1,1);kit.add(e);if(!this.exIn)this.exIn=new T3.MeshBasicMaterial({color:0x050505});const d=new T3.Mesh(new T3.CircleGeometry(.36,14),this.exIn);d.rotation.y=-Math.PI/2;d.position.set(-22.86,4.35,z*.9);kit.add(d)}
