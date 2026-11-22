@@ -1,6 +1,24 @@
 {
  "id": "muscle",
  "name": "Zéčko Muscle",
+ "plate": "5U8 0008",
  "platform": "koncept-z",
- "plate": "5U8 0008"
+ "p1": "#7a1e2a",
+ "p2": "#14151a",
+ "rim": "#d8dbe0",
+ "fin": "gloss",
+ "glow": "off",
+ "w": 1,
+ "sx": 1.06,
+ "sy": 1.04,
+ "kit": [
+  "blower",
+  "duck"
+ ],
+ "rims": "deep",
+ "hood": "#111214",
+ "roof": "#111214",
+ "cal": "#c9a227",
+ "hl": "oval",
+ "cls": "muscle"
 }

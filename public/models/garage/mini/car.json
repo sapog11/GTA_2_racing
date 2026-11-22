@@ -3,6 +3,17 @@
  "name": "Zéčko Mini",
  "plate": "5U3 1100",
  "platform": "koncept-z",
+ "p1": "#c9b458",
+ "p2": "#14151a",
+ "rim": "#e9ecef",
+ "fin": "gloss",
+ "glow": "off",
+ "w": 0.93,
+ "sx": 0.8,
+ "sy": 1.16,
+ "kit": [],
+ "hl": "oval",
+ "cls": "hatch",
  "parts": {
   "notes": "Body proportions (sx = length, sy = height, w = width) live in R3.ZB; override them here."
  }

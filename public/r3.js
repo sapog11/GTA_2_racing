@@ -272,15 +272,15 @@ const R3={ok:false,off:/[?&]2d/.test(location.search),chunks:new Map(),CH:16,PX:
   golfik:{p1:'#b8bcc2',p2:'#7a1e2a',rim:'#2a2a2e',fin:'metal',glow:'off',w:.97,sx:.86,sy:1.14,kit:['lip','skirts'],hl:'blade',cls:'hatch'},
   bavorak:{p1:'#1f3a5f',p2:'#0e0f14',rim:'#c9ccd2',fin:'metal',glow:'off',w:1,sx:1,sy:1.07,kit:['duck','skirts'],hl:'angel',cls:'sedan'},
   imprezka:{p1:'#2a4a8a',p2:'#1a2a5a',rim:'#c9a227',fin:'gloss',glow:'off',w:1,sx:.96,sy:1.09,kit:['wing','scoop','flaps'],hl:'oval',cls:'rally'},
-  koncept:{p1:'#7a1e2a',p2:'#14151a',rim:'#d8dbe0',fin:'gloss',glow:'#2a9d8f',w:1,sy:1.03,kit:[],hl:'led',cls:'sport'},
+  koncept:{p1:'#7a1e2a',p2:'#14151a',rim:'#d8dbe0',fin:'gloss',glow:'#2a9d8f',w:1,sy:1.09,kit:[],hl:'led',cls:'sport'},
   mini:{p1:'#c9b458',p2:'#14151a',rim:'#e9ecef',fin:'gloss',glow:'off',w:.93,sx:.8,sy:1.16,kit:[],hl:'oval',cls:'hatch'},
-  kupe:{p1:'#5b4a8a',p2:'#14151a',rim:'#d8dbe0',fin:'metal',glow:'off',w:1,sx:.92,sy:1.02,kit:['duck','skirts'],rims:'five',hl:'popup',cls:'sport'},
+  kupe:{p1:'#5b4a8a',p2:'#14151a',rim:'#d8dbe0',fin:'metal',glow:'off',w:1,sx:.92,sy:1.08,kit:['duck','skirts'],rims:'five',hl:'popup',cls:'sport'},
   sedan:{p1:'#d8d8d4',p2:'#2a2c33',rim:'#8a8f98',fin:'metal',glow:'off',w:1.02,sx:1.1,sy:1.08,kit:['lip'],hl:'rings',cls:'sedan'},
   kombi:{p1:'#3b5d3a',p2:'#14151a',rim:'#c9ccd2',fin:'metal',glow:'off',w:1.02,sx:1.14,sy:1.13,kit:['flaps'],rails:1,hl:'blade',cls:'wagon'},
   vitka:{p1:'#c8c8c4',p2:'#2a2c33',rim:'#8a8f98',fin:'gloss',glow:'off',w:1.06,sx:1.12,sy:1.42,kit:[],ladder:1,hl:'blade',cls:'van'},
   muscle:{p1:'#7a1e2a',p2:'#14151a',rim:'#d8dbe0',fin:'gloss',glow:'off',w:1,sx:1.06,sy:1.04,kit:['blower','duck'],rims:'deep',hood:'#111214',roof:'#111214',cal:'#c9a227',hl:'oval',cls:'muscle'},
   blower:{p1:'#1b1c20',p2:'#14151a',rim:'#c9a227',fin:'matte',glow:'off',w:1,sx:1.02,sy:1.02,kit:['blower','duck'],rims:'five',hood:'#8a5a2a',cal:'#b8541a',hl:'popup',cls:'muscle'},
-  supka:{p1:'#c08a2a',p2:'#14151a',rim:'#1a1a1e',fin:'gloss',glow:'off',w:1.02,sy:1.03,kit:['wing','splitter','skirts'],hl:'popup',cls:'sport'}},
+  supka:{p1:'#c08a2a',p2:'#14151a',rim:'#8a8f98',fin:'gloss',glow:'off',w:1.02,sy:1.1,kit:['wing','skirts'],hl:'popup',cls:'sport'}},
  dashMat(orig){if(this.dMat)return this.dMat;const T3=THREE,cv=this.dCv=document.createElement('canvas');cv.width=1024;cv.height=256;const t=this.dTex=new T3.CanvasTexture(cv);t.flipY=false;t.colorSpace=T3.SRGBColorSpace;
   const m=this.dMat=orig.clone();m.emissiveMap=t;m.emissive=new T3.Color(1,1,1);m.emissiveIntensity=1.5;this.dashDraw(0,1,0);return m},
  dashDraw(k,gear,rpm){const cv=this.dCv;if(!cv)return;let rn='';try{rn=Snd.style&&STY[Snd.style]?STY[Snd.style].name:''}catch(e){}const key=k+'|'+gear+'|'+Math.round(rpm*12)+rn;if(key===this.dKey)return;this.dKey=key;const x=cv.getContext('2d');
@@ -398,15 +398,15 @@ const R3={ok:false,off:/[?&]2d/.test(location.search),chunks:new Map(),CH:16,PX:
   m.customProgramCacheKey=()=>'water';return m},
  lamps(kit,sp,paint,c){const T3=THREE,st=sp.hl||'stock';if(st==='stock')return;
   const L=this.lampMats||(this.lampMats={on:new T3.MeshBasicMaterial({color:new T3.Color(0xf2f7ff).multiplyScalar(2.6)}),hou:new T3.MeshPhysicalMaterial({color:0x0b0c10,metalness:.9,roughness:.15,clearcoat:1}),lens:new T3.MeshPhysicalMaterial({color:0xcfe4ff,metalness:.1,roughness:.02,transparent:true,opacity:.35,clearcoat:1})});
-  const pop=[];for(const sd of[-1,1]){const G=new T3.Group();G.position.set(21.15,7.75,sd*6.6);G.rotation.y=sd*.18;kit.add(G);const add=(geo,m,x,y,z,sx,sy,sz,rx,ry,rz)=>{const q=new T3.Mesh(geo,m);q.position.set(x,y,z);q.scale.set(sx||1,sy||1,sz||1);q.rotation.set(rx||0,ry||0,rz||0);G.add(q);return q};
+  const pop=[];for(const sd of[-1,1]){const G=new T3.Group();const hp=kit.userData.snap&&kit.userData.snap([40,7.9,sd*6.4],[-1,0,0]);G.position.set(hp?hp.x-.05:21.15,7.9,sd*6.4);G.rotation.y=sd*.18;kit.add(G);const add=(geo,m,x,y,z,sx,sy,sz,rx,ry,rz)=>{const q=new T3.Mesh(geo,m);q.position.set(x,y,z);q.scale.set(sx||1,sy||1,sz||1);q.rotation.set(rx||0,ry||0,rz||0);G.add(q);return q};
    const S=this.lampG||(this.lampG={sph:new T3.SphereGeometry(1,20,14),tor:new T3.TorusGeometry(.55,.1,8,28),cyl:new T3.CylinderGeometry(1,1,1,20)});
    if(st==='rings'){add(this.carBox,L.hou,-.1,0,0,.4,1.5,4.6);for(let i=0;i<3;i++)add(S.tor,L.on,.15,0,(i-1)*1.25,1,1,1,0,Math.PI/2)}
    else if(st==='blade'){add(this.carBox,L.hou,-.1,.1,0,.4,1.2,4.8);add(this.carBox,L.on,.15,.55,-.1,.12,.16,4.6,sd*.12);add(this.carBox,L.on,.15,-.25,sd*.6,.12,.14,2.6,sd*.05);for(let i=0;i<3;i++)add(S.sph,L.on,.15,-.25,-sd*(.8+i*.5),.12,.12,.12)}
    else if(st==='oval'){add(S.sph,L.hou,-.15,0,0,.55,1.05,2.6);add(S.sph,L.lens,.05,0,0,.5,1,2.5);for(const z of[-.95,.95]){add(S.sph,L.on,.1,0,z,.25,.55,.55);add(S.sph,L.hou,.32,0,z,.05,.22,.22)}}
    else if(st==='led'){add(this.carBox,L.hou,-.1,.1,0,.4,1.1,4.4);add(this.carBox,L.on,.15,.5,0,.12,.16,4.2);for(let i=0;i<4;i++)add(this.carBox,L.on,.15,-.1,(i-1.5)*.9,.12,.5,.55)}
    else if(st==='angel'){add(S.sph,L.hou,-.15,0,0,.5,1,2.6);for(const z of[-.95,.95]){add(S.tor,L.on,.2,0,z,1,1,1,0,Math.PI/2);add(S.sph,L.on,.12,0,z,.15,.3,.3)}}
-   else if(st==='popup'){G.position.set(19.4,10.25,sd*6.6);G.rotation.y=0;const hinge=new T3.Group();hinge.position.set(-1.6,0,0);G.add(hinge);const P=new T3.Group();P.position.set(1.6,0,0);hinge.add(P);
-    const lid=new T3.Mesh(this.carBox,paint);lid.scale.set(3.2,.35,3.6);lid.position.set(0,.2,0);P.add(lid);const box2=new T3.Mesh(this.carBox,L.hou);box2.scale.set(.4,1.4,3.2);box2.position.set(1.4,-.55,0);P.add(box2);
+   else if(st==='popup'){const hy=kit.userData.snap&&kit.userData.snap([19.6,30,sd*6.4],[0,-1,0]);G.position.set(19.6,(hy?hy.y:10.2)-.05,sd*6.4);G.rotation.y=0;const hinge=new T3.Group();hinge.position.set(-1.6,0,0);G.add(hinge);const P=new T3.Group();P.position.set(1.6,0,0);hinge.add(P);
+    const lid=new T3.Mesh(this.carBox,paint);lid.scale.set(3,.18,3.2);lid.position.set(0,.05,0);P.add(lid);const box2=new T3.Mesh(this.carBox,L.hou);box2.scale.set(.4,1.3,3);box2.position.set(1.4,-.6,0);P.add(box2);
     for(const z of[-.8,.8]){const b=new T3.Mesh(S.sph,L.on);b.scale.set(.15,.5,.5);b.position.set(1.62,-.55,z);P.add(b)}pop.push(hinge)}}
   kit.userData.pop=pop.length?pop:null},
  PATS:{},patTex(k){if(this.PATS[k])return this.PATS[k];const T3=THREE,cv=document.createElement('canvas');cv.width=cv.height=512;const x=cv.getContext('2d'),R=Math.random;
@@ -424,7 +424,7 @@ const R3={ok:false,off:/[?&]2d/.test(location.search),chunks:new Map(),CH:16,PX:
   const paint=new T3.MeshPhysicalMaterial({color:sp.p1,metalness:mt?mt[0]:f[0],roughness:mt?mt[1]:f[1],clearcoat:f[2],clearcoatRoughness:f[3],envMapIntensity:(sp.fin==='chrome'||mt)?1.6:1.1});
   if(sp.pat&&sp.pat!=='none'){paint.map=this.patTex(sp.pat);paint.color.set(0xffffff);paint.metalness=Math.min(paint.metalness,.3)}
   const paint2=new T3.MeshPhysicalMaterial({color:sp.p2,metalness:.3,roughness:.55,clearcoat:.25,clearcoatRoughness:.3,envMapIntensity:.45});
-  const rim=new T3.MeshStandardMaterial({color:sp.rim,metalness:1,roughness:.16,envMapIntensity:1.4});
+  const rim=new T3.MeshStandardMaterial({color:sp.rim,metalness:.65,roughness:.28,envMapIntensity:1.6});
   const tint=sp.tint?new T3.MeshPhysicalMaterial({color:0x020305,metalness:.3,roughness:.04,transparent:true,opacity:.93,envMapIntensity:1.6,side:T3.DoubleSide}):null;
   const anc=(o,re)=>{for(let q=o;q;q=q.parent)if(re.test(q.name||''))return true;return false};
   const pm=(col)=>new T3.MeshPhysicalMaterial({color:col,metalness:f[0],roughness:f[1],clearcoat:f[2],clearcoatRoughness:f[3]}),roofM=sp.roof?pm(sp.roof):null,hoodM=sp.hood?pm(sp.hood):null,mirM=sp.mir?pm(sp.mir):null;
@@ -444,7 +444,7 @@ const R3={ok:false,off:/[?&]2d/.test(location.search),chunks:new Map(),CH:16,PX:
   if(sp.rims&&sp.rims!=='stock')for(const wn of wheels){wn.traverse(o=>{if(/Rim$/.test(o.name))o.visible=false});wn.add(this.rimSet(sp.rims,rim))}
   // chassis: wheels hang on knuckles, knuckles on front/rear axles under the body; the body rolls on top
   const lo=sp.low?.8*zs:0,WG=new T3.Group();m.updateMatrixWorld(true);let wy=0;const P=new T3.Vector3(),knF=[],kn=[],ax={f:[],r:[]};
-  for(const wn of wheels){wn.getWorldPosition(P);wy=P.y;const k=new T3.Group();k.position.set(P.x*bx,P.y,P.z*zw);const h=new T3.Group();wn.parent.matrixWorld.decompose(h.position,h.quaternion,h.scale);h.position.sub(P);h.add(wn);k.add(h);WG.add(k);kn.push(k);(wn.userData.front?ax.f:ax.r).push(k);if(wn.userData.front)knF.push(k)}
+  for(const wn of wheels){wn.getWorldPosition(P);wy=P.y;const k=new T3.Group();k.position.set(P.x*bx,P.y,P.z*zw*1.05);k.scale.z=1.15;const h=new T3.Group();wn.parent.matrixWorld.decompose(h.position,h.quaternion,h.scale);h.position.sub(P);h.add(wn);k.add(h);WG.add(k);kn.push(k);(wn.userData.front?ax.f:ax.r).push(k);if(wn.userData.front)knF.push(k)}
   {if(!this.chasM){this.chasM=new T3.MeshStandardMaterial({color:0x1a1b1e,metalness:.7,roughness:.45});this.chasL=new T3.MeshStandardMaterial({color:0x3a3d44,metalness:.85,roughness:.3})}const B=(m2,sx,sy,sz,x,y,z,ry)=>{const q=new T3.Mesh(this.carBox,m2);q.scale.set(sx,sy,sz);q.position.set(x,y,z);if(ry)q.rotation.y=ry;WG.add(q);return q};
    for(const k of['f','r']){const L2=ax[k];if(L2.length<2)continue;const a=L2[0].position,b=L2[1].position,cx=(a.x+b.x)/2,w2=Math.abs(a.z-b.z)-2.6;
     const shaft=new T3.Mesh(this.axG||(this.axG=new T3.CylinderGeometry(.32,.32,1,10)),this.chasL);shaft.rotation.x=Math.PI/2;shaft.scale.y=w2;shaft.position.set(cx,a.y,0);WG.add(shaft);
@@ -465,25 +465,26 @@ const R3={ok:false,off:/[?&]2d/.test(location.search),chunks:new Map(),CH:16,PX:
     this.epG=new T3.ExtrudeGeometry(ep,{depth:.22,bevelEnabled:false});this.epG.translate(0,0,-.11);
     const sn=new T3.Shape();sn.moveTo(-.9,0);sn.lineTo(.9,0);sn.quadraticCurveTo(1.2,2.4,.2,3.4);sn.lineTo(.5,4.4);sn.lineTo(-.6,4.4);sn.lineTo(-.9,3.2);sn.quadraticCurveTo(.2,2.2,-.9,0);
     this.snG=new T3.ExtrudeGeometry(sn,{depth:.5,bevelEnabled:false});this.snG.translate(0,0,-.25)}
-   const W=new T3.Group();W.position.set(-20.3,12.15,0);kit.add(W);const add=(geo,mat,x,y,z,rz)=>{const q=new T3.Mesh(geo,mat);q.position.set(x,y,z);if(rz)q.rotation.z=rz;W.add(q);return q};
+   const W=new T3.Group();W.position.set(-19.6,12.1,0);W.scale.set(.85,.62,.72);kit.add(W);const add=(geo,mat,x,y,z,rz)=>{const q=new T3.Mesh(geo,mat);q.position.set(x,y,z);if(rz)q.rotation.z=rz;W.add(q);return q};
    add(this.wingG,wm,0,4.5,0,-.1);const gf=new T3.Mesh(this.carBox,this.carbon);gf.scale.set(.12,.5,19.6);gf.position.set(-2.25,4.95,0);W.add(gf);
    const el2=add(this.wingG,wm,-1.6,5.4,0,-.32);el2.scale.set(.5,.8,1);
    for(const z of[-10,10])add(this.epG,this.carbon,-.4,4.9,z);
    for(const z of[-5.5,5.5]){add(this.snG,this.carbon,.3,.15,z);const bp=new T3.Mesh(this.carBox,this.carbon);bp.scale.set(2.6,.25,1.4);bp.position.set(.3,.1,z);W.add(bp);
     for(const dx of[-.8,.8]){const bo=new T3.Mesh(this.exG||(this.exG=new T3.CylinderGeometry(.42,.42,.9,14,1,true)),this.chromeM||(this.chromeM=new T3.MeshStandardMaterial({color:0xd8dbe0,metalness:1,roughness:.15})));bo.scale.set(.3,.3,.3);bo.position.set(.3+dx,.28,z);W.add(bo)}}}
   if(K.includes('duck'))box(paint,2,.45,16,-20.6,12.45,0,-.18);
-  if(K.includes('lip'))box(this.carbon,1.2,.3,18,21.2,2.2,0);
-  if(K.includes('splitter')){box(this.carbon,2.2,.3,20.5,21,2,0);for(const z of[-10,10])box(this.carbon,1.4,.9,.25,21.3,2.5,z)}
-  if(K.includes('skirts'))for(const z of[-11.55,11.55]){box(this.carbon,19,.7,.7,-1.2,2.95,z);box(this.carbon,19,.25,1.3,-1.2,2.6,z*.985)}
+  
+  if(K.includes('splitter')){0}
+  if(K.includes('skirts'))for(const z of[-11.45,11.45])box(this.carbon,18,.6,.5,-1.2,3.1,z)
   if(K.includes('scoop')){box(paint,5,1.1,6,14.5,10.7,0,-.06);box(this.carbon,.4,.8,5,17,10.6,0)}
   if(K.includes('flaps'))for(const z of[-10,10])box(paint2,.4,3.6,3.4,-21.8,2.6,z);
   {const id=(c.st&&c.st.id)||'z',num=(sp.spz&&sp.spz!=='def'?sp.spz:0)||sp.plate||('5U'+((id.charCodeAt(0)*7+id.length*3)%9+1)+' '+String(1000+(id.charCodeAt(1)||0)*37%9000).slice(0,4)),pm=this.plateMat(num);
-   for(const[x,y,ry]of[[-23.15,5.6,-Math.PI/2],[23.2,3.3,Math.PI/2]]){const pl=new T3.Mesh(this.plateGeo||(this.plateGeo=new T3.PlaneGeometry(5.2,1.15)),pm);pl.position.set(x,y,0);pl.rotation.y=ry;kit.add(pl)}
+   for(const[x,y,ry]of[[-23.15,5.6,-Math.PI/2],[23.2,3.3,Math.PI/2]]){const pl=new T3.Mesh(this.plateGeo||(this.plateGeo=new T3.PlaneGeometry(5.2,1.15)),pm);pl.position.set(x,y,0);pl.userData.snapX=x>0?1:-1;pl.rotation.y=ry;kit.add(pl)}
    if(!this.chromeM)this.chromeM=new T3.MeshStandardMaterial({color:0xd8dbe0,metalness:1,roughness:.15});if(!this.exG){this.exG=new T3.CylinderGeometry(.42,.42,.9,14,1,true);this.exG.rotateZ(Math.PI/2)}
    for(const z of(K.includes('wing')||K.includes('duck')?[-6.2,-4.6,4.6,6.2]:[-5.4,5.4])){const e=new T3.Mesh(this.exG,this.chromeM);e.position.set(-22.6,4.35,z*.9);e.scale.set(.7,1,1);kit.add(e);if(!this.exIn)this.exIn=new T3.MeshBasicMaterial({color:0x050505});const d=new T3.Mesh(new T3.CircleGeometry(.36,14),this.exIn);d.rotation.y=-Math.PI/2;d.position.set(-22.86,4.35,z*.9);kit.add(d)}
    if(!this.dfM)this.dfM=new T3.MeshStandardMaterial({color:0x0e0f12,roughness:.6,metalness:.3});{const df=new T3.Mesh(this.carBox,this.dfM);df.scale.set(1.2,1.2,15);df.position.set(-22.3,4.35,0);kit.add(df)}
    if(!this.brkM)this.brkM=new T3.MeshBasicMaterial({color:new T3.Color(0xff1a2a).multiplyScalar(3.2)});var brk=new T3.Group();for(const z of[-7.2,7.2]){const b=new T3.Mesh(this.carBox,this.brkM);b.scale.set(.3,.7,4.4);b.position.set(-20.4,11.85,z);brk.add(b)}brk.visible=false;kit.add(brk)}
-  this.lamps(kit,sp,paint,c);
+  g.updateMatrixWorld(true);kit.userData.snap=(o,d)=>{const rc=this._rc||(this._rc=new T3.Raycaster()),O=kit.localToWorld(new T3.Vector3(...o)),D=kit.localToWorld(new T3.Vector3(o[0]+d[0],o[1]+d[1],o[2]+d[2])).sub(O).normalize();rc.set(O,D);const h=rc.intersectObject(m,true).find(q=>q.object.visible&&q.object.material&&q.object.material.name!=='Glass'&&!/Wheel/.test(q.object.parent.name));return h?kit.worldToLocal(h.point.clone()):null};
+  this.lamps(kit,sp,paint,c);for(const o of kit.children)if(o.userData.snapX){const d=o.userData.snapX,h=kit.userData.snap([d*40,o.position.y,0],[-d,0,0]);if(h)o.position.x=h.x+d*.06}
   if(sp.grill==='front'||sp.grill==='both'){const gm=this.grM||(this.grM=new T3.MeshStandardMaterial({color:0x1a1b1f,metalness:.85,roughness:.35}));const tb=(x,y,z,len,rx,rz)=>{const q=new T3.Mesh(this.tubeG||(this.tubeG=new T3.CylinderGeometry(.35,.35,1,10)),gm);q.scale.y=len;q.position.set(x,y,z);q.rotation.set(rx||0,0,rz||0);kit.add(q)};
    tb(23.6,6.8,0,20,Math.PI/2);tb(23.6,4,0,20,Math.PI/2);for(const z of[-9.5,-3,3,9.5])tb(23.6,5.4,z,5.6);for(const z of[-6,6])tb(22.8,7.2,z,2.4,0,Math.PI/2)}
   if(sp.grill==='both'){const gm=this.grM;for(let i=0;i<6;i++){const q=new T3.Mesh(this.carBox,gm);q.scale.set(.25,.25,15);q.position.set(-19.9,12.9+i*.3,0);q.rotation.z=.35;kit.add(q)}for(const z of[-7,-2.3,2.3,7]){const q=new T3.Mesh(this.carBox,gm);q.scale.set(.25,2,.25);q.position.set(-19.8,13.7,z);q.rotation.z=.35;kit.add(q)}}
@@ -502,7 +503,7 @@ const R3={ok:false,off:/[?&]2d/.test(location.search),chunks:new Map(),CH:16,PX:
   if(K.includes('pipes'))for(const z of[-11.6,11.6]){const pp=new T3.Mesh(new T3.CylinderGeometry(.5,.5,12,12),this.chromeM);pp.rotation.z=Math.PI/2;pp.position.set(-2,2.1,z);kit.add(pp)}
   if(K.includes('rally')){box(this.carbon,2,1,13,-1,14.3,0);if(!this.rallyM)this.rallyM=new T3.MeshBasicMaterial({color:new T3.Color(0xfff2c8).multiplyScalar(2.2)});for(const z of[-4.5,-1.5,1.5,4.5]){const l=new T3.Mesh(this.carBox,this.rallyM);l.scale.set(.6,1.8,2.2);l.position.set(.2,15.4,z);kit.add(l)}}
   if(!this.shTex){this.shTex=this.glowTex('rgba(0,0,0,.85)');this.shGeo=new T3.PlaneGeometry(1,1);this.shGeo.rotateX(-Math.PI/2);this.shMat=new T3.MeshBasicMaterial({map:this.shTex,transparent:true,depthWrite:false})}
-  const W=B.hw*2*zs*zw;const sh=new T3.Mesh(this.shGeo,this.shMat);sh.scale.set(L*1.5,1,W*1.5);sh.position.y=.7;g.add(sh);const beam=new T3.Mesh(this.beamGeo,this.beamMat);beam.position.set(L/2,1.6,0);g.add(beam);
+  const W=B.hw*2*zs*zw;const sh=new T3.Mesh(this.shGeo,this.shMat);sh.scale.set(L*1.12,1,W*1.15);sh.position.y=.25;g.add(sh);const beam=new T3.Mesh(this.beamGeo,this.beamMat);beam.position.set(L/2,1.6,0);g.add(beam);
   if(!this.ugTex)this.ugTex=this.glowTex('rgba(255,255,255,.9)');let glow=null;if(sp.glow&&sp.glow!=='off'){glow=new T3.Mesh(this.shGeo,new T3.MeshBasicMaterial({map:this.ugTex,color:sp.glow,transparent:true,blending:T3.AdditiveBlending,depthWrite:false}));glow.scale.set(L*1.55,1,W*1.5);glow.material.opacity=.4;glow.position.y=1;g.add(glow)}
   if(!this.flG){this.flG=new T3.ConeGeometry(3.2,16,8);this.flG.rotateZ(Math.PI/2);this.flM=new T3.MeshBasicMaterial({color:new T3.Color(0x66aaff).multiplyScalar(3),transparent:true,opacity:.85,blending:T3.AdditiveBlending,depthWrite:false})}
   const fl=new T3.Mesh(this.flG,this.flM);fl.position.set(-L/2-8,5*zs,0);fl.visible=false;g.add(fl);
@@ -528,7 +529,7 @@ const R3={ok:false,off:/[?&]2d/.test(location.search),chunks:new Map(),CH:16,PX:
   {const lg=new T3.CylinderGeometry(0,40,70,24,1,true),lm=new T3.MeshBasicMaterial({color:0xffe2a8,transparent:true,opacity:.06,blending:T3.AdditiveBlending,depthWrite:false,side:T3.DoubleSide});for(const[x,z]of[[-60,-40],[60,-30],[0,50]]){const c=new T3.Mesh(lg,lm);c.position.set(x,150,z);gr.add(c)}}
   this.gYaw=.6;this.gVel=.25},
  garageSet(def,tune){if(!this.concept)return false;if(!this.gRoom)this.garageBuild();if(this.gCar){this.gDisc.remove(this.gCar);this.gCar=null}
-  const c={L:def.L,Wd:def.Wd,col:(tune&&tune.p1)||def.col,st:{id:def.id},kind:'player'};let g;if(def.soon){g=this.soonMesh(def);if(!g)return false}else if(def.kenney){if(!this.kReady||!this.km[def.kenney])return false;g=this.kenneyMesh(c,def.kenney);g.userData.beam.visible=false}else g=this.zMesh(c,this.zSpec(def.id,tune),true);g.position.y=1;if(g.userData.beam)g.userData.beam.visible=false;this.gDisc.add(g);this.gCar=g;return true},
+  const c={L:def.L,Wd:def.Wd,col:(tune&&tune.p1)||def.col,st:{id:def.id},kind:'player'};let g;if(def.soon){g=this.soonMesh(def);if(!g)return false}else if(def.kenney){if(!this.kReady||!this.km[def.kenney])return false;g=this.kenneyMesh(c,def.kenney);g.userData.beam.visible=false}else g=this.zMesh(c,this.zSpec(def.id,tune),true);g.position.y=2.45;if(g.userData.beam)g.userData.beam.visible=false;g.traverse(o=>{if(o.isMesh&&(o.geometry===this.shGeo||o.geometry===this.beamGeo))o.visible=false});this.gDisc.add(g);this.gCar=g;return true},
  garageRender(dt){if(!this.gRoom||!this.gCar)return false;const C=this.cam;this.gRoom.visible=true;this.sky.visible=false;const fogD=this.scene.fog.density;this.scene.fog.density=0;
   if(!this.gDrag)this.gYaw+=this.gVel*dt;this.gVel=lerp(this.gVel,.25,Math.min(1,dt*1.5));this.gDisc.rotation.y=this.gYaw;
   const V=this.gView||{x:VW/2,y:VH/2,w:VW,h:VH},fov=40,tn=Math.tan(fov*Math.PI/360),av=Math.max(120,Math.min(V.w*.92,V.h*1.75)),d=clamp(74*VH/(2*tn*av),80,340),el=.13;
@@ -592,7 +593,7 @@ const R3={ok:false,off:/[?&]2d/.test(location.search),chunks:new Map(),CH:16,PX:
   const seen=new Set();for(const c of w.cars){let g=this.cars.get(c);if(g&&((c.kind==='player'&&c.st&&(c.st.kenney?(this.kReady&&(!g.userData.k||g.userData.tk!==this.tuneKey(c.st.id))):(this.concept&&(!g.userData.concept||g.userData.tk!==this.tuneKey(c.st.id)))))||(!g.userData.k&&!g.userData.concept&&this.kReady&&this.kModelFor(c)))){this.scene.remove(g);this.cars.delete(c);g=null}if(!g){g=this.carMesh(c);this.cars.set(c,g)}seen.add(c);g.position.set(c.x,0,c.y);g.rotation.y=-c.a;
    if(g.userData.paint.isMaterial)g.userData.paint.color.set(c.wreck?0x2a2522:(c.st&&c.st.police)?0xe9ecef:c.hitT>0?0xffffff:(g.userData.pc||c.col));g.userData.beam.visible=!c.wreck;for(const wg of g.userData.wheels)wg.rotation.z-=(c.v||0)*dt/5.6;
    {const U=g.userData,sp=Math.abs(c.v||0),lat=(c.steer||0)*Math.min(1,sp/260)*(c.v<0?-1:1)*(c.drift?1.6:1),dv=dt>0?((c.v||0)-(c.pv===undefined?c.v||0:c.pv))/dt:0;c.pv=c.v;
-    if(U.pop){const up=sp>4||this.tod==='night'?1:0;for(const q of U.pop)q.rotation.z=lerp(q.rotation.z,up?-1.05:0,Math.min(1,dt*4))}
+    if(U.pop){const up=sp>8?1:0;for(const q of U.pop)q.rotation.z=lerp(q.rotation.z,up?-1.05:0,Math.min(1,dt*4))}
     if(U.brk)U.brk.visible=!!c.brake||(c.v||0)<-5;
     if(U.dice){U.dice.rotation.x=lerp(U.dice.rotation.x,-(c.steer||0)*Math.min(1,sp/200)*.5,Math.min(1,dt*3))}
     if(U.sw){U.sw.rotation.x=(c.steer||0)*2.2;if(c.kind==='player'&&this.camMode==='cockpit'){const v=this.tmp2||(this.tmp2=new THREE.Vector3());U.sw.getWorldPosition(v);v.project(this.cam);this.swScr={x:(v.x+1)/2*VW,y:(1-v.y)/2*VH};

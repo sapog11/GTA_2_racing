@@ -1,19 +1,21 @@
 {
  "id": "supka",
  "name": "Toyda Supka",
- "p1": "#e8a21a",
- "p2": "#14151a",
- "rim": "#1a1a1e",
- "fin": "gloss",
- "glow": "#ff8a2e",
- "w": 1.02,
- "kit": [
-  "wing",
-  "splitter",
-  "skirts"
- ],
  "plate": "5U8 0998",
  "platform": "koncept-z",
+ "p1": "#c08a2a",
+ "p2": "#14151a",
+ "rim": "#8a8f98",
+ "fin": "gloss",
+ "glow": "off",
+ "w": 1.02,
+ "sy": 1.1,
+ "kit": [
+  "wing",
+  "skirts"
+ ],
+ "hl": "popup",
+ "cls": "sport",
  "parts": {
   "body": "models/koncept/CarConcept.gltf (Khronos CarConcept, CC-BY 4.0)",
   "kit": [
@@ -25,5 +27,5 @@
  },
  "rims": "five",
  "tl": "bar",
- "cal": "#d4142a"
+ "cal": "#7a1e2a"
 }

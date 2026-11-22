@@ -3,6 +3,21 @@
  "name": "Zéčko Kupé",
  "plate": "5U6 6666",
  "platform": "koncept-z",
+ "p1": "#5b4a8a",
+ "p2": "#14151a",
+ "rim": "#d8dbe0",
+ "fin": "metal",
+ "glow": "off",
+ "w": 1,
+ "sx": 0.92,
+ "sy": 1.08,
+ "kit": [
+  "duck",
+  "skirts"
+ ],
+ "rims": "five",
+ "hl": "popup",
+ "cls": "sport",
  "parts": {
   "notes": "Body proportions (sx = length, sy = height, w = width) live in R3.ZB; override them here."
  }

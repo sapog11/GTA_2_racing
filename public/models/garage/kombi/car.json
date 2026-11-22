@@ -3,6 +3,20 @@
  "name": "Zéčko Kombi",
  "plate": "5U5 2244",
  "platform": "koncept-z",
+ "p1": "#3b5d3a",
+ "p2": "#14151a",
+ "rim": "#c9ccd2",
+ "fin": "metal",
+ "glow": "off",
+ "w": 1.02,
+ "sx": 1.14,
+ "sy": 1.13,
+ "kit": [
+  "flaps"
+ ],
+ "rails": 1,
+ "hl": "blade",
+ "cls": "wagon",
  "parts": {
   "notes": "Body proportions (sx = length, sy = height, w = width) live in R3.ZB; override them here."
  }

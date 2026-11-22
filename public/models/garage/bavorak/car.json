@@ -1,18 +1,22 @@
 {
  "id": "bavorak",
  "name": "Bavorák E46",
- "p1": "#1d3f8a",
+ "plate": "5U9 0046",
+ "platform": "koncept-z",
+ "p1": "#1f3a5f",
  "p2": "#0e0f14",
  "rim": "#c9ccd2",
  "fin": "metal",
- "glow": "#2e6bff",
+ "glow": "off",
  "w": 1,
+ "sx": 1,
+ "sy": 1.07,
  "kit": [
   "duck",
   "skirts"
  ],
- "plate": "5U9 0046",
- "platform": "koncept-z",
+ "hl": "angel",
+ "cls": "sedan",
  "parts": {
   "body": "models/koncept/CarConcept.gltf (Khronos CarConcept, CC-BY 4.0)",
   "kit": [
@@ -21,6 +25,5 @@
   ],
   "notes": "Drop body.glb / wheel.glb / kit_*.glb here later to replace the shared Z-platform parts."
  },
- "rims": "five",
- "hl": "angel"
+ "rims": "five"
 }
