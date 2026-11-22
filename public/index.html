@@ -726,7 +726,7 @@ function explode(w,x,y){Snd.boom();for(let i=0;i<26;i++){const a=R()*6.28,s=rr(3
 
 /* ---------------- PHYSICS ---------------- */
 function carPhysics(w,c,ctl,dt){
-  const st=c.st,SPK=1.22,PL=c===w.player;let maxV=st.max*SPK*(c.speedMul||1);let acc=st.acc*(PL?.8:1.05),turn=st.turn*(PL?.72:1),grip=st.grip;
+  const st=c.st,SPK=1.22,PL=c===w.player;let maxV=st.max*SPK*(c.speedMul||1);let acc=st.acc*(PL?.95:1.05),turn=st.turn*(PL?.92:1),grip=st.grip;
   if(c.handMul){turn*=c.handMul;grip*=c.handMul}
   const tl=tileAt(Math.floor(c.x/T),Math.floor(c.y/T));if(tl===GRASS){maxV*=.6;grip*=.6}
   if(c.boost){maxV*=1.42;acc*=1.7}
@@ -738,9 +738,9 @@ function carPhysics(w,c,ctl,dt){
   else if(thr<0){if(c.v>5){c.v-=st.acc*1.9*dt*Math.min(1,-thr);c.brake=-thr>.5}else if(thr>-.5){c.v=Math.max(0,c.v-st.acc*dt)}else c.v=Math.max(-90,c.v-st.acc*.6*dt)}
   else c.v*=1-.7*dt;
   if(c.v>maxV)c.v-=(c.v-maxV)*2.5*dt;
-  const sp=Math.abs(c.v);let tgt=ctl.steer||0;if(PL&&!c.drift)tgt*=1-.5*clamp((sp-110)/400,0,1);
-  c.steer=lerp(c.steer,tgt,Math.min(1,dt*(PL?(Math.abs(tgt)<Math.abs(c.steer)?10:6.5):10)));
-  let yaw=c.steer*turn*clamp(sp/100,0,1);if(PL&&!c.drift&&sp>40){const latMax=430+grip*45;yaw=clamp(yaw,-latMax/sp,latMax/sp);yaw*=1-clamp(((c.slip||0)-40)/300,0,.5)}
+  const sp=Math.abs(c.v);let tgt=ctl.steer||0;if(PL&&!c.drift)tgt*=1-.35*clamp((sp-130)/420,0,1);
+  c.steer=lerp(c.steer,tgt,Math.min(1,dt*(PL?(Math.abs(tgt)<Math.abs(c.steer)?11:9):10)));
+  let yaw=c.steer*turn*clamp(sp/100,0,1);if(PL&&!c.drift&&sp>40){const latMax=520+grip*50;yaw=clamp(yaw,-latMax/sp,latMax/sp);yaw*=1-clamp(((c.slip||0)-40)/300,0,.5)}
   c.a=wrapA(c.a+yaw*dt*(c.v<0?-1:1));
   const hx=Math.cos(c.a),hy=Math.sin(c.a),tvx=hx*c.v,tvy=hy*c.v;
   if(c.drift&&R()<.7&&w.parts.length<400){for(const sd of[-1,1])part(w,{x:c.x-hx*c.L*.38-hy*sd*c.Wd*.45,y:c.y-hy*c.L*.38+hx*sd*c.Wd*.45,vx:rr(-15,15)-c.vx*.1,vy:rr(-15,15)-c.vy*.1,life:rr(.6,1.2),max:1.2,type:'smoke',size:rr(6,10),z:0,col:1})}
@@ -1276,22 +1276,23 @@ function navPath(x0,y0,x1,y1){const a=nearestRoad(x0,y0),b=nearestRoad(x1,y1);if
   if(prev[g]<0)return null;const pts=[];for(let c=g;;c=prev[c]){const tx=c%MAPW,ty=(c/MAPW)|0;pts.push({x:tx%8<2?(8*(tx>>3)+1)*T:(tx+.5)*T,y:ty%8<2?(8*(ty>>3)+1)*T:(ty+.5)*T});if(c===s0)break}pts.reverse();
   const cr=[pts[0]];for(let i=1;i<pts.length-1;i++){const A=cr[cr.length-1],B=pts[i],C=pts[i+1];if((B.x-A.x)*(C.y-B.y)-(B.y-A.y)*(C.x-B.x)!==0)cr.push(B)}cr.push(pts[pts.length-1]);
   const out=[cr[0]];for(let i=1;i<cr.length;i++){const l=out[out.length-1];if(i<cr.length-1&&Math.hypot(cr[i].x-l.x,cr[i].y-l.y)<T*2.6)continue;out.push(cr[i])}return out}
-function navTarget(){const w=G.world,p=w&&w.player;if(!p)return null;if(G.mode==='race'&&w.route){const n=w.route[Math.min(p.seg+1,w.route.length-1)];return{x:n.x,y:n.y,name:RS&&RS.L?RS.L.name:'Cíl'}}
+function navTarget(){const w=G.world,p=w&&w.player;if(!p)return null;if(G.mode==='race'&&w.route){const i=Math.min(p.seg+1,w.route.length-1),n=w.route[i],n2=w.route[i+1];return{x:n.x,y:n.y,name:RS&&RS.L?RS.L.name:'Cíl',next:n2?{x:n2.x,y:n2.y}:null}}
   if(G.mode==='roam'){if(NAV.to)return NAV.to;if(RS&&RS.arrowTo)return{x:RS.arrowTo.x,y:RS.arrowTo.y,name:RS.arrowTo.L.name}}return null}
 let rbKey='';function radioUI(){const st=Snd.style||'off',k=st+(Snd.muted?1:0);if(k===rbKey)return;rbKey=k;const b=$('rbtn'),on=st!=='off'&&STY[st]&&STY[st].bpm;b.classList.toggle('play',!!on);
   const d=on?(60/STY[st].bpm).toFixed(3)+'s':'0s';b.style.animationDuration=d;b.firstChild.style.animationDuration=d;$('rbtnN').textContent=STY[st]?STY[st].name:'VYPNUTO'}
 $('rbtn').addEventListener('click',e=>{e.stopPropagation();nextRadio();rbKey='';radioUI()});
 function navUpdate(dt){radioUI();if(effSteer()!==lastEff){applySteerMode();G.keys.u=G.keys.d=false;if(WH)WH.id=null}const w=G.world,p=w&&w.player,tg=navTarget();if(!tg||!p){if(NAV.path){NAV.path=null;if(typeof R3!=='undefined'&&R3.ok)R3.setNav(null)}NAV.ins=null;$('nav').classList.remove('on');return}
-  NAV.t-=dt;const key=Math.floor(p.x/T)+','+Math.floor(p.y/T)+'>'+Math.round(tg.x)+','+Math.round(tg.y);
-  if(key!==NAV.key||NAV.t<=0){NAV.key=key;NAV.t=1.2;NAV.path=navPath(p.x,p.y,tg.x,tg.y);if(typeof R3!=='undefined'&&R3.ok)R3.setNav(NAV.path)}
+  NAV.t-=dt;const key=Math.floor(p.x/T)+','+Math.floor(p.y/T)+'>'+Math.round(tg.x)+','+Math.round(tg.y)+(tg.next?'>'+Math.round(tg.next.x):'');
+  if(key!==NAV.key||NAV.t<=0){NAV.key=key;NAV.t=1.2;NAV.path=navPath(p.x,p.y,tg.x,tg.y);if(NAV.path&&tg.next){const q=navPath(tg.x,tg.y,tg.next.x,tg.next.y);if(q&&q.length>1)NAV.path=NAV.path.concat(q.slice(1))}if(typeof R3!=='undefined'&&R3.ok)R3.setNav(NAV.path)}
   const P=NAV.path;let ins={a:'⬆',d:Math.hypot(tg.x-p.x,tg.y-p.y),s:'',c:tg.name};
   if(P&&P.length>1){let dist=Math.hypot(P[0].x-p.x,P[0].y-p.y),found=false;const d0x=P[1].x-P[0].x,d0y=P[1].y-P[0].y,l0=Math.hypot(d0x,d0y)||1;
     if(Math.cos(p.a)*d0x/l0+Math.sin(p.a)*d0y/l0<-.55&&Math.hypot(p.vx,p.vy)>-1&&dist<T*3){ins.a='↩';ins.s='Otoč se';ins.d=0}
     else{for(let i=1;i<P.length-1;i++){dist+=Math.hypot(P[i].x-P[i-1].x,P[i].y-P[i-1].y);const ax=P[i].x-P[i-1].x,ay=P[i].y-P[i-1].y,bx=P[i+1].x-P[i].x,by=P[i+1].y-P[i].y,la=Math.hypot(ax,ay)||1,lb=Math.hypot(bx,by)||1,cs=(ax*bx+ay*by)/la/lb;
-      if(cs<.7){const cr=ax*by-ay*bx;ins.a=cr>0?'↱':'↰';ins.d=dist;const st=streetAt(P[i].x+bx/lb*T*3,P[i].y+by/lb*T*3);ins.s=(cr>0?'Doprava':'Doleva')+(st[0]?' • '+st[0]:'');found=true;break}}
+      if(cs<.7){const cr=ax*by-ay*bx;ins.a=cr>0?'↱':'↰';ins.d=dist;const st=streetAt(P[i].x+bx/lb*T*3,P[i].y+by/lb*T*3);ins.s=(cr>0?'Doprava':'Doleva')+(st[0]?' • '+st[0]:'');found=true;
+       let d2=0;for(let j=i+1;j<P.length-1;j++){d2+=Math.hypot(P[j].x-P[j-1].x,P[j].y-P[j-1].y);const ux=P[j].x-P[j-1].x,uy=P[j].y-P[j-1].y,vx=P[j+1].x-P[j].x,vy=P[j+1].y-P[j].y,lu=Math.hypot(ux,uy)||1,lv=Math.hypot(vx,vy)||1;if((ux*vx+uy*vy)/lu/lv<.7){ins.then=(ux*vy-uy*vx>0?'↱':'↰')+' '+(d2<1000?Math.round(d2/10)*10+' m':(d2/1000).toFixed(1)+' km');break}}break}}
      if(!found){ins.d=dist+Math.hypot(P[P.length-1].x-P[P.length-2].x,P[P.length-1].y-P[P.length-2].y);ins.s='Rovně do cíle';ins.a=ins.d<80?'🏁':'⬆'}}}
   NAV.ins=ins;const D=ins.d<1000?Math.max(10,Math.round(ins.d/10)*10)+' m':(ins.d/1000).toFixed(1)+' km';
-  if(NAV.dKey!==ins.a+D+ins.s+ins.c){NAV.dKey=ins.a+D+ins.s+ins.c;$('navA').textContent=ins.a;$('navD').textContent=ins.s==='Otoč se'?'OTOČ SE':D;$('navS').textContent=ins.s==='Otoč se'?'':ins.s;$('navC').textContent='→ '+ins.c+'  •  '+clockTxt()}
+  if(NAV.dKey!==ins.a+D+ins.s+ins.c+(ins.then||'')){NAV.dKey=ins.a+D+ins.s+ins.c+(ins.then||'');$('navA').textContent=ins.a;$('navD').innerHTML=(ins.s==='Otoč se'?'OTOČ SE':D)+(ins.then?' <small style="font-size:14px;opacity:.8">pak '+ins.then+'</small>':'');$('navS').textContent=ins.s==='Otoč se'?'':ins.s;$('navC').textContent='→ '+ins.c+'  •  '+clockTxt()}
   $('nav').classList.add('on')}
 function clockTxt(){const d=new Date();let pr='';try{pr=new Intl.DateTimeFormat('cs-CZ',{timeZone:'Europe/Prague',hour:'2-digit',minute:'2-digit'}).format(d)}catch(e){}const lo=String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');return pr&&pr!==lo?'🕒 '+lo+' • Praha '+pr:'🕒 '+lo}
 function openNav(){if(G.mode!=='roam')return;const w=G.world,p=w.player;G.prevMode='roam';G.mode='paused';Snd.engine(0,false);G.keys={};
@@ -1306,7 +1307,7 @@ document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest
 $('nav').addEventListener('click',()=>openNav());
 function infoHit(e){if(!document.body.classList.contains('cock')||typeof R3==='undefined'||!R3.iRect)return null;const r=R3.iRect;if(e.clientX<r.x0||e.clientX>r.x1||e.clientY<r.y0||e.clientY>r.y1)return null;return e.clientX<r.x0+(r.x1-r.x0)*.58?'nav':'radio'}
 cv.addEventListener('pointerdown',e=>{if(!(G.mode==='roam'||G.mode==='race'))return;const h=infoHit(e);if(!h)return;if(h==='nav')openNav();else{nextRadio();floatMsg('📻 '+STY[Snd.style].name,1.2)}});
-const WH={id:null,ang:0,last:0,cx:0,cy:0,lx:0},WMAX=2.2;
+const WH={id:null,ang:0,last:0,cx:0,cy:0,lx:0},WMAX=1.7;
 {const pd=$('pedals');let pid=null;const set=e=>{const r=pd.getBoundingClientRect(),g=e.clientY>r.top+r.height/2;G.keys.u=g;G.keys.d=!g;$('pG').classList.toggle('on',g);$('pB').classList.toggle('on',!g)},off=e=>{if(e.pointerId!==pid)return;pid=null;G.keys.u=G.keys.d=false;$('pG').classList.remove('on');$('pB').classList.remove('on')};
  pd.addEventListener('pointerdown',e=>{e.preventDefault();pid=e.pointerId;try{pd.setPointerCapture(pid)}catch(_){}set(e)});pd.addEventListener('pointermove',e=>{if(e.pointerId===pid)set(e)});
  pd.addEventListener('pointerup',off);pd.addEventListener('pointercancel',off);pd.addEventListener('lostpointercapture',off);pd.addEventListener('contextmenu',e=>e.preventDefault())}
