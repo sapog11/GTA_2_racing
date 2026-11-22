@@ -165,6 +165,15 @@ h1,h2,h3{margin:0}
 body.rec #skip{display:none!important}
 /* HUD */
 #hud{position:fixed;inset:0;pointer-events:none;display:none;z-index:8}
+#nav{position:absolute;left:10px;top:calc(max(10px,env(safe-area-inset-top)) + 150px);display:none;align-items:center;gap:10px;background:#ffcc1a;color:#111;border:2px solid #111;border-radius:10px;padding:7px 12px 7px 8px;box-shadow:3px 3px 0 rgba(0,0,0,.6);pointer-events:auto;cursor:pointer;max-width:230px;font-family:Oswald,sans-serif}
+#nav.on{display:flex}#navA{font-size:34px;line-height:1;width:40px;text-align:center;font-weight:700}#nav .nt{display:flex;flex-direction:column;line-height:1.1;min-width:0}
+#navD{font-size:22px}#navS{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}#navC{font-style:normal;font-size:11px;opacity:.75;margin-top:2px}
+body.cock #nav{top:calc(max(10px,env(safe-area-inset-top)) + 120px)}
+#wgrip{position:fixed;width:38px;height:38px;margin:-19px 0 0 -19px;border-radius:50%;border:2px solid rgba(255,255,255,.28);background:rgba(255,255,255,.06);pointer-events:none;display:none;z-index:9}
+#navm{position:fixed;inset:0;z-index:25;background:rgba(6,6,12,.88);display:none;flex-direction:column;align-items:center;padding:max(16px,env(safe-area-inset-top)) 14px 16px;overflow-y:auto}
+#navm.on{display:flex}#navm h2{font-family:Bangers;color:#ffcc1a;font-size:34px;letter-spacing:2px;margin:6px 0 4px}#navm .nl{width:100%;max-width:520px;display:flex;flex-direction:column;gap:8px}
+#navm .ni{display:flex;align-items:center;gap:12px;background:#141724;border:2px solid #2c3148;border-radius:10px;padding:10px 12px;color:#fff;cursor:pointer;text-align:left;font-family:Oswald,sans-serif}
+#navm .ni.cur{border-color:#ffcc1a;background:#2a2410}#navm .ni b{font-size:18px;display:block}#navm .ni span{font-size:13px;color:#aab}#navm .ni .ic{font-size:26px;width:34px;text-align:center}#navm .ni .km{margin-left:auto;color:#ffcc1a;font-size:16px;white-space:nowrap}
 #hud.on{display:block}
 .hrow{position:absolute;left:10px;right:10px;top:max(10px,env(safe-area-inset-top));display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
 .hbox{background:rgba(8,9,16,.72);border:1px solid rgba(255,255,255,.12);border-radius:5px;padding:6px 9px;font-size:13px;font-weight:600;letter-spacing:1px}
@@ -283,12 +292,12 @@ body.two.driving #twHint{display:flex}
 
 <div id="hud">
   <div class="hrow">
-    <div class="hbox"><div id="hLabel">AUTO</div><div class="hp"><i id="hHp"></i></div><div style="margin-top:4px">RESPEKT <span id="hResp" style="color:var(--acc)">0</span></div></div>
+    <div class="hbox"><div id="hLabel">AUTO</div><div class="hp"><i id="hHp"></i></div><div style="margin-top:4px"><span id="hResp" style="color:var(--acc)">0</span> Kč</div></div>
     <div class="hbox" style="text-align:center"><div id="hMainL">POZICE</div><div class="big" id="hMain">1/5</div></div>
     <div style="display:flex;flex-direction:column;align-items:flex-end"><div style="display:flex;gap:4px"><button id="camB" title="Kamera (C)">🎥</button><button id="keyB" title="Motor (E)">🔑</button><button id="radioB" title="Rádio (R)">📻</button><button id="pauseB">II</button></div><canvas id="mm" width="192" height="192"></canvas></div>
   </div>
   <div id="bust"><b>POLICIE TĚ MÁ!</b><div class="hp"><i id="hBust"></i></div></div>
-  <div id="center"></div><div id="area"></div><div id="obj"></div><div id="street"></div><div id="drift"></div>
+  <div id="center"></div><div id="area"></div><div id="obj"></div><div id="street"></div><div id="nav"><div id="navA">⬆</div><div class="nt"><b id="navD"></b><span id="navS"></span><i id="navC"></i></div></div><div id="wgrip"></div><div id="drift"></div>
   <div id="spd"><svg viewBox="0 0 200 110"><defs><linearGradient id="sg" x1="0" x2="1"><stop offset="0" stop-color="#7a2cff"/><stop offset=".6" stop-color="#ff2e88"/><stop offset="1" stop-color="#ffb02e"/></linearGradient></defs><path d="M20 100 A80 80 0 0 1 180 100" fill="none" stroke="rgba(255,255,255,.12)" stroke-width="12" stroke-linecap="round"/><path id="spArc" d="M20 100 A80 80 0 0 1 180 100" fill="none" stroke="url(#sg)" stroke-width="12" stroke-linecap="round" pathLength="100" stroke-dasharray="0 100"/></svg><b id="spN">0</b><i>km/h</i></div>
   <div id="hint"></div>
 </div>
@@ -299,6 +308,7 @@ body.two.driving #twHint{display:flex}
 <path d="M-6-97h12v18h-12z" fill="#ff2e88"/><path d="M-80 8 L-30 14 L-22 40 L22 40 L30 14 L80 8" fill="none" stroke="#1b1c23" stroke-width="16" stroke-linejoin="round"/><path d="M0 34 L0 80" stroke="#1b1c23" stroke-width="16"/>
 <circle r="30" fill="#17181f" stroke="#2c2f3a" stroke-width="3"/><text y="11" text-anchor="middle" font-family="Audiowide,Bangers,sans-serif" font-size="30" fill="#ffcc1a">Z</text></svg></div>
 <div id="twHint"><span>◀ LEVÝ PRST: ZATÁČENÍ ▶</span><span>PRAVÝ: ▲ PLYN / ▼ BRZDA</span></div>
+<div id="navm"></div>
 <div id="ctrl">
   <div id="pedals"><button id="pB">BRZDA</button><button id="pG">PLYN</button></div>
   <button id="kL" data-k="l">◀</button>
@@ -326,7 +336,7 @@ const $=id=>document.getElementById(id);
 const SAVEKEY='usti_mesto_andelu_v1';
 let SAVE={steer:'drag',resp:0,cash:0,hero:null,car:'civka',owned:['civka'],done:{},seenIntro:false,comics:['intro'],mute:false,autoGas:null};
 try{const s=JSON.parse(localStorage.getItem(SAVEKEY)||'null');if(s)SAVE=Object.assign(SAVE,s)}catch(e){}
-if(!SAVE.owned.includes('koncept'))SAVE.owned.push('koncept');if(!SAVE.tune)SAVE.tune={};if(!SAVE.tuned)SAVE.tuned=[];if(!SAVE.unl){SAVE.unl={};for(const id of SAVE.tuned)SAVE.unl[id]=['*']}
+if(!SAVE.owned.includes('koncept'))SAVE.owned.push('koncept');if(!SAVE.kcMig){SAVE.kcMig=1;SAVE.cash=(SAVE.cash||0)+(SAVE.resp||0)*50}if(!SAVE.tune)SAVE.tune={};if(!SAVE.tuned)SAVE.tuned=[];if(!SAVE.unl){SAVE.unl={};for(const id of SAVE.tuned)SAVE.unl[id]=['*']}
 if((('ontouchstart' in window)||matchMedia('(pointer:coarse)').matches)&&!SAVE.steer3){SAVE.steer2=SAVE.steer3=1;SAVE.steer='wheel'}if(SAVE.steer==='two')SAVE.steer='wheel';
 function save(){try{localStorage.setItem(SAVEKEY,JSON.stringify(SAVE))}catch(e){}}
 const isTouch=('ontouchstart' in window)||matchMedia('(pointer:coarse)').matches;
@@ -451,12 +461,12 @@ const HOME={x:IX(3)+18,y:IX(27)-140,a:-Math.PI/2};
 /* ---------------- DATA ---------------- */
 const CARS=[
  {id:'civka',name:'Drago',desc:'Stará dobrá japonka. Černá jak noc, rychlá jak důchodce. Zatím.',col:'#141519',max:250,acc:190,turn:2.9,grip:6,hp:100,price:0,L:40,Wd:19},
- {id:'felda',name:'Škodovka Felda Turbo',desc:'Česká klasika s turbem z bazaru. Kouří, ale jede.',col:'#2d6b3a',max:262,acc:205,turn:2.85,grip:6.2,hp:105,price:250,L:38,Wd:19},
- {id:'golfik',name:'Golfík IV GTI',desc:'Každej druhej na Klíši ho má. Ty budeš ten rychlejší.',col:'#c8ccd2',max:278,acc:220,turn:3.0,grip:6.5,hp:110,price:500,L:39,Wd:20},
- {id:'bavorak',name:'Bavorák E46',desc:'Zadokolka. Bokem do každý zatáčky.',col:'#1d3f8a',max:300,acc:235,turn:2.9,grip:5.3,hp:120,price:900,L:44,Wd:20},
- {id:'imprezka',name:'Imprezka WRX',desc:'Čtyřkolka z rallye. Na mokru král.',col:'#2448c8',max:318,acc:260,turn:3.2,grip:7.4,hp:115,price:1500,L:43,Wd:20,spoiler:1},
+ {id:'felda',name:'Škodovka Felda Turbo',desc:'Česká klasika s turbem z bazaru. Kouří, ale jede.',col:'#2d6b3a',max:262,acc:205,turn:2.85,grip:6.2,hp:105,price:40000,L:38,Wd:19},
+ {id:'golfik',name:'Golfík IV GTI',desc:'Každej druhej na Klíši ho má. Ty budeš ten rychlejší.',col:'#c8ccd2',max:278,acc:220,turn:3.0,grip:6.5,hp:110,price:80000,L:39,Wd:20},
+ {id:'bavorak',name:'Bavorák E46',desc:'Zadokolka. Bokem do každý zatáčky.',col:'#1d3f8a',max:300,acc:235,turn:2.9,grip:5.3,hp:120,price:150000,L:44,Wd:20},
+ {id:'imprezka',name:'Imprezka WRX',desc:'Čtyřkolka z rallye. Na mokru král.',col:'#2448c8',max:318,acc:260,turn:3.2,grip:7.4,hp:115,price:250000,L:43,Wd:20,spoiler:1},
  {id:'koncept',name:'Koncept Z',desc:'Prototyp z budoucnosti. Nikdo neví, kde se v Ústí vzal. Dárek od ZORYX.',col:'#c8102e',max:300,acc:236,turn:3.1,grip:7.4,hp:120,price:0,L:46,Wd:21},
- {id:'supka',name:'Toyda Supka',desc:'Legenda nočních závodů. Kdo ji má, ten je někdo.',col:'#e8a21a',max:345,acc:270,turn:3.0,grip:6,hp:110,price:2500,L:44,Wd:21,spoiler:1},
+ {id:'supka',name:'Toyda Supka',desc:'Legenda nočních závodů. Kdo ji má, ten je někdo.',col:'#e8a21a',max:345,acc:270,turn:3.0,grip:6,hp:110,price:400000,L:44,Wd:21,spoiler:1},
 ];
 const POLICE={col:'#e9ecef',max:236,acc:235,turn:2.8,grip:6,hp:60,L:44,Wd:20,police:1};
 const CIV_COLS=['#7a2222','#3a4a6a','#bdbdbd','#5a5a5a','#7a6a3a','#2f5f5a','#6a3a6a','#9a9a8a'];
@@ -469,7 +479,7 @@ const LEVELS=[
  {id:'utek',name:'Útěk po loupeži',sub:'Noc • liják • policie',type:'chase',route:[[4,25],[2,25],[2,22],[4,22],[4,23],[7,23],[7,21],[8,21],[8,19],[3,19],[3,17]],
   blocks:[[2,.55],[5,.5],[7,.6],[8,.5]],reward:{resp:150,cash:50000},dark:.84,rain:true,from:'Mírové náměstí',to:'Úkryt v Neštěmicích',comic:'utek'},
  {id:'zavod',name:'Závod s místníma',sub:'Předlice → Střekov • 5 aut',type:'race',route:[[1,20],[3,20],[3,22],[1,22],[1,25],[4,25],[4,23],[9,23],[9,25],[7,25],[7,28]],
-  reward:{resp:200,cash:8000},dark:.78,rain:false,from:'Předlice',to:'Střekov',comic:'zavod',req:'utek'},
+  reward:{resp:200,cash:25000},dark:.78,rain:false,from:'Předlice',to:'Střekov',comic:'zavod',req:'utek'},
  {id:'l3',name:'Děčín',sub:'Zatím zavřeno',soon:true,at:[6,4]},
 ];
 
@@ -545,8 +555,8 @@ const COMICS={
   {scene:'cutoff2',who:['lucie','kaja'],bubs:[{w:'kaja',t:'Ty vole, kdo tě učil řídit? Šlapko jedna!',x:40,y:10,shout:1},{w:'lucie',t:'Cos to řek, ty pičo?',x:4,y:36}]},
   {scene:'start',art:'racestart',who:['marek','kaja'],bubs:[{w:'kaja',t:'Chceš respekt? Závod. Pět kár, přes Mariánskej most na Střekov. Vítěz bere prachy.',x:36,y:8},{w:'marek',t:'Platí. Lucko, nakopni jim prdele.',x:4,y:40}]},
   {scene:'start2',cap:'Platí jen první místo. Tlačítko NITRO = krátký zrychlení, nabíjí se samo.'}]},
- ch4:{title:'Kapitola 4: Chemička',cost:400,soon:true},
- ch5:{title:'Kapitola 5: Střekovskej hrad',cost:800,soon:true},
+ ch4:{title:'Kapitola 4: Chemička',cost:40000,soon:true},
+ ch5:{title:'Kapitola 5: Střekovskej hrad',cost:80000,soon:true},
 };
 const WHO_NAME={pepa:'PEPA',denis:'DENIS',lucie:'LUCIE',marek:'MAREK',kaja:'KÁJA',police:'POLICIE'};
 
@@ -1062,7 +1072,7 @@ function endPromo(){$('promoTxt').innerHTML='';document.body.classList.remove('b
 const screens=['scr-start','scr-menu','scr-heroes','scr-garage','scr-levels','scr-comics','scr-comic','scr-pause','scr-result'];
 function hideAll(){for(const s of screens)$(s).classList.remove('on');$('hud').classList.remove('on');$('ctrl').classList.remove('on')}
 function show(id){hideAll();$(id).classList.add('on');$(id).scrollTop=0}
-function moneyHTML(){return`<span>RESPEKT <b>${SAVE.resp}</b></span><span>PRACHY <b>${SAVE.cash.toLocaleString('cs-CZ')} Kč</b></span>`}
+function moneyHTML(){return`<span>PRACHY <b>${SAVE.cash.toLocaleString('cs-CZ')} Kč</b></span>`}
 function ensureAmbient(){if(!G.world||G.mode==='race'||G.mode==='result'){G.world=ambientWorld()}G.mode='ambient'}
 function menuStage(){const w=G.world;if(!w)return;const sx=IX(2)+T*1.6,sy=IX(24)+T*1.45;w.peds.length=0;w.userPan=false;G.menuZoom=1;{const Zm=baseZoom()*1.15;w.cam.x=sx+T*3-VW*.17/Zm;w.cam.y=sy-VH*.14/Zm}
   const f1=makePed('fight',sx+T*2,sy),f2=makePed('fight',sx+T*2+16,sy);f1.mate=f2;f2.mate=f1;f1.sayT=.5;f2.sayT=2;w.peds.push(f1,f2);
@@ -1087,7 +1097,7 @@ function g3d(){return typeof R3!=='undefined'&&R3.ok&&!!R3.concept}
 function garage3D(){const c=CARS[gIdx];if(g3d()){R3.garageSet(c,SAVE.tune[c.id]||null);G.g3=c.id+R3.tuneKey(c.id)}}
 function renderGarage(){const el=$('scr-garage'),c=CARS[gIdx],own=SAVE.owned.includes(c.id),is3=typeof R3!=='undefined'&&R3.ok;el.classList.toggle('dim',!is3);el.classList.toggle('g3d',is3);
   const bar=(l,v)=>`<div class="stat"><span>${l}</span><div class="bar"><i style="width:${clamp(v,5,100)}%"></i></div></div>`;
-  let btn=own?(SAVE.car===c.id?`<button class="btn" disabled>VYBRÁNO</button>`:`<button class="btn" data-pick="${c.id}">VYBRAT</button>`):`<button class="btn pink" data-buy="${c.id}" ${SAVE.resp<c.price?'disabled':''}>ODEMKNOUT • ${c.price} RESPEKTU</button>`;
+  let btn=own?(SAVE.car===c.id?`<button class="btn" disabled>VYBRÁNO</button>`:`<button class="btn" data-pick="${c.id}">VYBRAT</button>`):`<button class="btn pink" data-buy="${c.id}" ${SAVE.cash<c.price?'disabled':''}>KOUPIT • ${c.price.toLocaleString('cs-CZ')} Kč</button>`;
   const Z=(typeof R3!=='undefined'&&R3.ZB&&R3.ZB[c.id])||{},T=Object.assign({},Z,SAVE.tune[c.id]||{}),hasW=(T.wing===1)||(T.wing!==0&&(Z.kit||[]).includes('wing'));
   let tn='';if(!own)tn=`<p class="note">Tuning až po odemčení auta.</p>`;
   else{const U=SAVE.unl[c.id]||[],all=U.includes('*'),has=k=>all||U.includes(k),pr=n=>n.toLocaleString('cs-CZ')+' Kč',cur={...T,wing:hasW?1:0,low:T.low?1:0,tint:T.tint?1:0,sw:T.sw||'sport',dice:T.dice||'off',amb:T.amb||'off',seat:T.seat||'#1a1a1e'};
@@ -1106,15 +1116,15 @@ function renderGarage(){const el=$('scr-garage'),c=CARS[gIdx],own=SAVE.owned.inc
   else for(const k of CARS){const im=new Image();im.src='art/car_'+k.id+'.jpg'}}
 function tuneSet(id,k,v){if(k==='reset'){delete SAVE.tune[id]}else{const t=SAVE.tune[id]||(SAVE.tune[id]={});t[k]=(k==='wing'||k==='low'||k==='tint')?Number(v):(k==='dice'||k==='amb')&&v==='off'?0:v}save();const sc=$('scr-garage').scrollTop;renderGarage();$('scr-garage').scrollTop=sc}
 function showLevels(){const el=$('scr-levels');let h=topBar('MISE')+`<div class="cards">`;
-  for(const L of LEVELS){const locked=L.soon||(L.req&&!SAVE.done[L.req]);const d=SAVE.done[L.id];
+  for(const L of LEVELS){const locked=!!L.soon;const d=SAVE.done[L.id];
     h+=`<div class="card lvl" ${locked?'':`data-lvl="${L.id}"`}><div class="role">${L.type==='chase'?'Útěk před policií':L.type==='race'?'Pouliční závod':'Příběh'}</div><h3>${L.name}</h3><div class="meta">${L.sub}</div>
-    ${!locked&&L.route?'<p style="color:#9dff00">▶ Jeď na značku ve městě</p>':''}${L.reward?`<p>Odměna: <b style="color:#ffcc1a">+${L.reward.resp} respektu</b> a ${L.reward.cash.toLocaleString('cs-CZ')} Kč${L.type==='race'?' (jen za 1. místo)':''}</p>`:''}${d?'<p style="color:#3ddc84">✔ Splněno</p>':''}
+    ${!locked&&L.route?'<p style="color:#9dff00">▶ Jeď na značku ve městě</p>':''}${L.reward?`<p>Odměna: <b style="color:#ffcc1a">${L.reward.cash.toLocaleString('cs-CZ')} Kč</b>${L.type==='race'?' (jen za 1. místo)':''}</p>`:''}${d?'<p style="color:#3ddc84">✔ Splněno</p>':''}
     ${locked?`<div class="lock">🔒<br>${L.soon?'ZAVŘENO':'Nejdřív dokonči: '+LEVELS.find(x=>x.id===L.req).name}</div>`:''}</div>`}
   el.innerHTML=h+'</div>';show('scr-levels')}
 function showComics(){const el=$('scr-comics');let h=topBar('KOMIKS')+`<div class="cards">`;
   for(const k in COMICS){const C=COMICS[k],own=SAVE.comics.includes(k)||(k!=='intro'&&!C.cost&&SAVE.done[k])||(k==='utek'&&SAVE.seenIntro);
     h+=`<div class="card lvl" ${own&&!C.soon?`data-comic="${k}"`:''}><h3>${C.title}</h3>${C.soon?`<p>Dialogy se píšou…</p>`:'<p>Klepni a čti.</p>'}
-    ${!own||C.soon?`<div class="lock">🔒<br>${C.cost?`${C.cost} RESPEKTU`:'Odemkne se v misi'}${C.soon?'<br><small style="font-family:Oswald;font-size:13px">obsah brzy</small>':''}</div>`:''}</div>`}
+    ${!own||C.soon?`<div class="lock">🔒<br>${C.cost?`${C.cost.toLocaleString('cs-CZ')} Kč`:'Odemkne se v misi'}${C.soon?'<br><small style="font-family:Oswald;font-size:13px">obsah brzy</small>':''}</div>`:''}</div>`}
   el.innerHTML=h+'</div>';show('scr-comics')}
 
 /* ---- comic player ---- */
@@ -1153,7 +1163,7 @@ function renderPanel(){const el=$('scr-comic'),C=comic.C,P=C.panels[comic.i];
 function finishComic(){const d=comic.done;comic=null;if(d)d();else showComics()}
 
 /* ---------------- FREE ROAM ---------------- */
-function MARKERS(){return LEVELS.filter(L=>!L.soon).map(L=>{const r=L.route?L.route[0]:L.at;return{L,x:IX(r[0]),y:IX(r[1]),open:!L.soon&&(!L.req||SAVE.done[L.req])}})}
+function MARKERS(){return LEVELS.filter(L=>!L.soon).map(L=>{const r=L.route?L.route[0]:L.at;return{L,x:IX(r[0]),y:IX(r[1]),open:!L.soon}})}
 function startRoam(at,target){AN.ev('roam_start');hideAll();G.engineOff=false;$('keyB').classList.remove('off');$('keyB').style.display='';at=at||HOME;const w=newWorld({rain:R()<.45,dark:.8,civMax:8,pedMax:28});G.world=w;G.mode='roam';G.level=null;
   const car=CARS.find(c=>c.id===SAVE.car)||CARS[0];const p=makeCar(Object.assign({},car),at.x,at.y,at.a,'player');p.handMul=SAVE.hero==='lucie'?1.15:1;w.player=p;w.cars.push(p);
   w.cam={x:p.x,y:p.y};w.zoom=baseZoom();for(let i=0;i<5;i++)spawnCiv(w);for(let i=0;i<20;i++)spawnPed(w,100,800);
@@ -1179,11 +1189,11 @@ function updateRoam(dt){const w=G.world,p=w.player;
     if(dd<60&&RS.enterCD<=0){if(m.open){enterMission(m.L);return}else if(msgT<=0)floatMsg(m.L.soon?'BRZY':'ZAMČENO',1.2)}}
   if(!best)for(const m of ms){const dd=Math.hypot(m.x-p.x,m.y-p.y);if(m.open&&dd<bd){bd=dd;best=m}}
   RS.arrowTo=best;
-  $('obj').textContent=best?`⭐ ${best.L.name} — jeď na žlutou značku (${(bd/1000).toFixed(1)} km)`:'Volná jízda — mise brzy';
+  $('obj').textContent=NAV.to?`🧭 ${NAV.to.name}`:best?`⭐ ${best.L.name} — jeď podle žluté navigace`:'Volná jízda';
   if(msgT>0){msgT-=dt;if(msgT<=0)$('center').textContent=''}
-  $('hHp').style.width=clamp(p.hp/p.maxhp*100,0,100)+'%';$('hResp').textContent=SAVE.resp;spdSet(Math.round(sp*.42));streetHud(p);
-  drawMinimap()}
-function enterMission(L){G.mode='entering';Snd.engine(0,false);$('obj').classList.remove('on');$('area').classList.remove('on');$('hMain').classList.remove('small');startLevel(L.id)}
+  $('hHp').style.width=clamp(p.hp/p.maxhp*100,0,100)+'%';$('hResp').textContent=SAVE.cash.toLocaleString('cs-CZ');spdSet(Math.round(sp*.42));streetHud(p);
+  navUpdate(dt);drawMinimap()}
+function enterMission(L){if(NAV.to&&NAV.to.id==='m:'+L.id)NAV.to=null;G.mode='entering';Snd.engine(0,false);$('obj').classList.remove('on');$('area').classList.remove('on');$('hMain').classList.remove('small');startLevel(L.id)}
 
 /* ---------------- RACE ---------------- */
 let RS=null;
@@ -1204,7 +1214,7 @@ function beginRace(L){hideAll();const w=newWorld({rain:L.rain,dark:L.dark,civMax
   }else{
     for(let k=0;k<2;k++){const c=makeCar(POLICE,r0.x-ca*(260+k*80)+nx*(k?-18:18),r0.y-sa*(260+k*80)+ny*(k?-18:18),a,'police');c.v=120;w.cars.push(c)}
     for(const b of L.blocks){const s=w.cum[b[0]]+(w.cum[b[0]+1]-w.cum[b[0]])*b[1];const q=routeAt(w,s);for(const side of[-1,1]){const c=makeCar(POLICE,q.x-Math.sin(q.a)*side*24,q.y+Math.cos(q.a)*side*24,q.a+Math.PI/2+side*.4,'police');c.parked=true;c.seg=q.i;c.s=s;w.cars.push(c)}}
-    w.onKill=c=>{RS.kills++;floatMsg('+25 RESPEKT')};
+    w.onKill=c=>{RS.kills++;floatMsg('+2 000 Kč')};
   }
   for(let i=0;i<4;i++)spawnCiv(w);for(let i=0;i<20;i++)spawnPed(w,100,800);
   w.cam={x:p.x,y:p.y};for(const c of w.cars)c.frozen=true;
@@ -1229,7 +1239,7 @@ function driftUpdate(p,w,dt,bank){const sp=Math.hypot(p.vx,p.vy),lat=Math.abs(-M
   if(sp>170)for(const c of w.cars){if(c.kind!=='civ'&&c.kind!=='rival')continue;const d=Math.hypot(c.x-p.x,c.y-p.y);if(d<40&&c.nmT!==Math.floor(w.t/3)){c.nmT=Math.floor(w.t/3);DR.score+=120;DR.time+=.5;DR.idle=0;DR.nm=1.2;Snd.nz(.25,'highpass',2500,.2)}}
   const mult=1+Math.floor(DR.time/2);DR.nm=Math.max(0,DR.nm-dt);
   if(DR.score>0&&DR.idle<1){el.className='on';el.innerHTML='<b>'+(DR.nm>0?'NEAR MISS! ':'DRIFT ')+'×'+mult+'</b><i>'+Math.floor(DR.score*mult)+'</i>'}
-  else if(DR.score>0){const tot=Math.floor(DR.score*mult),rp=bank?Math.floor(tot/400):0,kc=bank?Math.round(tot*1.2/50)*50:0;if(rp>0||kc>0){SAVE.resp+=rp;SAVE.cash+=kc;save()}el.className='on';el.innerHTML='<b>+'+tot+'</b><i>'+(rp>0?'+'+rp+' RESPEKT':'BODY')+(kc>0?' • +'+kc.toLocaleString('cs-CZ')+' Kč':'')+'</i>';DR.msgT=1.6;DR.score=0;DR.time=0;AN.ev('drift',{points:tot})}
+  else if(DR.score>0){const tot=Math.floor(DR.score*mult),rp=bank?Math.floor(tot/400):0,kc=bank?Math.round(tot*1.2/50)*50:0;if(rp>0||kc>0){SAVE.resp+=rp;SAVE.cash+=kc;save()}el.className='on';el.innerHTML='<b>+'+tot+'</b><i>'+(kc>0?'+'+kc.toLocaleString('cs-CZ')+' Kč':'BODY')+'</i>';DR.msgT=1.6;DR.score=0;DR.time=0;AN.ev('drift',{points:tot})}
   else if(DR.msgT>0){DR.msgT-=dt;if(DR.msgT<=0)el.className=''}}
 function spdSet(k){$('spN').textContent=k;$('spArc').setAttribute('stroke-dasharray',Math.min(100,k/1.6)+' 100')}
 let msgT=0;function floatMsg(t,dur){$('center').textContent=t;msgT=dur||1.1}
@@ -1246,16 +1256,57 @@ function playerCtl(){const k=G.keys;const p=G.world&&G.world.player;
   else if(STK.id!==null&&p){const L=Math.hypot(STK.dx,STK.dy);if(L>14){const want=Math.atan2(STK.dy,STK.dx);const d=wrapA(want-p.a);steer=clamp(d*2.4,-1,1);if(!k.d)thr=Math.max(thr,clamp(L/60,.35,1))}}
   else if(drag&&!k.d&&!k.u)thr=-.3;
   return{thr,steer,hb:!!k.h}}
+
+/* ---------------- NAVIGATION (yellow) ---------------- */
+const NAV={to:null,path:null,key:'',t:0,ins:null};
+function navPlaces(){const out=[];for(const L of LEVELS){const r=L.route?L.route[0]:L.at;if(!r)continue;out.push({id:'m:'+L.id,name:L.name,sub:(L.soon?'Brzy • ':'')+(L.type==='chase'?'Útěk před policií':L.type==='race'?'Pouliční závod':'Mise')+(SAVE.done[L.id]?' • ✔ splněno':'')+(L.reward?' • '+L.reward.cash.toLocaleString('cs-CZ')+' Kč':''),x:IX(r[0]),y:IX(r[1]),L,ic:L.type==='race'?'🏁':'🚨'})}
+  const seen={};for(const sg of signs){const m=/FORUM|BOHEMIA|POD VANOU|KOSTEL|NÁDRAŽÍ|MOST|HRAD/i.exec(sg.text||'');if(!m||seen[sg.text])continue;seen[sg.text]=1;out.push({id:'p:'+sg.text,name:sg.text,sub:'Místo ve městě',x:sg.x,y:sg.y,ic:'📍'})}return out}
+function roadTile(tx,ty){const t=tileAt(tx,ty);return t===ROAD||t===BRIDGE}
+function nearestRoad(x,y){const tx=Math.floor(x/T),ty=Math.floor(y/T);if(roadTile(tx,ty))return[tx,ty];for(let r=1;r<14;r++)for(let dy=-r;dy<=r;dy++)for(let dx=-r;dx<=r;dx++){if(Math.max(Math.abs(dx),Math.abs(dy))!==r)continue;if(roadTile(tx+dx,ty+dy))return[tx+dx,ty+dy]}return null}
+const NB_P=new Int32Array(MAPW*MAPH),NB_Q=new Int32Array(MAPW*MAPH);
+function navPath(x0,y0,x1,y1){const a=nearestRoad(x0,y0),b=nearestRoad(x1,y1);if(!a||!b)return null;const prev=NB_P.fill(-1),q=NB_Q;let h=0,t=0;const s0=a[1]*MAPW+a[0],g=b[1]*MAPW+b[0];prev[s0]=s0;q[t++]=s0;
+  while(h<t){const c=q[h++];if(c===g)break;const cx=c%MAPW,cy=(c/MAPW)|0;for(let k=0;k<4;k++){const nx=cx+(k===0?1:k===1?-1:0),ny=cy+(k===2?1:k===3?-1:0);if(nx<0||ny<0||nx>=MAPW||ny>=MAPH)continue;const n=ny*MAPW+nx;if(prev[n]>=0||!roadTile(nx,ny))continue;prev[n]=c;q[t++]=n}}
+  if(prev[g]<0)return null;const pts=[];for(let c=g;;c=prev[c]){const tx=c%MAPW,ty=(c/MAPW)|0;pts.push({x:tx%8<2?(8*(tx>>3)+1)*T:(tx+.5)*T,y:ty%8<2?(8*(ty>>3)+1)*T:(ty+.5)*T});if(c===s0)break}pts.reverse();
+  const cr=[pts[0]];for(let i=1;i<pts.length-1;i++){const A=cr[cr.length-1],B=pts[i],C=pts[i+1];if((B.x-A.x)*(C.y-B.y)-(B.y-A.y)*(C.x-B.x)!==0)cr.push(B)}cr.push(pts[pts.length-1]);
+  const out=[cr[0]];for(let i=1;i<cr.length;i++){const l=out[out.length-1];if(i<cr.length-1&&Math.hypot(cr[i].x-l.x,cr[i].y-l.y)<T*2.6)continue;out.push(cr[i])}return out}
+function navTarget(){const w=G.world,p=w&&w.player;if(!p)return null;if(G.mode==='race'&&w.route){const n=w.route[Math.min(p.seg+1,w.route.length-1)];return{x:n.x,y:n.y,name:RS&&RS.L?RS.L.name:'Cíl'}}
+  if(G.mode==='roam'){if(NAV.to)return NAV.to;if(RS&&RS.arrowTo)return{x:RS.arrowTo.x,y:RS.arrowTo.y,name:RS.arrowTo.L.name}}return null}
+function navUpdate(dt){const w=G.world,p=w&&w.player,tg=navTarget();if(!tg||!p){if(NAV.path){NAV.path=null;if(typeof R3!=='undefined'&&R3.ok)R3.setNav(null)}NAV.ins=null;$('nav').classList.remove('on');return}
+  NAV.t-=dt;const key=Math.floor(p.x/T)+','+Math.floor(p.y/T)+'>'+Math.round(tg.x)+','+Math.round(tg.y);
+  if(key!==NAV.key||NAV.t<=0){NAV.key=key;NAV.t=1.2;NAV.path=navPath(p.x,p.y,tg.x,tg.y);if(typeof R3!=='undefined'&&R3.ok)R3.setNav(NAV.path)}
+  const P=NAV.path;let ins={a:'⬆',d:Math.hypot(tg.x-p.x,tg.y-p.y),s:'',c:tg.name};
+  if(P&&P.length>1){let dist=Math.hypot(P[0].x-p.x,P[0].y-p.y),found=false;const d0x=P[1].x-P[0].x,d0y=P[1].y-P[0].y,l0=Math.hypot(d0x,d0y)||1;
+    if(Math.cos(p.a)*d0x/l0+Math.sin(p.a)*d0y/l0<-.55&&Math.hypot(p.vx,p.vy)>-1&&dist<T*3){ins.a='↩';ins.s='Otoč se';ins.d=0}
+    else{for(let i=1;i<P.length-1;i++){dist+=Math.hypot(P[i].x-P[i-1].x,P[i].y-P[i-1].y);const ax=P[i].x-P[i-1].x,ay=P[i].y-P[i-1].y,bx=P[i+1].x-P[i].x,by=P[i+1].y-P[i].y,la=Math.hypot(ax,ay)||1,lb=Math.hypot(bx,by)||1,cs=(ax*bx+ay*by)/la/lb;
+      if(cs<.7){const cr=ax*by-ay*bx;ins.a=cr>0?'↱':'↰';ins.d=dist;const st=streetAt(P[i].x+bx/lb*T*3,P[i].y+by/lb*T*3);ins.s=(cr>0?'Doprava':'Doleva')+(st[0]?' • '+st[0]:'');found=true;break}}
+     if(!found){ins.d=dist+Math.hypot(P[P.length-1].x-P[P.length-2].x,P[P.length-1].y-P[P.length-2].y);ins.s='Rovně do cíle';ins.a=ins.d<80?'🏁':'⬆'}}}
+  NAV.ins=ins;const D=ins.d<1000?Math.max(10,Math.round(ins.d/10)*10)+' m':(ins.d/1000).toFixed(1)+' km';
+  if(NAV.dKey!==ins.a+D+ins.s+ins.c){NAV.dKey=ins.a+D+ins.s+ins.c;$('navA').textContent=ins.a;$('navD').textContent=ins.s==='Otoč se'?'OTOČ SE':D;$('navS').textContent=ins.s==='Otoč se'?'':ins.s;$('navC').textContent='→ '+ins.c+'  •  '+clockTxt()}
+  $('nav').classList.add('on')}
+function clockTxt(){const d=new Date();let pr='';try{pr=new Intl.DateTimeFormat('cs-CZ',{timeZone:'Europe/Prague',hour:'2-digit',minute:'2-digit'}).format(d)}catch(e){}const lo=String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');return pr&&pr!==lo?'🕒 '+lo+' • Praha '+pr:'🕒 '+lo}
+function openNav(){if(G.mode!=='roam')return;const w=G.world,p=w.player;G.prevMode='roam';G.mode='paused';Snd.engine(0,false);G.keys={};
+  const L=navPlaces().map(o=>({...o,d:Math.hypot(o.x-p.x,o.y-p.y)})).sort((a,b)=>a.d-b.d);const cur=NAV.to&&NAV.to.id;
+  let h='<h2>🧭 NAVIGACE</h2><p style="color:#aab;margin:0 0 10px;font-family:Oswald">Kam pojedem? Žlutá čára tě dovede.</p><div class="nl">';
+  for(const o of L)h+=`<button class="ni ${cur===o.id?'cur':''}" data-nav="${o.id}"><span class="ic">${o.ic}</span><span><b>${o.name}</b><span>${o.sub}</span></span><span class="km">${(o.d/1000).toFixed(1)} km</span></button>`;
+  h+=`<button class="ni" data-nav="auto"><span class="ic">⭐</span><span><b>Nejbližší mise</b><span>Automaticky</span></span></button></div><button class="btn dark" style="margin-top:14px" data-nav="close">ZAVŘÍT</button>`;
+  const m=$('navm');m.innerHTML=h;m.classList.add('on')}
+function closeNav(){$('navm').classList.remove('on');if(G.mode==='paused'&&G.prevMode==='roam'){G.mode='roam';G.keys={};if(isTouch)$('ctrl').classList.add('on')}}
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-nav]');if(!b)return;const id=b.dataset.nav;Snd.click&&Snd.click();
+  if(id==='close'){closeNav();return}if(id==='auto'){NAV.to=null;if(RS)RS.target=null}else{const o=navPlaces().find(q=>q.id===id);if(o){NAV.to={id:o.id,x:o.x,y:o.y,name:o.name};if(RS)RS.target=o.L&&!o.L.soon?o.L.id:null}}NAV.key='';closeNav();AN.ev('nav_pick',{to:id})});
+$('nav').addEventListener('click',()=>openNav());
+function infoHit(e){if(!document.body.classList.contains('cock')||typeof R3==='undefined'||!R3.iRect)return null;const r=R3.iRect;if(e.clientX<r.x0||e.clientX>r.x1||e.clientY<r.y0||e.clientY>r.y1)return null;return e.clientX<r.x0+(r.x1-r.x0)*.58?'nav':'radio'}
+cv.addEventListener('pointerdown',e=>{if(!(G.mode==='roam'||G.mode==='race'))return;const h=infoHit(e);if(!h)return;if(h==='nav')openNav();else{nextRadio();floatMsg('📻 '+STY[Snd.style].name,1.2)}});
 const WH={id:null,ang:0,last:0,cx:0,cy:0,lx:0},WMAX=2.2;
 {const pd=$('pedals');let pid=null;const set=e=>{const r=pd.getBoundingClientRect(),g=e.clientX>r.left+r.width/2;G.keys.u=g;G.keys.d=!g;$('pG').classList.toggle('on',g);$('pB').classList.toggle('on',!g)},off=e=>{if(e.pointerId!==pid)return;pid=null;G.keys.u=G.keys.d=false;$('pG').classList.remove('on');$('pB').classList.remove('on')};
  pd.addEventListener('pointerdown',e=>{e.preventDefault();pid=e.pointerId;try{pd.setPointerCapture(pid)}catch(_){}set(e)});pd.addEventListener('pointermove',e=>{if(e.pointerId===pid)set(e)});
  pd.addEventListener('pointerup',off);pd.addEventListener('pointercancel',off);pd.addEventListener('lostpointercapture',off);pd.addEventListener('contextmenu',e=>e.preventDefault())}
 function wheelOn(){return SAVE.steer==='wheel'&&isTouch&&(G.mode==='race'||G.mode==='roam')}
 function wheelCenter(){if(document.body.classList.contains('cock')&&typeof R3!=='undefined'&&R3.swScr)return R3.swScr;const r=$('wheel').getBoundingClientRect();return{x:r.left+r.width/2,y:r.top+r.height/2}}
-cv.addEventListener('pointerdown',e=>{if(!wheelOn()||WH.id!==null)return;if(e.clientX<VW*.4||e.clientY<VH*.3)return;const c=wheelCenter();WH.id=e.pointerId;WH.cx=c.x;WH.cy=c.y;WH.last=Math.atan2(e.clientY-c.y,e.clientX-c.x);WH.lx=e.clientX;try{cv.setPointerCapture(e.pointerId)}catch(_){}});
+cv.addEventListener('pointerdown',e=>{if(!wheelOn()||WH.id!==null)return;if(e.clientX<VW*.4||e.clientY<VH*.3||infoHit(e))return;const c=wheelCenter();WH.id=e.pointerId;WH.cx=c.x;WH.cy=c.y;WH.last=Math.atan2(e.clientY-c.y,e.clientX-c.x);WH.lx=e.clientX;gripAt(WH.last);try{cv.setPointerCapture(e.pointerId)}catch(_){}});
 cv.addEventListener('pointermove',e=>{if(e.pointerId!==WH.id)return;const dx=e.clientX-WH.cx,dy=e.clientY-WH.cy,r=Math.hypot(dx,dy),a=Math.atan2(dy,dx);
-  let d=r>34?wrapA(a-WH.last):0;d+=(e.clientX-WH.lx)/(r>34?260:75);WH.ang=clamp(WH.ang+d,-WMAX,WMAX);WH.last=a;WH.lx=e.clientX});
-const whEnd=e=>{if(e.pointerId===WH.id)WH.id=null};{const wt=e=>{if(WH.id!==null&&![...e.touches].some(t=>t.clientX>VW*.4))WH.id=null};addEventListener('touchend',wt);addEventListener('touchcancel',wt)}cv.addEventListener('pointerup',whEnd);cv.addEventListener('pointercancel',whEnd);cv.addEventListener('lostpointercapture',whEnd);
+  let d=r>34?wrapA(a-WH.last):0;d+=(e.clientX-WH.lx)/(r>34?260:75);WH.ang=clamp(WH.ang+d,-WMAX,WMAX);WH.last=a;WH.lx=e.clientX;gripAt(a)});
+function gripAt(a){const c=wheelCenter(),cock=document.body.classList.contains('cock'),R=cock&&R3.swRpx?R3.swRpx:$('wheel').getBoundingClientRect().width*.44,g=$('wgrip');g.style.left=(c.x+Math.cos(a)*R)+'px';g.style.top=(c.y+Math.sin(a)*R)+'px';g.style.display='block'}
+const whEnd=e=>{if(e.pointerId===WH.id){WH.id=null;$('wgrip').style.display='none'}};{const wt=e=>{if(WH.id!==null&&![...e.touches].some(t=>t.clientX>VW*.4)){WH.id=null;$('wgrip').style.display='none'}};addEventListener('touchend',wt);addEventListener('touchcancel',wt)}cv.addEventListener('pointerup',whEnd);cv.addEventListener('pointercancel',whEnd);cv.addEventListener('lostpointercapture',whEnd);
 let whDrawn=99;function wheelUI(){const now=performance.now(),dt=Math.min(.1,(now-(WH.t||now))/1000);WH.t=now;if(WH.id===null)WH.ang*=Math.exp(-dt*9);if(Math.abs(WH.ang)<.01)WH.ang=0;const p=G.world&&G.world.player,a=p?(p.steer||0)*WMAX:WH.ang;if(Math.abs(a-whDrawn)>.01){whDrawn=a;$('wheel').firstChild.style.transform='rotate('+a+'rad)'}}
 function stickOn(){return SAVE.steer==='drag'&&isTouch&&(G.mode==='race'||G.mode==='roam')}
 function twoOn(){return SAVE.steer==='two'&&isTouch&&(G.mode==='race'||G.mode==='roam')}
@@ -1312,7 +1363,7 @@ function updateRace(dt){const w=G.world,p=w.player,L=RS.L;RS.t+=dt;
   }
   Snd.siren(nearP<700?clamp(1-nearP/700,0,1):0,w.t);
   // HUD
-  $('hHp').style.width=clamp(p.hp/p.maxhp*100,0,100)+'%';$('hResp').textContent=SAVE.resp;spdSet(Math.round(sp*.42));streetHud(p);
+  $('hHp').style.width=clamp(p.hp/p.maxhp*100,0,100)+'%';$('hResp').textContent=SAVE.cash.toLocaleString('cs-CZ');spdSet(Math.round(sp*.42));streetHud(p);navUpdate(dt);
   if(L.type==='chase'){$('hMain').textContent=((w.total-p.s)/1000).toFixed(1)+' km'}
   else{let rank=1;for(const c of w.cars)if(c.kind==='rival'&&(c.finished||(c.s>p.s&&!p.finished)))rank++;RS.rank=rank;$('hMain').textContent=rank+'/5'}
   drawMinimap();
@@ -1328,13 +1379,13 @@ function updateRace(dt){const w=G.world,p=w.player,L=RS.L;RS.t+=dt;
 }
 function endRace(win,title,text){AN.ev('mission_end',{mission:RS.L.id,result:win?'win':'fail',seconds:Math.round(RS.t)});RS.end=1.6;RS.win=win;RS.title=title;RS.text=text;floatMsg(title,1.6);
   const L=RS.L;RS.gain={resp:0,cash:0};
-  if(win){RS.gain.resp=L.reward.resp+(L.type==='chase'?RS.kills*25:0);RS.gain.cash=L.reward.cash;SAVE.done[L.id]=(SAVE.done[L.id]||0)+1}
+  if(win){RS.gain.resp=L.reward.resp+(L.type==='chase'?RS.kills*25:0);RS.gain.cash=L.reward.cash+(L.type==='chase'?RS.kills*2000:0);SAVE.done[L.id]=(SAVE.done[L.id]||0)+1}
   else if(L.type==='chase')RS.gain.resp=RS.kills*10;
   SAVE.resp+=RS.gain.resp;SAVE.cash+=RS.gain.cash;save()}
 function showResult(){DJ.stop();G.mode='result';{const r=G.world.route,e=r[r.length-1],q=r[r.length-2];const a=Math.atan2(e.y-q.y,e.x-q.x);G.lastPos={x:e.x-Math.sin(a)*18+Math.cos(a)*60,y:e.y+Math.cos(a)*18+Math.sin(a)*60,a}}Snd.engine(0,false);Snd.siren(0,0);const el=$('scr-result'),L=RS.L;
   el.innerHTML=`<div class="res"><div class="tag">${L.name}</div><h2 style="color:${RS.win?'var(--acc)':'var(--acc2)'}">${RS.title}</h2><p>${RS.text}</p>
   <div class="lines"><div><span>Čas</span><b>${RS.t.toFixed(1)} s</b></div>${L.type==='chase'?`<div><span>Zničení policajti</span><b>${RS.kills}</b></div>`:`<div><span>Umístění</span><b>${RS.win?1:RS.finishOrder.length+1}. / 5</b></div>`}
-  <div><span>Respekt</span><b>+${RS.gain.resp}</b></div><div><span>Prachy</span><b>+${RS.gain.cash.toLocaleString('cs-CZ')} Kč</b></div><div><span>Celkem respektu</span><b>${SAVE.resp}</b></div></div>
+  <div><span>Výdělek</span><b>+${RS.gain.cash.toLocaleString('cs-CZ')} Kč</b></div><div><span>Celkem v kapse</span><b>${SAVE.cash.toLocaleString('cs-CZ')} Kč</b></div></div>
   <div class="row"><button class="btn" data-lvlgo="${L.id}">ZNOVU</button><button class="btn pink" data-go="city">DO MĚSTA</button><button class="btn dark" data-go="garage">GARÁŽ</button></div>
   ${RS.win&&L.id==='zavod'?'<p class="note">Další mapa se odemkne v příští verzi.</p>':''}</div>`;
   $('hud').classList.remove('on');$('ctrl').classList.remove('on');show('scr-result')}
@@ -1347,7 +1398,7 @@ function drawMinimapBg(){if(mmBuilt)return;mmBuilt=true;const g=mmBg.getContext(
   for(let bj=0;bj<BY;bj++)for(let bi=0;bi<BX;bi++){g.fillStyle=MMC[blocks[bj][bi].type]||'#333';g.fillRect((8*bi+2)*T*MS,(8*bj+2)*T*MS,6*T*MS,6*T*MS)}
   g.fillStyle=MMC.water;g.fillRect((8*RIVER+2)*T*MS,0,6*T*MS,mmBg.height);g.fillStyle='#8a8ea0';for(const j in BRIDGES)g.fillRect((8*RIVER+2)*T*MS,8*j*T*MS,6*T*MS,2*T*MS)}
 function drawMinimap(){const g=$('mm').getContext('2d'),w=G.world,p=w.player||w.cam,k=2.2,W=192;g.setTransform(1,0,0,1,0,0);g.fillStyle='#10200f';g.fillRect(0,0,W,W);
-  const sx=p.x*MS-W/2/k,sy=p.y*MS-W/2/k;g.save();g.scale(k,k);g.translate(-sx,-sy);g.drawImage(mmBg,0,0);
+  const sx=p.x*MS-W/2/k,sy=p.y*MS-W/2/k;g.save();g.scale(k,k);g.translate(-sx,-sy);g.drawImage(mmBg,0,0);if(NAV.path&&NAV.path.length>1){g.strokeStyle='#ffcc1a';g.lineWidth=2.6;g.lineJoin='round';g.lineCap='round';g.beginPath();NAV.path.forEach((q,i)=>i?g.lineTo(q.x*MS,q.y*MS):g.moveTo(q.x*MS,q.y*MS));g.stroke()}
   if(w.route){g.strokeStyle='#ffcc1a';g.lineWidth=3/k*2;g.beginPath();w.route.forEach((q,i)=>i?g.lineTo(q.x*MS,q.y*MS):g.moveTo(q.x*MS,q.y*MS));g.stroke();const f=w.route[w.route.length-1];g.fillStyle='#fff';g.fillRect(f.x*MS-4/k*2,f.y*MS-4/k*2,8/k*2,8/k*2)}
   if(G.mode==='roam')for(const m of MARKERS()){g.fillStyle=m.open?'#ffcc1a':'#888';g.beginPath();g.arc(m.x*MS,m.y*MS,7/k*2,0,7);g.fill()}
   for(const c of w.cars){if(c.kind==='civ'||c===w.player)continue;g.fillStyle=c.kind==='police'?(Math.floor(w.t*6)%2?'#ff2a3a':'#3a7dff'):c.col;g.beginPath();g.arc(c.x*MS,c.y*MS,4/k*2,0,7);g.fill()}
@@ -1401,7 +1452,7 @@ document.addEventListener('click',e=>{const t=e.target.closest('button,[data-lvl
   if(t.dataset.tbuy){const key=t.dataset.tbuy,id=CARS[gIdx].id,p=tunePrice(key);if(SAVE.cash<p){floatMsg('Málo prachů',1.5);return}SAVE.cash-=p;(SAVE.unl[id]||(SAVE.unl[id]=[])).push(key);AN.ev('tune_buy',{car:id,item:key,price:p});Snd.unlock&&Snd.unlock();save();
     if(key.includes(':')){const[k,v]=key.split(':');tuneSet(id,k,v)}else{const sc=$('scr-garage').scrollTop;renderGarage();$('scr-garage').scrollTop=sc}return}
   if(t.dataset.pick){SAVE.car=t.dataset.pick;save();renderGarage();return}
-  if(t.dataset.buy){const c=CARS.find(x=>x.id===t.dataset.buy);if(SAVE.resp>=c.price){AN.ev('car_unlock',{car:c.id});SAVE.resp-=c.price;SAVE.owned.push(c.id);SAVE.car=c.id;save();renderGarage()}return}
+  if(t.dataset.buy){const c=CARS.find(x=>x.id===t.dataset.buy);if(SAVE.cash>=c.price){AN.ev('car_unlock',{car:c.id});SAVE.cash-=c.price;SAVE.owned.push(c.id);SAVE.car=c.id;save();renderGarage()}return}
 });
 const pv=$('pv');
 if(!location.search.includes('rec')){const v=innerWidth<innerHeight?'vertical':'landscape';pv.poster='promo/'+v+'.jpg';pv.src='promo/'+v+'.mp4';pv.play&&pv.play().catch(()=>{})}
@@ -1510,7 +1561,7 @@ import {KTX2Loader} from './vendor/jsm/loaders/KTX2Loader.js';
 import {MeshoptDecoder} from './vendor/jsm/libs/meshopt_decoder.module.js';
 import * as SkeletonUtils from './vendor/jsm/utils/SkeletonUtils.js';
 window.THREE=THREE;window.TADD={EffectComposer,RenderPass,UnrealBloomPass,OutputPass,GLTFLoader,RGBELoader,SkeletonUtils,DRACOLoader,KTX2Loader,MeshoptDecoder};
-const s=document.createElement('script');s.src='r3.js?v=18';document.body.appendChild(s);
+const s=document.createElement('script');s.src='r3.js?v=19';document.body.appendChild(s);
 </script>
 </body>
 </html>
