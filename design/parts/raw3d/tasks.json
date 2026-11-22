@@ -9,5 +9,8 @@
  "common_hood": "e2de64a0-fec7-4fdc-b2f9-13fedaee297d",
  "common_mirror": "8e60bec1-9228-4704-86bd-a044bc319971",
  "common_rim": "c54eff79-9c25-44ec-9a8c-8f9827fce099",
- "drago_taillight": "759df7c3-2163-4f3e-8c5f-ec2a96fdee32"
+ "drago_taillight": "759df7c3-2163-4f3e-8c5f-ec2a96fdee32",
+ "common_taillight": "12c8bee4-4a09-4736-aca4-09691fb6094f",
+ "common_wing": "e418e818-9762-4f5b-b572-33a40b1f2a7a",
+ "drago_rim": "1423fa54-a073-4549-b2ed-0541b312ca01"
 }
