@@ -278,6 +278,8 @@ const R3={ok:false,off:/[?&]2d/.test(location.search),chunks:new Map(),CH:16,PX:
   sedan:{p1:'#e9ecef',p2:'#2a2c33',rim:'#8a8f98',fin:'metal',glow:'off',w:1.02,sx:1.1,sy:1.02,kit:['lip'],hl:'led'},
   kombi:{p1:'#2d6b3a',p2:'#14151a',rim:'#c9ccd2',fin:'metal',glow:'off',w:1.02,sx:1.14,sy:1.08,kit:['flaps'],rails:1},
   vitka:{p1:'#d8d8d8',p2:'#2a2c33',rim:'#8a8f98',fin:'gloss',glow:'off',w:1.08,sx:1.12,sy:1.42,kit:[],ladder:1},
+  muscle:{p1:'#c8102e',p2:'#14151a',rim:'#d8dbe0',fin:'gloss',glow:'off',w:1.06,sx:1.08,sy:.96,kit:['blower','duck'],rims:'deep',hood:'#111214',roof:'#111214',cal:'#ffd400'},
+  blower:{p1:'#1b1c20',p2:'#14151a',rim:'#c9a227',fin:'matte',glow:'#ff8a2e',w:1.08,sx:1.02,sy:.94,kit:['blower','pipes','splitter'],rims:'five',hood:'#ff8a1a',cal:'#ff6a00',low:1},
   supka:{p1:'#e8a21a',p2:'#14151a',rim:'#1a1a1e',fin:'gloss',glow:'#ff8a2e',w:1.02,kit:['wing','splitter','skirts']}},
  dashMat(orig){if(this.dMat)return this.dMat;const T3=THREE,cv=this.dCv=document.createElement('canvas');cv.width=1024;cv.height=256;const t=this.dTex=new T3.CanvasTexture(cv);t.flipY=false;t.colorSpace=T3.SRGBColorSpace;
   const m=this.dMat=orig.clone();m.emissiveMap=t;m.emissive=new T3.Color(1,1,1);m.emissiveIntensity=1.5;this.dashDraw(0,1,0);return m},
@@ -429,20 +431,26 @@ const R3={ok:false,off:/[?&]2d/.test(location.search),chunks:new Map(),CH:16,PX:
   const K=sp.kit||[],wm=sp.wingCol==='paint'?paint:this.carbon;
   if(K.includes('wing')){box(wm,4.2,.45,21,-20.2,16.6,0,.12);for(const z of[-10.6,10.6])box(wm,3.6,2.2,.35,-20.2,16.1,z);for(const z of[-6,6])box(this.carbon,1.4,3.6,.8,-19.4,14.2,z,.2)}
   if(K.includes('duck'))box(paint,2,.45,16,-20.6,12.45,0,-.18);
-  if(K.includes('lip'))box(this.carbon,2,.45,20,21.6,1.7,0);
-  if(K.includes('splitter')){box(this.carbon,3.6,.45,22.6,21.4,1.4,0);for(const z of[-11,11])box(this.carbon,2.6,1.4,.35,21.6,2.3,z)}
+  if(K.includes('lip'))box(this.carbon,1.2,.3,18,21.2,2.2,0);
+  if(K.includes('splitter')){box(this.carbon,2.2,.3,20.5,21,2,0);for(const z of[-10,10])box(this.carbon,1.4,.9,.25,21.3,2.5,z)}
   if(K.includes('skirts'))for(const z of[-11.9,11.9])box(this.carbon,14,1.3,1,-1.5,2.2,z);
   if(K.includes('scoop')){box(paint,5,1.1,6,14.5,10.7,0,-.06);box(this.carbon,.4,.8,5,17,10.6,0)}
   if(K.includes('flaps'))for(const z of[-10,10])box(paint2,.4,3.6,3.4,-21.8,2.6,z);
   {const id=(c.st&&c.st.id)||'z',num=sp.plate||('5U'+((id.charCodeAt(0)*7+id.length*3)%9+1)+' '+String(1000+(id.charCodeAt(1)||0)*37%9000).slice(0,4)),pm=this.plateMat(num);
    for(const[x,y,ry]of[[-23.15,5.6,-Math.PI/2],[23.2,3.3,Math.PI/2]]){const pl=new T3.Mesh(this.plateGeo||(this.plateGeo=new T3.PlaneGeometry(5.2,1.15)),pm);pl.position.set(x,y,0);pl.rotation.y=ry;kit.add(pl)}
    if(!this.chromeM)this.chromeM=new T3.MeshStandardMaterial({color:0xd8dbe0,metalness:1,roughness:.15});if(!this.exG){this.exG=new T3.CylinderGeometry(.42,.42,.9,14,1,true);this.exG.rotateZ(Math.PI/2)}
-   for(const z of(K.includes('wing')||K.includes('duck')?[-6.2,-4.6,4.6,6.2]:[-5.4,5.4])){const e=new T3.Mesh(this.exG,this.chromeM);e.position.set(-22.7,2.7,z*.9);kit.add(e)}
+   for(const z of(K.includes('wing')||K.includes('duck')?[-6.2,-4.6,4.6,6.2]:[-5.4,5.4])){const e=new T3.Mesh(this.exG,this.chromeM);e.position.set(-22.55,3.35,z*.9);e.scale.set(.7,1,1);kit.add(e);if(!this.exIn)this.exIn=new T3.MeshBasicMaterial({color:0x050505});const d=new T3.Mesh(new T3.CircleGeometry(.36,14),this.exIn);d.rotation.y=-Math.PI/2;d.position.set(-22.82,3.35,z*.9);kit.add(d)}
    if(!this.brkM)this.brkM=new T3.MeshBasicMaterial({color:new T3.Color(0xff1a2a).multiplyScalar(3.2)});var brk=new T3.Group();for(const z of[-7.2,7.2]){const b=new T3.Mesh(this.carBox,this.brkM);b.scale.set(.3,.7,4.4);b.position.set(-20.4,11.85,z);brk.add(b)}brk.visible=false;kit.add(brk)}
   if(sp.hl==='led'||sp.hl==='angel'){if(!this.hlM2)this.hlM2=new T3.MeshBasicMaterial({color:new T3.Color(0xdff2ff).multiplyScalar(3)});
    for(const sd of[-1,1]){if(sp.hl==='led'){const b=new T3.Mesh(this.carBox,this.hlM2);b.scale.set(.25,.14,3.6);b.position.set(21.35,8.12,sd*6.4);b.rotation.y=sd*.12;kit.add(b)}
     else{if(!this.angG){this.angG=new T3.TorusGeometry(.62,.09,8,28);this.angG.rotateY(Math.PI/2)}for(const z of[5.5,7.3]){const r=new T3.Mesh(this.angG,this.hlM2);r.position.set(21.25-(z-5.5)*.25,8.62,sd*z);kit.add(r)}}}}
   if(sp.tl==='bar'){if(!this.tlBarM)this.tlBarM=new T3.MeshBasicMaterial({color:new T3.Color(0xff1030).multiplyScalar(1.6)});const b=new T3.Mesh(this.carBox,this.tlBarM);b.scale.set(.2,.18,17.5);b.position.set(-20.35,12.4,0);kit.add(b)}
+  if(K.includes('blower')){if(!this.engM){this.engM=new T3.MeshStandardMaterial({color:0x8a8f98,metalness:.9,roughness:.3});this.engD=new T3.MeshStandardMaterial({color:0x141416,metalness:.5,roughness:.5})}
+   const bl=new T3.Group();bl.position.set(14.2,10.3,0);kit.add(bl);const B=(m,sx,sy,sz,x,y,z)=>{const q=new T3.Mesh(this.carBox,m);q.scale.set(sx,sy,sz);q.position.set(x,y,z);bl.add(q)};
+   B(this.engD,6.5,1.4,5.4,0,.6,0);B(this.engM,5.6,2.4,4.2,0,2.2,0);for(let i=-2;i<=2;i++)B(this.engD,5.7,.18,.25,0,2.5,i*.8);
+   const sc=new T3.Mesh(new T3.CylinderGeometry(1.3,1.5,2.2,16),this.chromeM||(this.chromeM=new T3.MeshStandardMaterial({color:0xd8dbe0,metalness:1,roughness:.15})));sc.position.set(.6,4.3,0);bl.add(sc);
+   const top=new T3.Mesh(new T3.CylinderGeometry(1.55,1.55,.4,16),this.engD);top.position.set(.6,5.5,0);bl.add(top);B(this.engD,.4,1.6,.3,-2.9,1.6,1.6)}
+  if(K.includes('pipes'))for(const z of[-11.6,11.6]){const pp=new T3.Mesh(new T3.CylinderGeometry(.5,.5,12,12),this.chromeM);pp.rotation.z=Math.PI/2;pp.position.set(-2,2.1,z);kit.add(pp)}
   if(K.includes('rally')){box(this.carbon,2,1,13,-1,14.3,0);if(!this.rallyM)this.rallyM=new T3.MeshBasicMaterial({color:new T3.Color(0xfff2c8).multiplyScalar(2.2)});for(const z of[-4.5,-1.5,1.5,4.5]){const l=new T3.Mesh(this.carBox,this.rallyM);l.scale.set(.6,1.8,2.2);l.position.set(.2,15.4,z);kit.add(l)}}
   if(!this.shTex){this.shTex=this.glowTex('rgba(0,0,0,.85)');this.shGeo=new T3.PlaneGeometry(1,1);this.shGeo.rotateX(-Math.PI/2);this.shMat=new T3.MeshBasicMaterial({map:this.shTex,transparent:true,depthWrite:false})}
   const W=B.hw*2*zs*zw;const sh=new T3.Mesh(this.shGeo,this.shMat);sh.scale.set(L*1.5,1,W*1.5);sh.position.y=.7;g.add(sh);const beam=new T3.Mesh(this.beamGeo,this.beamMat);beam.position.set(L/2,1.6,0);g.add(beam);

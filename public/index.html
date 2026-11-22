@@ -478,6 +478,8 @@ const CARS=[
  {id:'sedan',name:'Zéčko Limuzína',desc:'Dlouhá, tichá, s kůží. Jako by tě vezl starosta.',col:'#e9ecef',max:295,acc:225,turn:2.8,grip:6.6,hp:130,price:120000,L:50,Wd:21},
  {id:'kombi',name:'Zéčko Kombi',desc:'Na chatu, na hokej, na útěk. Vejde se tam všechno.',col:'#2d6b3a',max:280,acc:215,turn:2.8,grip:6.4,hp:135,price:90000,L:51,Wd:21},
  {id:'vitka',name:'Dodávka Vitka',desc:'Řemeslnická dodávka. Žebřík na střeše, kafe v držáku, nikdo tě nezastaví.',col:'#d8d8d8',max:250,acc:185,turn:2.55,grip:6,hp:170,price:70000,L:52,Wd:23},
+ {id:'muscle',name:'Zéčko Muscle',desc:'V8 s kompresorem trčí z kapoty. Na semaforu na Klíši vyhraje vždycky.',col:'#c8102e',max:330,acc:285,turn:2.7,grip:5.8,hp:130,price:260000,L:48,Wd:22},
+ {id:'blower',name:'Zéčko Blower',desc:'Matně černej dragster s bočníma výfukama. Sousedi ho slyšej až v Děčíně.',col:'#1b1c20',max:345,acc:300,turn:2.6,grip:5.6,hp:125,price:320000,L:47,Wd:22},
  {id:'pickup',name:'Farmář Pickup',desc:'Korba vzadu, blato na kolech. Pro kluky z Trmic.',col:'#a8321e',max:255,acc:200,turn:2.6,grip:6.2,hp:160,price:60000,L:48,Wd:22,kenney:'truck'},
  {id:'popelka',name:'Popelka',desc:'Popelářský auto. Pomalý, obří, ale co mu stojí v cestě, to odveze.',col:'#ff8a1a',max:205,acc:150,turn:2.3,grip:6,hp:300,price:120000,L:62,Wd:26,kenney:'garbage_truck',soon:'kenney'},
  {id:'tank',name:'Tank',desc:'Na Mírový náměstí? Jednou možná. Zatím zamčeno.',col:'#3a4a2a',max:150,acc:120,turn:2,grip:8,hp:900,price:0,L:50,Wd:28,soon:'tank'},
@@ -634,7 +636,7 @@ const Snd={ctx:null,
   boxer:{cyl:4,idle:800,red:7500,grit:.9,cut:2000,turbo:1,rumble:1},i6:{cyl:6,idle:750,red:7600,grit:.35,cut:3000,turbo:0},i6t:{cyl:6,idle:800,red:7200,grit:.45,cut:2800,turbo:1},
   v8:{cyl:8,idle:700,red:7000,grit:.65,cut:2300,turbo:0},v6:{cyl:6,idle:700,red:6500,grit:.3,cut:2400,turbo:0},i3:{cyl:3,idle:900,red:6500,grit:.6,cut:2200,turbo:0},
   diesel:{cyl:4,idle:780,red:4600,grit:1,cut:1500,turbo:1},v8low:{cyl:8,idle:650,red:5600,grit:.8,cut:1700,turbo:0}},
- setCar(id){const M={civka:'hi4',felda:'i4t',golfik:'i4',bavorak:'i6',imprezka:'boxer',koncept:'v8',supka:'i6t',mini:'i3',kupe:'v8',sedan:'v6',kombi:'diesel',vitka:'diesel',pickup:'v8low'};this.prof=this.ENG[M[id]||'i4']},
+ setCar(id){const M={civka:'hi4',felda:'i4t',golfik:'i4',bavorak:'i6',imprezka:'boxer',koncept:'v8',supka:'i6t',mini:'i3',kupe:'v8',muscle:'v8low',blower:'v8low',sedan:'v6',kombi:'diesel',vitka:'diesel',pickup:'v8low'};this.prof=this.ENG[M[id]||'i4']},
  engine(v,on,boost){if(!this.ctx||!this.eng)return;const E=this.eng,P=this.prof||this.ENG.i4,p=G.world&&G.world.player,t=this.ctx.currentTime,rpmN=clamp(p&&p.rpm||0,0,1.06),thr=p?clamp(p.thrIn||0,0,1):0,
    rpm=P.idle+(P.red-P.idle)*rpmN,fire=rpm/60*P.cyl/2*(boost?1.03:1),load=on?(.35+.65*thr):0;
    E.o1.frequency.setTargetAtTime(fire,t,.03);E.o2.frequency.setTargetAtTime(fire*(P.rumble?.5:.5),t,.03);E.o3.frequency.setTargetAtTime(fire*2,t,.03);
@@ -1619,7 +1621,7 @@ import {KTX2Loader} from './vendor/jsm/loaders/KTX2Loader.js';
 import {MeshoptDecoder} from './vendor/jsm/libs/meshopt_decoder.module.js';
 import * as SkeletonUtils from './vendor/jsm/utils/SkeletonUtils.js';
 window.THREE=THREE;window.TADD={EffectComposer,RenderPass,UnrealBloomPass,OutputPass,GLTFLoader,RGBELoader,SkeletonUtils,DRACOLoader,KTX2Loader,MeshoptDecoder};
-const s=document.createElement('script');s.src='r3.js?v=30';document.body.appendChild(s);
+const s=document.createElement('script');s.src='r3.js?v=31';document.body.appendChild(s);
 </script>
 </body>
 </html>
