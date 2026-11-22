@@ -3,10 +3,10 @@
 <script type="importmap">{"imports":{"three":"../vendor/three.module.min.js"}}</script></head><body><div id="g"></div>
 <script type="module">
 import * as THREE from 'three';import {GLTFLoader} from '../vendor/jsm/loaders/GLTFLoader.js';
-const L=['rim_five','rim_multi','rim_mesh','rim_deep','rim_turbine','headlight_slim','rear_diffuser'];const ld=new GLTFLoader();window.ready=0;
+const L=['headlight_tripo','taillight_tripo','rim_five','rim_multi','rim_mesh','rim_deep','rim_turbine','headlight_slim','rear_diffuser'];const ld=new GLTFLoader();window.ready=0;
 for(const n of L){const d=document.createElement('div');d.className='c';const cv=document.createElement('canvas');d.append(cv);d.insertAdjacentHTML('beforeend','<b>'+n+'</b>');g.append(d);
  const r=new THREE.WebGLRenderer({canvas:cv,antialias:true,preserveDrawingBuffer:true});r.setSize(240,220,false);r.toneMapping=THREE.ACESFilmicToneMapping;const s=new THREE.Scene();s.background=new THREE.Color(0x2a2c33);
  const pm=new THREE.PMREMGenerator(r);const es=new THREE.Scene();es.background=new THREE.Color(0x30323a);for(const[x,y,z,c]of[[0,5,0,0xffffff],[5,1,2,0xffe0c0],[-5,2,-3,0xa0c0ff],[0,-5,0,0x202020]]){const m=new THREE.Mesh(new THREE.PlaneGeometry(6,6),new THREE.MeshBasicMaterial({color:c,side:2}));m.position.set(x,y,z);m.lookAt(0,0,0);es.add(m)}s.environment=pm.fromScene(es,.02).texture;s.add(new THREE.DirectionalLight(0xffffff,2));
  ld.load('../models/parts/'+n+'.glb',gl=>{const o=gl.scene;s.add(o);const b=new THREE.Box3().setFromObject(o),c=b.getCenter(new THREE.Vector3()),R=b.getSize(new THREE.Vector3()).length();
-  const cam=new THREE.PerspectiveCamera(35,240/220,.01,100);const dir=n.startsWith('rear')?new THREE.Vector3(-1,.5,.7):new THREE.Vector3(1,.35,.6);cam.position.copy(c).add(dir.normalize().multiplyScalar(R*1.25));cam.lookAt(c);r.render(s,cam);window.ready++})}
+  const cam=new THREE.PerspectiveCamera(35,240/220,.01,100);const dir=n.startsWith('rear')||n.startsWith('tail')?new THREE.Vector3(-1,.5,.7):new THREE.Vector3(1,.35,.6);cam.position.copy(c).add(dir.normalize().multiplyScalar(R*1.25));cam.lookAt(c);r.render(s,cam);window.ready++})}
 </script></body></html>
