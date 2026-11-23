@@ -274,6 +274,7 @@ body.two.driving #twHint{display:flex}
 <body>
 <canvas id="c3"></canvas>
 <canvas id="c"></canvas>
+<div id="loadv" style="position:fixed;inset:0;z-index:1;pointer-events:none;background:radial-gradient(ellipse at 60% 40%,#2a1238,#07060c 70%);display:flex;align-items:flex-end;justify-content:flex-end;padding:0 24px calc(28px + env(safe-area-inset-bottom));transition:opacity .8s"><div style="font-family:Bangers,sans-serif;letter-spacing:2px;color:#ffcc1a;font-size:22px;text-shadow:2px 2px 0 #000">NAČÍTÁM MĚSTO…</div></div>
 
 <div id="scr-start" class="scr on" style="justify-content:flex-end;padding:0">
   <video id="pv" muted autoplay playsinline loop preload="auto"></video>
@@ -1487,6 +1488,7 @@ const stkEnd=e=>{if(e.pointerId!==STK.id)return;STK.id=null;STK.dx=STK.dy=0;$('s
 cv.addEventListener('pointerup',stkEnd);cv.addEventListener('pointercancel',stkEnd);cv.addEventListener('lostpointercapture',stkEnd);
 const PAN={id:null,x:0,y:0},PTS=new Map();let pinchD=0;
 function mzoom(f){G.menuZoom=clamp((G.menuZoom||1)*f,.3,2.2);if(G.world)G.world.userPan=true}
+setInterval(()=>{const v=$('loadv');if(!v||v.dataset.done)return;const ok=typeof R3!=='undefined'&&R3.ok&&R3.pkDone&&R3.aiPeople&&R3.aiPeople.length>=6;if(ok||performance.now()>60000){v.dataset.done=1;v.style.opacity=0;setTimeout(()=>v.remove(),900)}},250);
 function menuOn(){return G.mode==='ambient'&&$('scr-menu').classList.contains('on')&&G.world}
 cv.addEventListener('pointerdown',e=>{if(menuOn()){PTS.set(e.pointerId,[e.clientX,e.clientY]);if(PTS.size===2){const v=[...PTS.values()];pinchD=Math.hypot(v[0][0]-v[1][0],v[0][1]-v[1][1])}}if(!menuOn()||PAN.id!==null)return;PAN.id=e.pointerId;PAN.x=e.clientX;PAN.y=e.clientY;try{cv.setPointerCapture(e.pointerId)}catch(_){}});
 cv.addEventListener('pointermove',e=>{if(PTS.has(e.pointerId)){PTS.set(e.pointerId,[e.clientX,e.clientY]);if(PTS.size>=2&&menuOn()){const v=[...PTS.values()],d=Math.hypot(v[0][0]-v[1][0],v[0][1]-v[1][1]);if(pinchD>0)mzoom(d/pinchD);pinchD=d;PAN.x=e.clientX;PAN.y=e.clientY;return}}if(e.pointerId!==PAN.id||!menuOn())return;const w=G.world,Z=w.zoom||1;w.cam.x-=(e.clientX-PAN.x)/Z;w.cam.y-=(e.clientY-PAN.y)/Z;w.cam.x=clamp(w.cam.x,0,MAPPX);w.cam.y=clamp(w.cam.y,0,MAPPY);PAN.x=e.clientX;PAN.y=e.clientY;w.userPan=true});
@@ -1711,7 +1713,7 @@ function frame(now){const dt=Math.min(REC?.1:.033,(now-last)/1000);last=now;
       const Zm=baseZoom()*1.15*(G.menuZoom||1);if($('scr-menu').classList.contains('on')&&w.userPan){}else if($('scr-menu').classList.contains('on')&&w.stage){const tx=w.stage.x-VW*.17/Zm+Math.sin(w.t*.15)*30,ty=w.stage.y-VH*.14/Zm;if(Math.hypot(w.cam.x-tx,w.cam.y-ty)>900){w.cam.x=tx;w.cam.y=ty}w.cam.x=lerp(w.cam.x,tx,dt*1.5);w.cam.y=lerp(w.cam.y,ty,dt*1.5)}else if(amb.tgt){w.cam.x=lerp(w.cam.x,amb.tgt.x,dt*.8);w.cam.y=lerp(w.cam.y,amb.tgt.y,dt*.8)}w.zoom=Zm}}}
   if($('scr-garage').classList.contains('on')&&typeof R3!=='undefined'&&R3.ok){if(R3.concept&&(!R3.gCar||G.g3!==gList()[gIdx].id+R3.tuneKey(gList()[gIdx].id))){garage3D();if(!$('gstage'))renderGarage()}{const r=$('gstage')&&$('gstage').getBoundingClientRect();R3.gView=r&&r.width?{x:r.left+r.width/2,y:r.top+r.height/2,w:r.width,h:r.height}:null}if(R3.garageRender(dt)){ctx.clearRect(0,0,VW,VH);requestAnimationFrame(frame);return}}
   const w=G.world;const O3={labels:menuOn()&&(G.menuZoom||1)<.8,arrow:G.mode==='race',arrowTo:G.mode==='roam'&&RS?RS.arrowTo:null,markers:G.mode==='roam'?MARKERS():null};
-  if(w&&typeof R3!=='undefined'&&R3.ok){R3.camMode=(G.mode==='roam'||G.mode==='race')?(SAVE.cam||'chase'):(G.mode==='ambient'||G.mode==='promo')?'cine':'top';document.body.classList.toggle('driving',G.mode==='roam'||G.mode==='race');document.body.classList.toggle('gun',G.mode==='roam'||(G.mode==='race'&&!!RS&&!!RS.L&&RS.L.type==='race'));document.body.classList.toggle('cock',R3.camMode==='cockpit'&&!!(w.player&&R3.cars.get(w.player)&&R3.cars.get(w.player).userData.concept));R3.render(w,O3,dt);overlay3D(ctx,w,VW,VH,O3)}else if(w)render(ctx,w,VW,VH,w.cam,w.zoom||baseZoom(),{labels:menuOn()&&(G.menuZoom||1)<.8,arrow:G.mode==='race',arrowTo:G.mode==='roam'&&RS?RS.arrowTo:null,markers:G.mode==='roam'?MARKERS():null});
+  if(w&&typeof R3!=='undefined'&&R3.ok){R3.camMode=(G.mode==='roam'||G.mode==='race')?(SAVE.cam||'chase'):(G.mode==='ambient'||G.mode==='promo')?'cine':'top';document.body.classList.toggle('driving',G.mode==='roam'||G.mode==='race');document.body.classList.toggle('gun',G.mode==='roam'||(G.mode==='race'&&!!RS&&!!RS.L&&RS.L.type==='race'));document.body.classList.toggle('cock',R3.camMode==='cockpit'&&!!(w.player&&R3.cars.get(w.player)&&R3.cars.get(w.player).userData.concept));R3.render(w,O3,dt);overlay3D(ctx,w,VW,VH,O3)}else if(w&&G.mode!=='ambient'&&G.mode!=='promo')render(ctx,w,VW,VH,w.cam,w.zoom||baseZoom(),{labels:menuOn()&&(G.menuZoom||1)<.8,arrow:G.mode==='race',arrowTo:G.mode==='roam'&&RS?RS.arrowTo:null,markers:G.mode==='roam'?MARKERS():null});
   }catch(err){console.error(err)}
   requestAnimationFrame(frame)}
 requestAnimationFrame(frame);
@@ -1730,7 +1732,7 @@ import {KTX2Loader} from './vendor/jsm/loaders/KTX2Loader.js';
 import {MeshoptDecoder} from './vendor/jsm/libs/meshopt_decoder.module.js';
 import * as SkeletonUtils from './vendor/jsm/utils/SkeletonUtils.js';
 window.THREE=THREE;window.TADD={EffectComposer,RenderPass,UnrealBloomPass,OutputPass,GLTFLoader,RGBELoader,SkeletonUtils,DRACOLoader,KTX2Loader,MeshoptDecoder};
-const s=document.createElement('script');s.src='r3.js?v=61';document.body.appendChild(s);
+const s=document.createElement('script');s.src='r3.js?v=62';document.body.appendChild(s);
 </script>
 </body>
 </html>
