@@ -447,23 +447,38 @@ const R3={ok:false,off:/[?&]2d/.test(location.search),chunks:new Map(),CH:16,PX:
  archCheck(g){const T3=THREE,out=[];g.updateMatrixWorld(true);const U=g.userData;if(!U.cw)return out;const rc=new T3.Raycaster(),body=[];g.traverse(o=>{if(o.isMesh&&o.visible&&!/Wheel|^mesh_9/.test((o.parent&&o.parent.name)||'')&&/Paint|Mechanical/.test(o.material.name||''))body.push(o)});
   for(const wn of U.cw){const c=new T3.Vector3();wn.getWorldPosition(c);const r=(new T3.Box3().setFromObject(wn).getSize(new T3.Vector3()).y)/2;let gap=1e9;for(let a=.3;a<2.9;a+=.2){const d=new T3.Vector3(Math.cos(a),Math.sin(a),0);rc.set(c,d);const h=rc.intersectObjects(body,false)[0];if(h)gap=Math.min(gap,h.distance-r)}out.push(+gap.toFixed(2))}return out},
  tuneKey(id){const t=typeof SAVE!=='undefined'&&SAVE.tune&&SAVE.tune[id];return(t?JSON.stringify(t):'')+'#'+(this.partsV||0)+(this.camMode==='cockpit'?'c':'')+(this.aiCars&&this.aiCars[id]?'a':'')},
- AICARS:['civka','felda','golfik','bavorak','imprezka','supka','traffic_kombi','traffic_taxi','traffic_police'],
+ AICARS:['civka','felda','golfik','bavorak','imprezka','supka','koncept','traffic_kombi','traffic_taxi','traffic_police'],
  aiCar(id){if(!this.AICARS.includes(id))return null;this.aiCars=this.aiCars||{};const S=this.aiCars[id];
   if(S===undefined){this.aiCars[id]=null;new TADD.GLTFLoader().load('models/cars/ai/'+id+'.glb',g=>{g.scene.traverse(o=>{if(o.isMesh&&o.material){o.material.envMapIntensity=1.2}});this.aiCars[id]=g.scene;this.partsV=(this.partsV||0)+1},undefined,()=>{this.aiCars[id]=false});return null}
   if(!S)return null;
   return c=>{const T3=THREE,g=new T3.Group(),m=S.clone(true),L=c.L;m.scale.setScalar(L);const ch=new T3.Group();ch.add(m);g.add(ch);const aw=[];
-   const rimStyle=(this.ZB[c.st&&c.st.id]||{}).rims||'five',rimM=this.aiRimM||(this.aiRimM=new T3.MeshStandardMaterial({color:0xb8bcc4,metalness:.75,roughness:.28})),tyM=this.aiTyM||(this.aiTyM=new T3.MeshStandardMaterial({color:0x151517,roughness:.85,metalness:0}));
+   let dkP=0;const tn=(c.kind==='player'&&typeof SAVE!=='undefined'&&SAVE.tune&&c.st&&SAVE.tune[c.st.id])||{},repW=!!(tn.rims&&tn.rims!=='stock');
+   if(tn.p1||tn.fin){const FIN={gloss:[.15,.3],matte:[.05,.75],metal:[.65,.28],chrome:[.95,.08]}[tn.fin];m.traverse(o=>{if(o.isMesh&&o.material&&o.material.map){const O=o.material,M=O.clone();if(tn.p1){const tx=this.aiPaint(id+(O.map.uuid||''),M.map,tn.p1);if(tx)M.map=tx}if(FIN){M.metalness=FIN[0];M.roughness=FIN[1];M.metalnessMap=null;M.roughnessMap=null}if(M.map&&M.map.userData.dark)dkP=1;o.material=M}})}
+   const rimStyle=tn.rims||(this.ZB[c.st&&c.st.id]||{}).rims||'five',rimM=tn.rim?new T3.MeshStandardMaterial({color:tn.rim,metalness:.7,roughness:.28}):this.aiRimM||(this.aiRimM=new T3.MeshStandardMaterial({color:0xb8bcc4,metalness:.75,roughness:.28})),tyM=this.aiTyM||(this.aiTyM=new T3.MeshStandardMaterial({color:0x151517,roughness:.85,metalness:0}));
    m.updateMatrixWorld(true);m.traverse(o=>{if(/^Wheel_/.test(o.name)){o.userData.front=/_F/.test(o.name);aw.push(o);
      const bb=new T3.Box3();o.traverse(q=>{if(q.isMesh)bb.expandByObject(q)});const inv=new T3.Matrix4().copy(o.matrixWorld).invert();bb.applyMatrix4(inv);const sz=bb.getSize(new T3.Vector3());
-     const r=Math.min(Math.max(o.position.y*.93,.06),.13),wd=r*.62,side=o.position.z>0?1:-1;
-     const hid=this.aiHid||(this.aiHid=new T3.MeshBasicMaterial({visible:false}));o.traverse(q=>{if(q.isMesh)q.material=hid});
-     const tg=this.aiTyG||(this.aiTyG=new T3.CylinderGeometry(1,1,1,28,1).rotateX(Math.PI/2));const ty=new T3.Mesh(tg,tyM);ty.scale.set(r,r,wd);o.add(ty);
-     const rg=new T3.Group();rg.rotation.y=-side*Math.PI/2;rg.position.z=side*wd*.38;const rs=this.rimSet(rimStyle==='stock'?'five':rimStyle,rimM);rs.scale.setScalar(r*.74/.292);rg.add(rs);o.add(rg)}});
+     if(!repW&&!dkP)return;
+     const r=Math.min(Math.max(Math.min(o.position.y*.95,sz.y*.5),.06),.13),wd=Math.min(r*.62,sz.z*.9),side=o.position.z>0?1:-1;
+     const outer=side>0?bb.max.z:bb.min.z,rg=new T3.Group();if(dkP){const rr=Math.min(o.position.y,sz.y*.5)*1.01,tw=Math.min(sz.z*.8,rr*.75),tg=this.aiTyG||(this.aiTyG=new T3.CylinderGeometry(1,1,1,32,1).rotateX(Math.PI/2)),ty=new T3.Mesh(tg,tyM);ty.scale.set(rr,rr,tw);ty.position.z=outer-side*tw*.5;o.add(ty)}rg.rotation.y=-side*Math.PI/2;rg.position.z=outer-side*Math.min(sz.z*.12,.006);const rs=this.rimSet(rimStyle==='stock'?'five':rimStyle,rimM);rs.scale.setScalar(Math.min(sz.y*.5,r)*.78/.292);rg.add(rs);o.add(rg)}});
    if(!this.shTex){this.shTex=this.glowTex('rgba(0,0,0,.85)');this.shGeo=new T3.PlaneGeometry(1,1);this.shGeo.rotateX(-Math.PI/2);this.shMat=new T3.MeshBasicMaterial({map:this.shTex,transparent:true,depthWrite:false})}
    const sh=new T3.Mesh(this.shGeo,this.shMat);sh.scale.set(L*1.12,1,L*.55);sh.position.y=.25;g.add(sh);const beam=new T3.Mesh(this.beamGeo,this.beamMat);beam.position.set(L/2,1.6,0);g.add(beam);
    if(!this.flG){this.flG=new T3.ConeGeometry(3.2,16,8);this.flG.rotateZ(Math.PI/2);this.flM=new T3.MeshBasicMaterial({color:new T3.Color(0x66aaff).multiplyScalar(3),transparent:true,opacity:.85,blending:T3.AdditiveBlending,depthWrite:false})}
    const fl=new T3.Mesh(this.flG,this.flM);fl.position.set(-L/2-8,4,0);fl.visible=false;g.add(fl);
-   g.userData={beam,paint:{},wheels:[],aw,awR:L*.1,ch,glow:null,fl,aiCar:true,tk:c.st?this.tuneKey(c.st.id):''};if(!c.noAdd)this.scene.add(g);return g}},
+   let glow=null;if(tn.glow&&tn.glow!=='off'){if(!this.ugTex)this.ugTex=this.glowTex('rgba(255,255,255,.9)');glow=new T3.Mesh(this.shGeo,new T3.MeshBasicMaterial({map:this.ugTex,color:tn.glow,transparent:true,opacity:.45,blending:T3.AdditiveBlending,depthWrite:false}));glow.scale.set(L*1.5,1,L*.75);glow.position.y=1;g.add(glow)}
+   g.userData={beam,paint:{},wheels:[],aw,awR:L*.1,ch,glow,fl,aiCar:true,tk:c.st?this.tuneKey(c.st.id):''};if(!c.noAdd)this.scene.add(g);return g}},
+ aiWK:.92,aiWheelSplit(G,r){this.aiWS=this.aiWS||new Map();if(this.aiWS.has(G))return this.aiWS.get(G);const g=G.clone(),P=g.attributes.position,I=g.index?g.index.array:null,n=I?I.length/3:P.count/3,a=[],b=[];
+  for(let t=0;t<n;t++){let x=0,y=0;const tri=[];for(let k=0;k<3;k++){const v=I?I[t*3+k]:t*3+k;tri.push(v);x+=P.getX(v);y+=P.getY(v)}x/=3;y/=3;(Math.hypot(x,y)>r*this.aiWK?b:a).push(...tri)}
+  g.setIndex(a.concat(b));g.clearGroups();g.addGroup(0,a.length,0);g.addGroup(a.length,b.length,1);this.aiWS.set(G,g);return g},
+ aiPaint(id,map,hex){const k=id+hex;this.aiPT=this.aiPT||{};if(this.aiPT[k])return this.aiPT[k];const im=map&&map.image;if(!im||!im.width)return null;
+  const W=im.width,H=im.height,cv=document.createElement('canvas');cv.width=W;cv.height=H;const x=cv.getContext('2d');x.drawImage(im,0,0);let D;try{D=x.getImageData(0,0,W,H)}catch(e){return null}const d=D.data,n=W*H;
+  const hsl=(r,g,b)=>{const mx=Math.max(r,g,b),mn=Math.min(r,g,b),l=(mx+mn)/2;if(mx===mn)return[0,0,l];const dd=mx-mn,s=l>.5?dd/(2-mx-mn):dd/(mx+mn);let h=mx===r?(g-b)/dd+(g<b?6:0):mx===g?(b-r)/dd+2:(r-g)/dd+4;return[h*60,s,l]};
+  const hist=new Float32Array(36);let sat=0;for(let i=0;i<n;i+=7){const q=hsl(d[i*4]/255,d[i*4+1]/255,d[i*4+2]/255);if(q[1]>.35&&q[2]>.12&&q[2]<.85){hist[Math.floor(q[0]/10)%36]++;sat++}}
+  let hb=0;for(let i=1;i<36;i++)if(hist[i]>hist[hb])hb=i;const chrom=sat/(n/7)>.08,h0=hb*10+5;
+  const T=new THREE.Color(hex),tr=T.r,tg=T.g,tb=T.b;T.convertLinearToSRGB();const tl=Math.max(.06,(T.r+T.g+T.b)/3),ts=[T.r,T.g,T.b];
+  const wOf=q=>{if(chrom){const dh=Math.min(Math.abs(q[0]-h0),360-Math.abs(q[0]-h0));return q[1]<.18?0:Math.max(0,Math.min(1,(28-dh)/10))*Math.min(1,(q[1]-.18)/.15)}return q[1]>.22?0:q[2]>.6?0:Math.min(1,(.22-q[1])/.1)*Math.min(1,(.6-q[2])/.12)};
+  let ls=0,lc=0;for(let i=0;i<n;i+=5){const q=hsl(d[i*4]/255,d[i*4+1]/255,d[i*4+2]/255);if(wOf(q)>.5){ls+=q[2];lc++}}const bl=Math.max(.04,lc?ls/lc:.3);
+  for(let i=0;i<n;i++){const o=i*4,q=hsl(d[o]/255,d[o+1]/255,d[o+2]/255),w=wOf(q);if(!w)continue;const f=Math.min(2.4,Math.max(.12,q[2]/bl));for(let c=0;c<3;c++){const v=Math.min(1,ts[c]*f)*255;d[o+c]=d[o+c]*(1-w)+v*w}}
+  x.putImageData(D,0,0);const t=new THREE.CanvasTexture(cv);t.flipY=map.flipY;t.colorSpace=map.colorSpace;t.wrapS=map.wrapS;t.wrapT=map.wrapT;t.channel=map.channel;t.anisotropy=4;t.userData.dark=!chrom;return this.aiPT[k]=t},
  zSpec(id,tune){const b=this.ZB[id]||this.ZB.koncept,t=tune||{},o=Object.assign({},b,t);let kit=b.kit.slice();if(t.wing===1&&!kit.includes('wing'))kit=kit.filter(k=>k!=='duck').concat('wing');if(t.wing===0)kit=kit.filter(k=>k!=='wing');o.kit=kit;return o},
  zMesh(c,sp,noAdd){const T3=THREE,L=c.L,bx=sp.sx||1,by=sp.sy||1,zs=L/(46*bx),zw=(sp.w||1)*(sp.armor?1.04:1),g=new T3.Group(),m=this.concept.clone(true),B=this.zB;
   const FIN={gloss:[.3,.22,1,.03],matte:[.05,.7,0,.5],metal:[.8,.28,1,.06],chrome:[1,.04,1,.02]},f=FIN[sp.fin]||FIN.gloss;
@@ -694,7 +709,7 @@ const R3={ok:false,off:/[?&]2d/.test(location.search),chunks:new Map(),CH:16,PX:
   {const a=this.skid.geometry.attributes.position.array,n=Math.min(w.skids.length,1300);for(let i=0;i<n;i++){const s=w.skids[w.skids.length-n+i];a.set([s[0],.8,s[1],s[2],.8,s[3]],i*6)}this.skid.geometry.setDrawRange(0,n*2);this.skid.geometry.attributes.position.needsUpdate=true}
   // markers & route
   const ms=opts.markers||[];while(this.markers.length<ms.length){const r=new THREE.Mesh(this.ringGeo,this.mkMat),b=new THREE.Mesh(this.beamCyl,this.mkBeamMat);this.scene.add(r,b);this.markers.push([r,b])}
-  this.markers.forEach((m,i)=>{const k=ms[i];m[0].visible=m[1].visible=!!k;if(k){const pu=1+Math.sin(t*4)*.1;m[0].position.set(k.x,2,k.y);m[0].scale.set(pu,1,pu);m[1].position.set(k.x,0,k.y);m[0].material=k.open?this.mkMat:this.mkGray}});
+  this.markers.forEach((m,i)=>{const k=ms[i];m[0].visible=m[1].visible=!!k;if(k){const pu=1+Math.sin(t*1.6)*.05;m[0].position.set(k.x,2,k.y);m[0].scale.set(pu,1,pu);m[1].position.set(k.x,0,k.y);m[0].material=k.open?this.mkMat:this.mkGray}});
   const rt=opts.arrow&&w.route;this.finish.visible=this.finBeam.visible=this.next.visible=!!rt;
   if(rt){const F=w.route[w.route.length-1];this.finish.position.set(F.x,1.5,F.y);this.finBeam.position.set(F.x,0,F.y);const nx=w.route[Math.min(w.player.seg+1,w.route.length-1)];this.next.visible=nx!==F;this.next.position.set(nx.x,2,nx.y);this.next.scale.setScalar(1.25+Math.sin(t*5)*.08)}
   // 3D guide arrow above car
