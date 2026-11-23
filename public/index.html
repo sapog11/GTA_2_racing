@@ -803,7 +803,10 @@ function spawnCiv(w){for(let tries=0;tries<12;tries++){const ci=Math.round((w.ca
   c.path=[{i:o[0],j:o[1],pi:i,pj:j}].concat(civPath(o[0],o[1],i,j,6));c.pi=0;w.cars.push(c);return c}}
 
 /* ---- peds ---- */
-const LINES={pub:['Na zdraví, vole!','Ještě jedno a jdem.','Kdo platí tuhle rundu?','Ty vole, já tě mám rád!','Hospoda je můj druhej domov.','Pivo za 29? To je dar!','Zavolej mi taxíka…','Půjč mi kilo do pátku!','Hele, ty nejsi odsud, co?'],car:['Ty šlapko!','Ty opice!','Kam čumíš, vole?!','Naučíš se řídit?!','Debile!','Do píče, moje auto!','Papíry máš z Lidlu?!','Ty kreténe!'],police:['Zastavte vozidlo!','Policie! Stůjte!','Okamžitě zastav!','Máme tě, kreténe!','Ruce na volant!'],rival:['Čau, šnečku!','Papa, loosere!','Tohle sou Předlice, vole!','Seš pomalej jak tramvaj!','Ty opice!'],drunk:['Hik…','Máš cigo?','Půjč mi kilo do pátku!','Ty vole, kde je hospoda?','Ještě jedno, pane vrchní!','Já nejsem ožralej!','Pivo je tekutej chleba!'],fight:['Ty šlapko!','Do píče!','Co čumíš?!','Dej mi ty prachy!','Chceš do huby?','Vole, nech toho!','Pojď sem, ty kreténe!'],girl:['Svezeš mě, zlato?','Ahoj fešáku…','Tady je zima jak sviňa.','Máš cígo?'],hit:['Ty opice!','Ty kreténe!','Pomalu, vole!','Debile!','Kurva!','Jezdi pořádně!','Do píče, málem!'],worker:['Zase noční šichta…','Chemička smrdí jak vždycky.','Kde je ten autobus?'],shot:['Střílí!!','Lehni!','Pomoc!','Utíkej!','Do píče, kulky!','Policie, pomoc!'],greet:['Čau!','Nazdar, jak se máš?','Ahoj, co děláš?','Taky prší, co?','Viděls ten zápas?','Ty jo, dlouho jsme se neviděli!'],near:['Pěkná kára!','Hezký auto, vole.','Svezeš mě kousek?','Ty máš ale bourák!','Neblokuj chodník!','Co tu stojíš?'],walker:['Máš cigo?','Ty vole, prší.','Máš drobný?','Kam jdeš?','Půjč mi kilo do pátku.','Vrátím ti to, fakt!']};
+const DIALOG=[['Čau! Jak se máš?','Ale jo, ujde to.'],['Viděls ten zápas?','Jo, hrůza. Zase prohráli.'],['Půjčíš mi stovku?','Zapomeň, vole.'],['Ty jo, dlouho jsme se neviděli!','No jo, makám jak blázen.'],['Jdeš večer ven?','Jasně, do Pivnice.'],['Slyšels o tý honičce?','Jo, prej to byla černá kára.'],['Kde bydlíš teď?','Na Severní Terase.'],['Máš práci?','Jo, v Chemičce.'],['Co děláš o víkendu?','Spím. Celej víkend.'],['Hele, nemáš oheň?','Jasně, tumáš.']];
+const LINES={pub:['Na zdraví, vole!','Ještě jedno a jdem.','Kdo platí tuhle rundu?','Ty vole, já tě mám rád!','Hospoda je můj druhej domov.','Pivo za 29? To je dar!','Zavolej mi taxíka…','Půjč mi kilo do pátku!','Hele, ty nejsi odsud, co?'],car:['Ty šlapko!','Ty opice!','Kam čumíš, vole?!','Naučíš se řídit?!','Debile!','Do píče, moje auto!','Papíry máš z Lidlu?!','Ty kreténe!'],police:['Zastavte vozidlo!','Policie! Stůjte!','Okamžitě zastav!','Máme tě, kreténe!','Ruce na volant!'],rival:['Čau, šnečku!','Papa, loosere!','Tohle sou Předlice, vole!','Seš pomalej jak tramvaj!','Ty opice!'],drunk:['Já jsem v pohodě, fakt!','Kde je moje bunda?','Ještě jednu a domů… hik.','Miluju tohle město!','Hik…','Máš cigo?','Půjč mi kilo do pátku!','Ty vole, kde je hospoda?','Ještě jedno, pane vrchní!','Já nejsem ožralej!','Pivo je tekutej chleba!'],fight:['Ty šlapko!','Do píče!','Co čumíš?!','Dej mi ty prachy!','Chceš do huby?','Vole, nech toho!','Pojď sem, ty kreténe!'],girl:['Svezeš mě, zlato?','Ahoj fešáku…','Tady je zima jak sviňa.','Máš cígo?'],hit:['Ty opice!','Ty kreténe!','Pomalu, vole!','Debile!','Kurva!','Jezdi pořádně!','Do píče, málem!'],worker:['Ještě dvě hodiny a padla.','Mistr je kretén.','Zejtra zas ranní.','Výplata až v pátek…','Zase noční šichta…','Chemička smrdí jak vždycky.','Kde je ten autobus?'],bump:['Promiň!','Dávej bacha, vole!','Kam čumíš?','Pardon, pane.','Jejda, sorry!','Nešlapej mi na boty!','Ty máš oči na zádech?','Uhni, spěchám!'],
+ group:['A pak mu řekla, že je to jeho dítě!','Kdo jde na jedno?','Viděli jste včera Slavii?','Šéf mě zase sjel…','Tady se nic nezmění, vole.','Prej zdražujou tramvaj.','Já bych odsud vypadnul.','Hele, támhle jede ta černá kára!','Pátek, pátek, pátek!','Kdo má cígo?','Ty vole, to není možný!','Haha, to je dobrý!','Kam dneska večer?','Na Střekově je párty.','Kamarád prodává káru, levně.'],
+ shot:['Střílí!!','Lehni!','Pomoc!','Utíkej!','Do píče, kulky!','Policie, pomoc!'],greet:['Čau!','Nazdar, jak se máš?','Ahoj, co děláš?','Taky prší, co?','Viděls ten zápas?','Ty jo, dlouho jsme se neviděli!'],near:['Pěkná kára!','Hezký auto, vole.','Svezeš mě kousek?','Ty máš ale bourák!','Neblokuj chodník!','Co tu stojíš?'],walker:['Kolik je hodin?','Zase jsem nestih autobus.','Prší jak sviňa.','Kde je tu bankomat?','Tohle město mě jednou zabije.','Ještě že je pátek.','Ten nájem je šílenej.','Mám hlad jak vlk.','Máš cigo?','Ty vole, prší.','Máš drobný?','Kam jdeš?','Půjč mi kilo do pátku.','Vrátím ti to, fakt!']};
 const PEDCOL=['#3a6ea5','#a53a3a','#4a8a4a','#8a6a3a','#555','#7a3a8a','#c8c8c8','#2a2a2a','#b8862b'];
 function makePed(type,x,y){const p={type,x,y,a:pick([0,Math.PI/2,Math.PI,-Math.PI/2]),dx:0,dy:0,sp:type==='drunk'?16:rr(24,34),walk:R()*6,col:pick(PEDCOL),hair:pick(['#1a1410','#3a2a1a','#c9a04a','#6a3a1a','#111','#8a8a8a']),skin:pick(['#e8b896','#d79c74','#c08060','#f0c8a8']),down:0,flee:0,say:null,sayT:rr(2,10),wob:R()*6,mate:null,punch:0};
  if(type==='girl'){p.col=pick(['#ff2e88','#d4145a','#b46bff']);p.hair=pick(['#f2d27a','#c9a04a','#1a1410']);p.sp=0}
@@ -813,9 +816,12 @@ function makePed(type,x,y){const p={type,x,y,a:pick([0,Math.PI/2,Math.PI,-Math.P
  p.dx=Math.round(Math.cos(p.a));p.dy=Math.round(Math.sin(p.a));return p}
 function randWalkTile(w,minD,maxD){for(let k=0;k<30;k++){const a=R()*6.28,d=rr(minD,maxD);const x=w.cam.x+Math.cos(a)*d,y=w.cam.y+Math.sin(a)*d;const tx=Math.floor(x/T),ty=Math.floor(y/T);if(isWalk(tileAt(tx,ty)))return{x:(tx+.2+R()*.6)*T,y:(ty+.2+R()*.6)*T}}return null}
 function spawnPed(w,minD,maxD){const q=randWalkTile(w,minD,maxD);if(!q)return;const k=R();
- if(k<.1){const a=makePed('fight',q.x,q.y),b=makePed('fight',q.x+16,q.y);a.mate=b;b.mate=a;a.a=0;b.a=Math.PI;w.peds.push(a,b)}
+ if(k<.07){const a=makePed('fight',q.x,q.y),b=makePed('fight',q.x+16,q.y);a.mate=b;b.mate=a;a.a=0;b.a=Math.PI;w.peds.push(a,b)}
+ else if(k<.16){const n=3+(R()<.4?1:0),C={x:q.x,y:q.y};for(let j=0;j<n;j++){const an=j/n*6.283,c=makePed('crew',q.x+Math.cos(an)*13,q.y+Math.sin(an)*13);c.sp=0;c.crewC=C;c.sayT=rr(.3,4);w.peds.push(c)}}
  else w.peds.push(makePed(k<.45?'walker':k<.63?'drunk':k<.75?'worker':k<.87?'girl':'smoker',q.x,q.y))}
-function pmove(p,dx,dy){const nx=p.x+dx,ny=p.y+dy,r=5;for(const[ox,oy]of[[r,0],[-r,0],[0,r],[0,-r]])if(isSolid(tileAt(Math.floor((nx+ox)/T),Math.floor((ny+oy)/T))))return false;p.x=nx;p.y=ny;return true}
+function carAt(x,y,pad){const w=G.world;if(w)for(const c of w.cars){const dx=x-c.x,dy=y-c.y;if(dx*dx+dy*dy>3600)continue;const ca=Math.cos(c.a),sa=Math.sin(c.a),lx=dx*ca+dy*sa,ly=-dx*sa+dy*ca;if(Math.abs(lx)<(c.L||42)/2+pad&&Math.abs(ly)<(c.Wd||20)/2+pad)return c}
+  for(const c of parked){const dx=x-c.x,dy=y-c.y;if(dx*dx+dy*dy>1600)continue;const ca=Math.cos(c.a),sa=Math.sin(c.a),lx=dx*ca+dy*sa,ly=-dx*sa+dy*ca;if(Math.abs(lx)<19+pad&&Math.abs(ly)<10+pad)return c}return null}
+function pmove(p,dx,dy){const nx=p.x+dx,ny=p.y+dy,r=8;if(!p.down&&carAt(nx,ny,4)&&!carAt(p.x,p.y,4))return false;for(const[ox,oy]of[[r,0],[-r,0],[0,r],[0,-r]])if(isSolid(tileAt(Math.floor((nx+ox)/T),Math.floor((ny+oy)/T))))return false;p.x=nx;p.y=ny;return true}
 function say(p,arr,t){p.say=pick(arr);p.sayL=t||2.2}
 
 /* ---- particles ---- */
@@ -915,7 +921,9 @@ function updateWorld(w,dt,pctl){
   // peds
   if(w.peds.length<w.pedMax&&R()<.5)spawnPed(w,G.mode==='ambient'||G.mode==='promo'?300:620,G.mode==='ambient'||G.mode==='promo'?520:1000);
   const PL=w.player,shotNow=PL&&w.muzzle>0;
-  for(let i=w.peds.length-1;i>=0;i--){const p=w.peds[i];p.sayT-=dt;p.stand=false;if(p.say){p.sayL-=dt;if(p.sayL<=0)p.say=null}
+  for(let i=w.peds.length-1;i>=0;i--){const p=w.peds[i];p.sayT-=dt;p.stand=false;if(p.reply){p.replyT-=dt;if(p.replyT<=0){say(p,[p.reply],2.4);p.reply=null}}
+    if(p.type==='crew'){p.stand=true;p.walk+=dt*1.2;if(p.crewC)p.a=Math.atan2(p.crewC.y-p.y,p.crewC.x-p.x);if(p.sayT<0&&!p.say){p.sayT=rr(3,7);if(R()<.75)say(p,R()<.25?LINES.drunk:LINES.group,2.6)}}
+    if(p.bumpT>0)p.bumpT-=dt;if(p.say){p.sayL-=dt;if(p.sayL<=0)p.say=null}
     if(Math.hypot(p.x-w.cam.x,p.y-w.cam.y)>(G.mode==='ambient'||G.mode==='promo'?650:1250)){w.peds.splice(i,1);if(p.mate)p.mate.mate=null;continue}
     if(isSolid(tileAt(Math.floor(p.x/T),Math.floor(p.y/T)))){w.peds.splice(i,1);continue}
     if(p.kvx){pmove(p,p.kvx*dt,p.kvy*dt);p.kvx*=Math.max(0,1-dt*7);p.kvy*=Math.max(0,1-dt*7);if(Math.abs(p.kvx)+Math.abs(p.kvy)<4)p.kvx=p.kvy=0}
@@ -926,13 +934,15 @@ function updateWorld(w,dt,pctl){
     for(const c of w.cars){const sp=Math.hypot(c.vx,c.vy);if(sp<50)continue;const dx=p.x-c.x,dy=p.y-c.y,d=Math.hypot(dx,dy);
       if(d<c.L*.5+5&&sp>70){p.down=2.2;p.a=Math.atan2(c.vy,c.vx);const k=Math.min(1,sp/500)*160;p.kvx=c.vx/sp*k;p.kvy=c.vy/sp*k;if(c===w.player){c.v*=.96}say(p,['Au!','Ty kreténe!','Kurva!'],1.4);if(p.mate){p.mate.mate=null;p.mate=null}break}
       if(d<100&&p.flee<=0){const vx=c.vx/sp,vy=c.vy/sp;if((dx*vx+dy*vy)/d>.55){const side=(-vy*dx+vx*dy)>0?1:-1;p.fdx=-vy*side;p.fdy=vx*side;p.flee=.6;if(R()<.4&&!p.say)say(p,LINES.hit,1.6)}}}
-    if(p.flee>0){p.flee-=dt;const fs=p.scared?78:64;if(!pmove(p,p.fdx*fs*dt,p.fdy*fs*dt)){const a=Math.atan2(p.fdy,p.fdx)+(R()<.5?1.4:-1.4);p.fdx=Math.cos(a);p.fdy=Math.sin(a)}p.a=Math.atan2(p.fdy,p.fdx);p.walk+=dt*16;if(p.flee<=0){p.scared=0;if(p.type==='girl'||p.type==='smoker'||p.type==='fight'){p.type='walker';p.sp=30}}continue}
+    if(p.flee>0){p.flee-=dt;const fs=p.scared?78:64;if(!pmove(p,p.fdx*fs*dt,p.fdy*fs*dt)){const a=Math.atan2(p.fdy,p.fdx)+(R()<.5?1.4:-1.4);p.fdx=Math.cos(a);p.fdy=Math.sin(a)}p.a=Math.atan2(p.fdy,p.fdx);p.walk+=dt*16;if(p.flee<=0){p.scared=0;if(p.type==='girl'||p.type==='smoker'||p.type==='fight'||p.type==='crew'){p.type='walker';p.sp=30}}continue}
     // player car stopped next to them: turn and comment
     if(PL&&Math.abs(PL.v)<15){const dd=Math.hypot(p.x-PL.x,p.y-PL.y);if(dd<85){p.a=Math.atan2(PL.y-p.y,PL.x-p.x);if(!p.say&&p.sayT<0){p.sayT=rr(4,8);say(p,p.type==='girl'?LINES.girl:p.type==='drunk'?LINES.drunk:LINES.near,2.6)}p.stand=true;p.walk+=dt*1.2;continue}}
     // two walkers meet: stop and chat for a moment
     if(p.chat>0){p.chat-=dt;p.stand=true;p.walk+=dt*1.2;if(p.chatW)p.a=Math.atan2(p.chatW.y-p.y,p.chatW.x-p.x);continue}
-    if((p.type==='walker'||p.type==='worker')&&R()<dt*.6){for(const o of w.peds){if(o===p||o.chat>0||o.flee>0||o.down>0||(o.type!=='walker'&&o.type!=='worker'))continue;if(Math.abs(o.x-p.x)+Math.abs(o.y-p.y)<34){p.chat=o.chat=rr(3,6);p.chatW=o;o.chatW=p;say(p,LINES.greet,2.2);setTimeout(()=>{if(o.chat>0)say(o,LINES.greet,2.2)},1200);break}}if(p.chat>0)continue}
+    if(!(p.bumpT>0)&&p.sp>0){for(const o of w.peds){if(o===p||o.down>0||o.chat>0||o.type==='crew')continue;const dx=o.x-p.x,dy=o.y-p.y;if(dx*dx+dy*dy<100&&(p.dx*dx+p.dy*dy)>0){p.bumpT=o.bumpT=4;if(R()<.7)say(p,LINES.bump,1.8);if(o.sp>0&&R()<.5){o.reply=pick(LINES.bump);o.replyT=.9}const t=p.dx;p.dx=-p.dy;p.dy=t;break}}}
+    if((p.type==='walker'||p.type==='worker')&&R()<dt*.6){for(const o of w.peds){if(o===p||o.chat>0||o.flee>0||o.down>0||(o.type!=='walker'&&o.type!=='worker'))continue;if(Math.abs(o.x-p.x)+Math.abs(o.y-p.y)<34){p.chat=o.chat=rr(4,7);p.chatW=o;o.chatW=p;const dg=pick(DIALOG);say(p,[dg[0]],2.2);o.reply=dg[1];o.replyT=1.6;break}}if(p.chat>0)continue}
     if(p.type==='fight'){if(p.mate){p.a=Math.atan2(p.mate.y-p.y,p.mate.x-p.x);p.punch=(Math.sin(w.t*7+(p.x%7))>.6)?1:0;p.walk+=dt*3;if(p.sayT<0){p.sayT=rr(2.5,5);say(p,LINES.fight,1.8)}}else{p.type='walker';p.sp=34}continue}
+    if(p.type==='crew'){p.stand=true;continue}
     if(p.type==='girl'||p.type==='smoker'||p.type==='party'){p.walk+=dt*1.2;if(p.type==='party'){p.wob+=dt;p.a+=Math.sin(p.wob*2)*dt*.6}if(p.sayT<0){p.sayT=w.chatty?rr(3,7):rr(5,10);if(R()<.7)say(p,p.type==='girl'?LINES.girl:p.type==='party'?LINES.pub:LINES.walker,2.4)}continue}
     let sp=p.sp;if(p.type==='drunk'){p.wob+=dt*2.2;sp*=.7+.3*Math.sin(p.wob*1.7)}
     const nx=p.x+p.dx*12,ny=p.y+p.dy*12;
@@ -1732,7 +1742,7 @@ import {KTX2Loader} from './vendor/jsm/loaders/KTX2Loader.js';
 import {MeshoptDecoder} from './vendor/jsm/libs/meshopt_decoder.module.js';
 import * as SkeletonUtils from './vendor/jsm/utils/SkeletonUtils.js';
 window.THREE=THREE;window.TADD={EffectComposer,RenderPass,UnrealBloomPass,OutputPass,GLTFLoader,RGBELoader,SkeletonUtils,DRACOLoader,KTX2Loader,MeshoptDecoder};
-const s=document.createElement('script');s.src='r3.js?v=62';document.body.appendChild(s);
+const s=document.createElement('script');s.src='r3.js?v=63';document.body.appendChild(s);
 </script>
 </body>
 </html>
