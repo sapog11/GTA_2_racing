@@ -355,7 +355,13 @@ const R3={ok:false,off:/[?&]2d/.test(location.search),chunks:new Map(),CH:16,PX:
  // parked cars: real Kenney models, instanced per (model, colour) so the whole city costs a few draw calls
  parkedCull(){if(!this.pkG||!this.focus)return;const now=performance.now();if(now-(this.pkT||0)<600)return;this.pkT=now;const T3=THREE,M=new T3.Matrix4(),Q=new T3.Quaternion(),V=new T3.Vector3(),ONE=new T3.Vector3(1,1,1),AX=new T3.Vector3(0,1,0),fx=this.focus.x,fy=this.focus.y,R2=900*900;
   for(const G of this.pkG){let n=0;for(const p of G.list){if((p.x-fx)**2+(p.y-fy)**2>R2)continue;Q.setFromAxisAngle(AX,-p.a);M.compose(V.set(p.x,0,p.y),Q,ONE);for(const e of G.ims){const MM=M.clone().multiply(e.local);e.im.setMatrixAt(n,MM)}n++}for(const e of G.ims){e.im.count=n;e.im.instanceMatrix.needsUpdate=true}}},
- parkedKenney(){if(this.pkDone||!this.kReady||!parked.length)return;this.pkDone=1;const T3=THREE,mods=['sedan','hatchback_sports','suv','sedan_sports','van'].filter(n=>this.km[n]);if(!mods.length)return;
+ parkedKenney(){if(this.pkDone||!this.kReady||!parked.length)return;const AIP=['felda','golfik','bavorak','imprezka','supka','civka','traffic_kombi','traffic_taxi'],aok=AIP.filter(id=>this.aiCars&&this.aiCars[id]);if(aok.length<AIP.length&&performance.now()<25000)return;this.pkDone=1;
+  if(aok.length){const T3=THREE,grp=new Map();parked.forEach((p,i)=>{const k=aok[(i*5+2)%aok.length];if(!grp.has(k))grp.set(k,[]);grp.get(k).push(p)});
+   for(const[id,list]of grp){const proto=this.aiCar(id)({L:40,Wd:19,col:'#888',kind:'parked',st:{id},noAdd:1});proto.updateMatrixWorld(true);const U=proto.userData,ims=[];
+    proto.traverse(o=>{if(!o.isMesh||o===U.beam||o===U.fl||o===U.glow||o.geometry===this.shGeo||(o.material&&o.material.visible===false))return;const im=new T3.InstancedMesh(o.geometry,o.material,list.length);im.frustumCulled=false;im.count=0;ims.push({im,local:o.matrixWorld.clone()});this.scene.add(im)});
+    (this.pkG=this.pkG||[]).push({list,ims})}
+   if(this.parkedBox){for(const m of this.parkedBox)this.scene.remove(m)}return}
+const T3=THREE,mods=['sedan','hatchback_sports','suv','sedan_sports','van'].filter(n=>this.km[n]);if(!mods.length)return;
   const cols=['#8a1c1c','#d8d8d8','#2a3d6b','#3b3b3b','#1f5a4f','#c9a227'],grp=new Map();parked.forEach((p,i)=>{const k=mods[(i*7)%mods.length]+'|'+cols[(i*5+3)%cols.length];if(!grp.has(k))grp.set(k,[]);grp.get(k).push(p)});
   const M=new T3.Matrix4(),Q=new T3.Quaternion(),V=new T3.Vector3(),ONE=new T3.Vector3(1,1,1),AX=new T3.Vector3(0,1,0);
   for(const[k,list]of grp){const[nm,col]=k.split('|');const proto=this.kenneyMesh({L:38,Wd:19,col,kind:'civ',st:{}},nm);this.scene.remove(proto);proto.updateMatrixWorld(true);const U=proto.userData;
@@ -449,7 +455,7 @@ const R3={ok:false,off:/[?&]2d/.test(location.search),chunks:new Map(),CH:16,PX:
  tuneKey(id){const t=typeof SAVE!=='undefined'&&SAVE.tune&&SAVE.tune[id];return(t?JSON.stringify(t):'')+'#'+(this.partsV||0)+(this.camMode==='cockpit'?'c':'')+(this.aiCars&&this.aiCars[id]?'a':'')},
  AICARS:['civka','felda','golfik','bavorak','imprezka','supka','koncept','traffic_kombi','traffic_taxi','traffic_police'],
  aiCar(id){if(!this.AICARS.includes(id))return null;this.aiCars=this.aiCars||{};const S=this.aiCars[id];
-  if(S===undefined){this.aiCars[id]=null;new TADD.GLTFLoader().load('models/cars/ai/'+id+'.glb?v=3',g=>{g.scene.traverse(o=>{if(o.isMesh&&o.material){o.material.envMapIntensity=1.2}});this.aiCars[id]=g.scene;this.partsV=(this.partsV||0)+1},undefined,()=>{this.aiCars[id]=false});return null}
+  if(S===undefined){this.aiCars[id]=null;new TADD.GLTFLoader().load('models/cars/ai/'+id+'.glb?v=4',g=>{g.scene.traverse(o=>{if(o.isMesh&&o.material){o.material.envMapIntensity=1.2}});this.aiCars[id]=g.scene;this.partsV=(this.partsV||0)+1},undefined,()=>{this.aiCars[id]=false});return null}
   if(!S)return null;
   return c=>{const T3=THREE,g=new T3.Group(),m=S.clone(true),L=c.L;m.scale.setScalar(L);const ch=new T3.Group();ch.add(m);g.add(ch);const aw=[];
    let dkP=0;const tn=(c.kind==='player'&&typeof SAVE!=='undefined'&&SAVE.tune&&c.st&&SAVE.tune[c.st.id])||{},repW=!!(tn.rims&&tn.rims!=='stock');
@@ -660,6 +666,10 @@ const R3={ok:false,off:/[?&]2d/.test(location.search),chunks:new Map(),CH:16,PX:
    this.ca=this.ca===undefined?p.a:this.ca+wrapA(va-this.ca)*Math.min(1,dt*3.2);const back=105+sp*.12,hh=44+sp*.03,fx=Math.cos(this.ca),fz=Math.sin(this.ca);
    const tx=p.x-fx*back,tz=p.y-fz*back;this.cp=this.cp||{x:tx,y:hh,z:tz};this.cp.x=lerp(this.cp.x,tx,Math.min(1,dt*6));this.cp.z=lerp(this.cp.z,tz,Math.min(1,dt*6));this.cp.y=lerp(this.cp.y,hh,Math.min(1,dt*3));
    C.fov=lerp(C.fov,62+Math.min(14,sp/22)+(p.boost?10:0),Math.min(1,dt*3));C.updateProjectionMatrix();const sk=shakeA*.7;C.position.set(this.cp.x+rr(-sk,sk),this.cp.y+rr(-sk,sk)*.5,this.cp.z+rr(-sk,sk));C.lookAt(p.x+fx*130,14,p.y+fz*130);this.focus={x:p.x+fx*500,y:p.y+fz*500,r:1500}}
+  else if(this.camMode==='cine'){this.ca=undefined;this.cp=null;const t=performance.now()/1000,F=typeof promo!=='undefined'&&G.mode==='promo'&&promo&&promo.follow;if(C.fov!==48){C.fov=48;C.updateProjectionMatrix()}
+   if(F){const fx=Math.cos(F.a),fz=Math.sin(F.a),sd=Math.sin(t*.35);const tx=F.x-fx*60+fz*90*sd,tz=F.y-fz*60-fx*90*sd;this.cq=this.cq||{x:tx,z:tz};this.cq.x=lerp(this.cq.x,tx,Math.min(1,dt*2.5));this.cq.z=lerp(this.cq.z,tz,Math.min(1,dt*2.5));C.position.set(this.cq.x,22,this.cq.z);C.lookAt(F.x+fx*40,10,F.y+fz*40)}
+   else{this.cq=null;const a=t*.05,R=330,cx=w.cam.x,cz=w.cam.y;C.position.set(cx+Math.cos(a)*R,88+Math.sin(t*.13)*14,cz+Math.sin(a)*R);C.lookAt(cx,10,cz)}
+   this.focus={x:C.position.x,y:C.position.z,r:1600}}
   else{this.ca=undefined;this.cp=null;const Z=w.zoom||baseZoom(),fov=50;if(C.fov!==fov){C.fov=fov;C.updateProjectionMatrix()}const visH=VH/Z,d=visH/(2*Math.tan(fov*Math.PI/360)),tilt=.42;
    const sx=shakeA?rr(-shakeA,shakeA):0,sy=shakeA?rr(-shakeA,shakeA):0;C.position.set(w.cam.x+sx,d*Math.cos(tilt),w.cam.y+d*Math.sin(tilt)+sy);C.lookAt(w.cam.x+sx,0,w.cam.y+sy);this.focus={x:w.cam.x,y:w.cam.y-visH*.15,r:Math.max(VW,VH)/Z*.85+300}}},
  proj(x,y,h){const v=this.tmp||(this.tmp=new THREE.Vector3());v.set(x,h||0,y).project(this.cam);return[(v.x+1)/2*VW,(1-v.y)/2*VH,v.z<1&&v.z>-1]},
