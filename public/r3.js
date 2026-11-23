@@ -455,7 +455,7 @@ const T3=THREE,mods=['sedan','hatchback_sports','suv','sedan_sports','van'].filt
  tuneKey(id){const t=typeof SAVE!=='undefined'&&SAVE.tune&&SAVE.tune[id];return(t?JSON.stringify(t):'')+'#'+(this.partsV||0)+(this.camMode==='cockpit'?'c':'')+(this.aiCars&&this.aiCars[id]?'a':'')},
  AICARS:['civka','felda','golfik','bavorak','imprezka','supka','koncept','traffic_kombi','traffic_taxi','traffic_police'],
  aiCar(id){if(!this.AICARS.includes(id))return null;this.aiCars=this.aiCars||{};const S=this.aiCars[id];
-  if(S===undefined){this.aiCars[id]=null;new TADD.GLTFLoader().load('models/cars/ai/'+id+'.glb?v=7',g=>{g.scene.traverse(o=>{if(o.isMesh&&o.material){o.material.envMapIntensity=1.2}});this.aiCars[id]=g.scene;this.partsV=(this.partsV||0)+1},undefined,()=>{this.aiCars[id]=false});return null}
+  if(S===undefined){this.aiCars[id]=null;new TADD.GLTFLoader().load('models/cars/ai/'+id+'.glb?v=7',g=>{g.scene.traverse(o=>{if(o.isMesh&&o.material){o.material.envMapIntensity=1.2;if(o.name==='Body'&&!/^traffic/.test(id))o.material=this.aiCoat(o.material)}});this.aiCars[id]=g.scene;this.partsV=(this.partsV||0)+1},undefined,()=>{this.aiCars[id]=false});return null}
   if(!S)return null;
   return c=>{const T3=THREE,g=new T3.Group(),m=S.clone(true),L=c.L;m.scale.setScalar(L);const ch=new T3.Group();ch.add(m);g.add(ch);const aw=[];
    let dkP=0;const tn=(c.kind==='player'&&typeof SAVE!=='undefined'&&SAVE.tune&&c.st&&SAVE.tune[c.st.id])||{},repW=!!(tn.rims&&tn.rims!=='stock');
@@ -475,6 +475,12 @@ const T3=THREE,mods=['sedan','hatchback_sports','suv','sedan_sports','van'].filt
  aiWK:.92,aiIn:0,aiWs:1,aiWheelSplit(G,r){this.aiWS=this.aiWS||new Map();if(this.aiWS.has(G))return this.aiWS.get(G);const g=G.clone(),P=g.attributes.position,I=g.index?g.index.array:null,n=I?I.length/3:P.count/3,a=[],b=[];
   for(let t=0;t<n;t++){let x=0,y=0;const tri=[];for(let k=0;k<3;k++){const v=I?I[t*3+k]:t*3+k;tri.push(v);x+=P.getX(v);y+=P.getY(v)}x/=3;y/=3;(Math.hypot(x,y)>r*this.aiWK?b:a).push(...tri)}
   g.setIndex(a.concat(b));g.clearGroups();g.addGroup(0,a.length,0);g.addGroup(a.length,b.length,1);this.aiWS.set(G,g);return g},
+ aiCoat(M0){const T3=THREE,im=M0.map&&M0.map.image;if(!im||!im.width)return M0;const W=Math.min(512,im.width),H=Math.round(W*im.height/im.width),cv=document.createElement('canvas');cv.width=W;cv.height=H;const x=cv.getContext('2d');x.drawImage(im,0,0,W,H);let D;try{D=x.getImageData(0,0,W,H)}catch(e){return M0}const d=D.data,n=W*H;
+  const hsl=(r,g,b)=>{const mx=Math.max(r,g,b),mn=Math.min(r,g,b),l=(mx+mn)/2;if(mx===mn)return[0,0,l];const dd=mx-mn,s=l>.5?dd/(2-mx-mn):dd/(mx+mn);let h=mx===r?(g-b)/dd+(g<b?6:0):mx===g?(b-r)/dd+2:(r-g)/dd+4;return[h*60,s,l]};
+  const hist=new Float32Array(36);let sat=0;for(let i=0;i<n;i+=3){const q=hsl(d[i*4]/255,d[i*4+1]/255,d[i*4+2]/255);if(q[1]>.35&&q[2]>.12&&q[2]<.85){hist[Math.floor(q[0]/10)%36]++;sat++}}let hb=0;for(let i=1;i<36;i++)if(hist[i]>hist[hb])hb=i;const chrom=sat/(n/3)>.08,h0=hb*10+5;
+  for(let i=0;i<n;i++){const o=i*4,q=hsl(d[o]/255,d[o+1]/255,d[o+2]/255);let w;if(chrom){const dh=Math.min(Math.abs(q[0]-h0),360-Math.abs(q[0]-h0));w=q[1]<.18?0:Math.max(0,Math.min(1,(30-dh)/10))}else w=q[1]>.2?0:(q[2]>.08&&q[2]<.75)?1:0;const v=w*255;d[o]=d[o+1]=d[o+2]=v;d[o+3]=255}
+  x.putImageData(D,0,0);const t=new T3.CanvasTexture(cv);t.flipY=M0.map.flipY;t.channel=M0.map.channel;
+  const M=new T3.MeshPhysicalMaterial({map:M0.map,normalMap:M0.normalMap||null,roughnessMap:M0.roughnessMap||null,metalnessMap:M0.metalnessMap||null,roughness:M0.roughness,metalness:M0.metalness,envMapIntensity:1.35,clearcoat:1,clearcoatRoughness:.05,clearcoatMap:t});if(M0.normalScale)M.normalScale.copy(M0.normalScale);return M},
  aiPaint(id,map,hex){const k=id+hex;this.aiPT=this.aiPT||{};if(this.aiPT[k])return this.aiPT[k];const im=map&&map.image;if(!im||!im.width)return null;
   const W=im.width,H=im.height,cv=document.createElement('canvas');cv.width=W;cv.height=H;const x=cv.getContext('2d');x.drawImage(im,0,0);let D;try{D=x.getImageData(0,0,W,H)}catch(e){return null}const d=D.data,n=W*H;
   const hsl=(r,g,b)=>{const mx=Math.max(r,g,b),mn=Math.min(r,g,b),l=(mx+mn)/2;if(mx===mn)return[0,0,l];const dd=mx-mn,s=l>.5?dd/(2-mx-mn):dd/(mx+mn);let h=mx===r?(g-b)/dd+(g<b?6:0):mx===g?(b-r)/dd+2:(r-g)/dd+4;return[h*60,s,l]};
