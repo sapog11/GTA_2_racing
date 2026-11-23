@@ -456,7 +456,7 @@ const T3=THREE,mods=['sedan','hatchback_sports','suv','sedan_sports','van'].filt
  tuneKey(id){const t=typeof SAVE!=='undefined'&&SAVE.tune&&SAVE.tune[id];return(t?JSON.stringify(t):'')+'#'+(this.partsV||0)+(this.camMode==='cockpit'?'c':'')+(this.aiCars&&this.aiCars[id]?'a':'')},
  AICARS:['civka','felda','golfik','bavorak','imprezka','supka','koncept','traffic_kombi','traffic_taxi','traffic_police'],
  aiCar(id){if(!this.AICARS.includes(id))return null;this.aiCars=this.aiCars||{};const S=this.aiCars[id];
-  if(S===undefined){this.aiCars[id]=null;new TADD.GLTFLoader().load('models/cars/ai/'+id+'.glb?v=7',g=>{g.scene.traverse(o=>{if(o.isMesh&&o.material){o.material.envMapIntensity=1.2;if(o.name==='Body'&&!/^traffic/.test(id))o.material=this.aiCoat(o.material)}});this.aiCars[id]=g.scene;this.partsV=(this.partsV||0)+1},undefined,()=>{this.aiCars[id]=false});return null}
+  if(S===undefined){this.aiCars[id]=null;new TADD.GLTFLoader().load('models/cars/ai/'+id+'.glb?v=8',g=>{g.scene.traverse(o=>{if(o.isMesh&&o.material){o.material.envMapIntensity=1.2;if(o.name==='Body'&&!/^traffic/.test(id))o.material=this.aiCoat(o.material)}});this.aiCars[id]=g.scene;this.partsV=(this.partsV||0)+1},undefined,()=>{this.aiCars[id]=false});return null}
   if(!S)return null;
   return c=>{const T3=THREE,g=new T3.Group(),m=S.clone(true),L=c.L;m.scale.setScalar(L);const ch=new T3.Group();ch.add(m);g.add(ch);const aw=[];
    let dkP=0;const tn=(c.kind==='player'&&typeof SAVE!=='undefined'&&SAVE.tune&&c.st&&SAVE.tune[c.st.id])||{},repW=!!(tn.rims&&tn.rims!=='stock');
@@ -625,9 +625,14 @@ const T3=THREE,mods=['sedan','hatchback_sports','suv','sedan_sports','van'].filt
   const V=this.gView||{x:VW/2,y:VH/2,w:VW,h:VH},fov=40,tn=Math.tan(fov*Math.PI/360),av=Math.max(120,Math.min(V.w*.92,V.h*1.75)),d=clamp((this.gZoom||55)*VH/(2*tn*av),60,330),el=.14;
   C.near=2;C.fov=fov;C.setViewOffset(VW,VH,VW/2-V.x,VH/2-V.y,VW,VH);
   const cx=this.GX,cz=this.GZ;C.position.set(cx+d*Math.cos(el)*.45,d*Math.sin(el)+8,cz+d*Math.cos(el)*.9);C.lookAt(cx,4,cz);
-  const bs=this.bloom?this.bloom.strength:0;if(this.bloom)this.bloom.strength=.28;const env=this.scene.environment;if(this.env)this.scene.environment=this.env;
+  const bs=this.bloom?this.bloom.strength:0;if(this.bloom)this.bloom.strength=.28;const env=this.scene.environment;this.scene.environment=this.studioEnv()||this.env;
   if(this.comp)this.comp.render();else this.renderer.render(this.scene,C);
   if(this.bloom)this.bloom.strength=bs;this.scene.environment=env;this.scene.fog.density=fogD;this.gRoom.visible=false;this.sky.visible=true;C.clearViewOffset();C.near=8;C.updateProjectionMatrix();return true},
+ studioEnv(){if(this.envS)return this.envS;const T3=THREE;try{const pm=new T3.PMREMGenerator(this.renderer),es=new T3.Scene();es.background=new T3.Color(0x16181d);
+  const box=(k,x,y,z,w,h,c)=>{const m=new T3.Mesh(new T3.PlaneGeometry(w,h),new T3.MeshBasicMaterial({side:T3.DoubleSide}));m.material.color.setRGB(k*(c?c[0]:1),k*(c?c[1]:1),k*(c?c[2]:1));m.position.set(x,y,z);m.lookAt(0,0,0);es.add(m)};
+  box(4,0,8,0,9,4);box(2.6,-8,3,0,2.2,7);box(2.6,8,3,0,2.2,7);box(2.5,0,3,8,8,1.2);box(2.5,0,3,-8,8,1.2);box(1.6,5,1,5,3,.6,[1,.75,.5]);box(1.2,-5,1,-5,3,.6,[.6,.8,1]);
+  const fl=new T3.Mesh(new T3.PlaneGeometry(40,40),new T3.MeshBasicMaterial({color:0x3a3c42,side:T3.DoubleSide}));fl.rotation.x=-Math.PI/2;fl.position.y=-2;es.add(fl);
+  this.envS=pm.fromScene(es,.02).texture;pm.dispose();return this.envS}catch(e){return null}},
  pedMesh(p){if(this.aiPeople&&this.aiPeople.length>=6){const W1=G.world,c1=W1&&W1.player?W1.player:(W1&&W1.cam)||this.focus,nr=c1?Math.hypot(p.x-c1.x,p.y-c1.y)<600:true;if(!(nr&&(this.skinN||0)<(isTouch?22:32))){const g=new THREE.Group();g.visible=false;g.userData={hid:true};this.scene.add(g);return g}}
   const W0=G.world,cc=W0&&W0.player?W0.player:(W0&&G.mode!=='roam'&&G.mode!=='race'&&W0.cam)?W0.cam:this.focus,near=cc?Math.hypot(p.x-cc.x,p.y-cc.y)<600:true;
   const POOL=this.aiPeople&&this.aiPeople.length?this.aiPeople:this.mini;if(POOL&&POOL.length&&(POOL===this.aiPeople||POOL.length>=6)&&window.TADD&&near&&(this.skinN||0)<(isTouch?22:32)){const T3=THREE,g=new T3.Group();if(p.mi===undefined)p.mi=Math.floor(Math.random()*1e6);const M=POOL[p.mi%POOL.length],m=TADD.SkeletonUtils.clone(M.sc),k=((M.n?16.4:12.8)+(p.mi%5)*.55)/M.h;
