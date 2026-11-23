@@ -4,7 +4,7 @@
    Game logic stays in index.html (2D world coords in px).
    World (x, y) -> three (x, height, y). Heading a -> rotation.y = -a.
    ========================================================= */
-const R3={ok:false,off:/[?&]2d/.test(location.search),chunks:new Map(),CH:16,PX:20,HK:620,camMode:'top',
+const R3={ok:false,off:/[?&]2d/.test(location.search),chunks:new Map(),CH:16,PX:40,HK:620,camMode:'top',
  cars:new Map(),peds:new Map(),markers:[],tmp:null,lastT:0,
  init(){
   if(this.off||!window.THREE)return;const T3=THREE;
@@ -222,6 +222,7 @@ const R3={ok:false,off:/[?&]2d/.test(location.search),chunks:new Map(),CH:16,PX:
    const ge=new T3.ExtrudeGeometry(sh,{depth,bevelEnabled:true,bevelThickness:bev,bevelSize:bev,bevelSegments:2,curveSegments:2});ge.translate(0,0,-depth/2);ge.computeVertexNormals();return ge};
   const c=P.cab;return this.carGeo[key]={low:ex(P.low,W-3,1.5),cab:ex(c,W*.8-2,1),roofX:[c[1][0]*L,c[2][0]*L],roofY:Math.max(c[1][1],c[2][1])}},
  carMesh(c){if(c.kind==='player'&&c.st&&c.st.kenney&&this.kReady&&this.km[c.st.kenney]){const t=(typeof SAVE!=='undefined'&&SAVE.tune&&SAVE.tune[c.st.id])||{};const g=this.kenneyMesh(Object.assign({},c,{col:t.p1||c.col}),c.st.kenney);g.userData.tk=this.tuneKey(c.st.id);return g}
+  if(c.aiId){const A=this.aiCar(c.aiId);if(A){const g=A(c);g.userData.paint={};return g}}
   if(c.kind==='player'&&c.st&&!c.st.kenney&&this.camMode!=='cockpit'){const A=this.aiCar(c.st.id);if(A)return A(c)}
   if(c.kind==='civ'||(c.st&&c.st.police&&!c.parked)){const id=c.st&&c.st.police?'traffic_police':['traffic_kombi','traffic_taxi','traffic_kombi'][Math.floor((c.L*97)%3)];const A=this.aiCar(id);if(A){const g=A(c);g.userData.paint={};return g}}
   if(c.kind==='player'&&this.concept&&c.st&&!c.st.kenney)return this.zMesh(c,this.zSpec(c.st.id,(typeof SAVE!=='undefined'&&SAVE.tune&&SAVE.tune[c.st.id])||null));{const km=this.kModelFor(c);if(km)return this.kenneyMesh(c,km)}const T3=THREE,g=new T3.Group(),L=c.L,W=c.Wd,st=c.st||{},pol=!!st.police;
@@ -627,7 +628,7 @@ const T3=THREE,mods=['sedan','hatchback_sports','suv','sedan_sports','van'].filt
   const bs=this.bloom?this.bloom.strength:0;if(this.bloom)this.bloom.strength=.28;const env=this.scene.environment;if(this.env)this.scene.environment=this.env;
   if(this.comp)this.comp.render();else this.renderer.render(this.scene,C);
   if(this.bloom)this.bloom.strength=bs;this.scene.environment=env;this.scene.fog.density=fogD;this.gRoom.visible=false;this.sky.visible=true;C.clearViewOffset();C.near=8;C.updateProjectionMatrix();return true},
- pedMesh(p){const near=this.focus?Math.hypot(p.x-(G.world&&G.world.player?G.world.player.x:this.focus.x),p.y-(G.world&&G.world.player?G.world.player.y:this.focus.y))<600:true;
+ pedMesh(p){const W0=G.world,cc=W0&&W0.player?W0.player:(W0&&G.mode!=='roam'&&G.mode!=='race'&&W0.cam)?W0.cam:this.focus,near=cc?Math.hypot(p.x-cc.x,p.y-cc.y)<600:true;
   const POOL=this.aiPeople&&this.aiPeople.length?this.aiPeople:this.mini;if(POOL&&POOL.length&&(POOL===this.aiPeople||POOL.length>=6)&&window.TADD&&near&&(this.skinN||0)<(isTouch?44:70)){const T3=THREE,g=new T3.Group();if(p.mi===undefined)p.mi=Math.floor(Math.random()*1e6);const M=POOL[p.mi%POOL.length],m=TADD.SkeletonUtils.clone(M.sc),k=((M.n?16.4:12.8)+(p.mi%5)*.55)/M.h;
    m.scale.setScalar(k);m.position.y=-M.minY*k;m.rotation.y=Math.PI/2;const mixer=new T3.AnimationMixer(m),act={};for(const[a,b]of[['idle','idle'],['walk','walk'],['run',M.cl.sprint?'sprint':'run'],['talk',(p.mi%2)?'emote-yes':'emote-no']])if(M.cl[b])act[a]=mixer.clipAction(M.cl[b]);
    if(act.idle)act.idle.play();mixer.update(Math.random()*2);g.add(m);g.userData={skin:true,mixer,act,cur:'idle',body:m,mini:true,ai:POOL===this.aiPeople};this.skinN=(this.skinN||0)+1;this.scene.add(g);return g}if(this.pedProto&&window.TADD&&near&&(this.skinN||0)<(isTouch?22:34)){const T3=THREE,g=new T3.Group(),m=TADD.SkeletonUtils.clone(this.pedProto);m.rotation.y=Math.PI/2;m.scale.setScalar(9.5);
@@ -673,7 +674,7 @@ const T3=THREE,mods=['sedan','hatchback_sports','suv','sedan_sports','van'].filt
    const tx=p.x-fx*back,tz=p.y-fz*back;this.cp=this.cp||{x:tx,y:hh,z:tz};this.cp.x=lerp(this.cp.x,tx,Math.min(1,dt*6));this.cp.z=lerp(this.cp.z,tz,Math.min(1,dt*6));this.cp.y=lerp(this.cp.y,hh,Math.min(1,dt*3));
    C.fov=lerp(C.fov,62+Math.min(14,sp/22)+(p.boost?10:0),Math.min(1,dt*3));C.updateProjectionMatrix();const sk=shakeA*.7;C.position.set(this.cp.x+rr(-sk,sk),this.cp.y+rr(-sk,sk)*.5,this.cp.z+rr(-sk,sk));C.lookAt(p.x+fx*130,14,p.y+fz*130);this.focus={x:p.x+fx*500,y:p.y+fz*500,r:1500}}
   else if(this.camMode==='cine'){this.ca=undefined;this.cp=null;const t=performance.now()/1000,F=typeof promo!=='undefined'&&G.mode==='promo'&&promo&&promo.follow;if(C.fov!==48){C.fov=48;C.updateProjectionMatrix()}
-   if(F){const fx=Math.cos(F.a),fz=Math.sin(F.a),sd=Math.sin(t*.35);const tx=F.x-fx*60+fz*90*sd,tz=F.y-fz*60-fx*90*sd;this.cq=this.cq||{x:tx,z:tz};this.cq.x=lerp(this.cq.x,tx,Math.min(1,dt*2.5));this.cq.z=lerp(this.cq.z,tz,Math.min(1,dt*2.5));C.position.set(this.cq.x,22,this.cq.z);C.lookAt(F.x+fx*40,10,F.y+fz*40)}
+   if(F){const fx=Math.cos(F.a),fz=Math.sin(F.a),sd=Math.sin(t*.35),fr=promo.cam==='front';const tx=fr?F.x+fx*95+fz*28:F.x-fx*60+fz*90*sd,tz=fr?F.y+fz*95-fx*28:F.y-fz*60-fx*90*sd;this.cq=this.cq||{x:tx,z:tz};this.cq.x=lerp(this.cq.x,tx,Math.min(1,dt*2.5));this.cq.z=lerp(this.cq.z,tz,Math.min(1,dt*2.5));C.position.set(this.cq.x,fr?13:22,this.cq.z);C.lookAt(fr?F.x:F.x+fx*40,fr?12:10,fr?F.y:F.y+fz*40)}
    else{this.cq=null;const a=t*.05,R=330,cx=w.cam.x,cz=w.cam.y;C.position.set(cx+Math.cos(a)*R,88+Math.sin(t*.13)*14,cz+Math.sin(a)*R);C.lookAt(cx,10,cz)}
    this.focus={x:C.position.x,y:C.position.z,r:1600}}
   else{this.ca=undefined;this.cp=null;const Z=w.zoom||baseZoom(),fov=50;if(C.fov!==fov){C.fov=fov;C.updateProjectionMatrix()}const visH=VH/Z,d=visH/(2*Math.tan(fov*Math.PI/360)),tilt=.42;
@@ -700,7 +701,7 @@ const T3=THREE,mods=['sedan','hatchback_sports','suv','sedan_sports','van'].filt
    if(g.userData.bar){const ph=Math.floor(t*8)%2;g.userData.bar[0].material=ph?this.redMat:this.offMat;g.userData.bar[1].material=ph?this.offMat:this.bluMat}}
   for(const[c,g]of this.cars)if(!seen.has(c)){this.scene.remove(g);g.traverse(o=>{if(o.material===g.userData.paint||(g.userData.k&&o.isMesh&&o.material&&o.material.isMeshPhysicalMaterial))o.material.dispose()});this.cars.delete(c)}
   // peds
-  const ps=new Set();for(const p of w.peds){let g=this.peds.get(p);const aiOk=this.aiPeople&&this.aiPeople.length>=6,fc=w.player||this.focus;if(g&&!g.userData.ai&&(aiOk||(!g.userData.skin&&(this.pedProto||this.mini)))&&(this.skinN||0)-(g.userData.skin?1:0)<(isTouch?44:70)&&fc&&Math.hypot(p.x-fc.x,p.y-fc.y)<520){this.scene.remove(g);if(g.userData.skin){g.userData.mixer.stopAllAction();this.skinN--}g=null}if(!g){g=this.pedMesh(p);this.peds.set(p,g)}ps.add(p);g.position.set(p.x,0,p.y);g.rotation.y=-p.a;
+  const ps=new Set();for(const p of w.peds){let g=this.peds.get(p);const aiOk=this.aiPeople&&this.aiPeople.length>=6,fc=w.player||(G.mode!=='roam'&&G.mode!=='race'?w.cam:this.focus);if(g&&!g.userData.ai&&(aiOk||(!g.userData.skin&&(this.pedProto||this.mini)))&&(this.skinN||0)-(g.userData.skin?1:0)<(isTouch?44:70)&&fc&&Math.hypot(p.x-fc.x,p.y-fc.y)<520){this.scene.remove(g);if(g.userData.skin){g.userData.mixer.stopAllAction();this.skinN--}g=null}if(!g){g=this.pedMesh(p);this.peds.set(p,g)}ps.add(p);g.position.set(p.x,0,p.y);g.rotation.y=-p.a;
    const U=g.userData;if(U.skin){U.mixer.update(dt);if(p.down>0){U.body.rotation.z=Math.PI/2;g.position.y=3}else{U.body.rotation.z=0;const want=p.flee>0?'run':(p.sp>0&&!p.stand?'walk':(U.act.talk&&((p.stand&&p.say)||((p.say||p.mate)&&Math.floor(w.t/4+p.x)%3===0))?'talk':'idle'));
      if(want!==U.cur&&U.act[want]){U.act[want].reset().play();U.act[U.cur]&&U.act[U.cur].crossFadeTo(U.act[want],.25,false);U.cur=want}if(U.act.walk)U.act.walk.timeScale=Math.max(.5,(p.sp||20)/22);
      if(p.type==='drunk'||p.type==='party')U.body.rotation.x=Math.sin((p.wob||0)*2)*.12}continue}

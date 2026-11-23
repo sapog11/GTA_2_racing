@@ -912,10 +912,10 @@ function updateWorld(w,dt,pctl){
     if(!dead)for(const c of w.cars){if(c===w.player||c.wreck)continue;if(Math.hypot(c.x-b.x,c.y-b.y)<c.L*.5){c.hp-=b.dmg;sparks(w,b.x,b.y,12,'#fff3b0');c.hitT=.12;w.flash=Math.max(w.flash||0,.08);dead=true;break}}
     if(dead)w.bullets.splice(i,1)}
   // peds
-  if(w.peds.length<w.pedMax&&R()<.5)spawnPed(w,G.mode==='ambient'?380:620,G.mode==='ambient'?700:1000);
+  if(w.peds.length<w.pedMax&&R()<.5)spawnPed(w,G.mode==='ambient'||G.mode==='promo'?300:620,G.mode==='ambient'||G.mode==='promo'?520:1000);
   const PL=w.player,shotNow=PL&&w.muzzle>0;
   for(let i=w.peds.length-1;i>=0;i--){const p=w.peds[i];p.sayT-=dt;p.stand=false;if(p.say){p.sayL-=dt;if(p.sayL<=0)p.say=null}
-    if(Math.hypot(p.x-w.cam.x,p.y-w.cam.y)>(G.mode==='ambient'?1250:1250)){w.peds.splice(i,1);if(p.mate)p.mate.mate=null;continue}
+    if(Math.hypot(p.x-w.cam.x,p.y-w.cam.y)>(G.mode==='ambient'||G.mode==='promo'?650:1250)){w.peds.splice(i,1);if(p.mate)p.mate.mate=null;continue}
     if(isSolid(tileAt(Math.floor(p.x/T),Math.floor(p.y/T)))){w.peds.splice(i,1);continue}
     if(p.kvx){pmove(p,p.kvx*dt,p.kvy*dt);p.kvx*=Math.max(0,1-dt*7);p.kvy*=Math.max(0,1-dt*7);if(Math.abs(p.kvx)+Math.abs(p.kvy)<4)p.kvx=p.kvy=0}
     if(p.down>0){p.down-=dt;if(p.down<=0){say(p,LINES.hit,2);if(PL){const a=Math.atan2(p.y-PL.y,p.x-PL.x);p.fdx=Math.cos(a);p.fdy=Math.sin(a);p.flee=1.2}}continue}
@@ -1131,7 +1131,7 @@ function baseZoom(){return clamp(Math.min(VW,VH)/400,.8,1.6)}
 
 /* ---------------- GAME STATE ---------------- */
 const G={mode:'start',world:null,level:null,keys:{},cam:{x:IX(2),y:IX(6)}};
-function ambientWorld(){const w=newWorld({rain:true,dark:.74,civMax:14,pedMax:50,chatty:true});w.cam={x:IX(2)+150,y:IX(24)};for(let i=0;i<10;i++)spawnCiv(w);for(let i=0;i<24;i++)spawnPed(w,60,700);return w}
+function ambientWorld(){const w=newWorld({rain:true,dark:.74,civMax:14,pedMax:40,chatty:true});w.cam={x:IX(2)+150,y:IX(24)};for(let i=0;i<10;i++)spawnCiv(w);for(let i=0;i<30;i++)spawnPed(w,40,480);return w}
 
 /* ---------------- PROMO ---------------- */
 const ART=['keyart','street','heist','bridge','racestart','lucie','marek','kaja'];
@@ -1147,9 +1147,10 @@ const PROMO=[
  {t:29.6,d:2.6,card:'marek',name:'MAREK „ŠROT“',role:'STŘELEC',col:'#2f6bff',side:'R'},
  {t:32.2,d:2.6,card:'kaja',name:'KÁJA',role:'KRÁL PŘEDLIC',col:'#9dff00',side:'L'},
  {t:34.8,d:4.6,img:'racestart',kb:'in',txt:['Respekt se tu nekupuje…','…vyjíždí se.'],fx:'rev'},
- {t:39.4,d:6,title:1,fx:'thunder'},
+ {t:39.4,d:5.4,game:'race',txt:['Supka. Imprezka. Koncept Z.','Vyber si svou káru.'],fx:'rev'},
+ {t:44.8,d:6,title:1,fx:'thunder'},
 ];
-const PROMO_END=45.4;
+const PROMO_END=50.8;
 let promo=null,ciFlip=0;
 function startPromo(){DJ.stop();hideAll();Snd.setStyle('labe');preloadArt();G.mode='promo';const w=ambientWorld();G.world=w;promo={t:0,shot:-1,w,pan:{vx:0,vy:0}};document.body.classList.add('bars');$('skip').style.display='block';$('cine').style.display='block';Snd.startMusic(true,true);Snd.rain(true)}
 function cineCut(){const f=$('flash');f.classList.remove('go');void f.offsetWidth;f.classList.add('go')}
@@ -1165,14 +1166,17 @@ function promoShot(i){const w=promo.w,s=PROMO[i];cineCut();
   if(s.fx==='glass'){Snd.nz(.6,'highpass',3000,.5);Snd.alarm()}
   if(s.fx==='guns'){for(let k=0;k<7;k++)setTimeout(()=>Snd.shot(),120+k*95)}
   if(s.fx==='rev'){Snd.tone(60,220,1.1,'sawtooth',.25)}
-  if(s.game){w.peds.length=0;w.cars=w.cars.filter(c=>c.kind==='civ');promo.follow=null;
+  if(s.game){w.peds.length=0;w.cars=w.cars.filter(c=>c.kind==='civ');promo.follow=null;promo.gun=0;w.bullets.length=0;
+    if(s.game==='race'){setRoute(w,[[1,20],[3,20],[3,22],[1,22],[1,25],[4,25]]);const ids=['supka','imprezka','koncept','golfik'],cols=['#ff7a1a','#1a5cff','#5a5e66','#d81e1e'];let lead=null;
+      ids.forEach((id,k)=>{const c=makeCar({col:cols[k],max:300+k*4,acc:260,turn:2.9,grip:6.2,hp:999,L:44,Wd:20},IX(1)+80-k*55,IX(20)+(k%2?-16:16),0,'run');c.aiId=id;c.path=routePath(w,k%2?-16:16);c.v=230-k*6;c.vx=c.v;w.cars.push(c);if(!lead)lead=c});
+      promo.follow=lead;promo.cam='front';w.cam.x=lead.x;w.cam.y=lead.y}
     if(s.game==='street'){w.cam.x=IX(2)+40;w.cam.y=IX(24)+30;promo.pan={vx:26,vy:0};const bx=IX(2)+T*1.5,by=IX(24)+T*1.4;
       const f1=makePed('fight',bx+60,by),f2=makePed('fight',bx+76,by);f1.mate=f2;f2.mate=f1;w.peds.push(f1,f2);
       w.peds.push(makePed('drunk',bx+140,by+2),makePed('girl',bx+210,by-4),makePed('girl',bx+230,by+4),makePed('smoker',bx+20,by-6),makePed('walker',bx+280,by));
       for(let k=0;k<12;k++)spawnPed(w,80,500)}
-    if(s.game==='chase'){setRoute(w,[[0,21],[3,21],[3,23],[8,23],[8,25]]);const sp={col:'#141519',max:235,acc:240,turn:2.9,grip:6,hp:999,L:40,Wd:19};const g=makeCar(sp,IX(0)+60,IX(21)+18,0,'run');g.path=routePath(w,18);g.v=200;g.vx=200;w.cars.push(g);
+    if(s.game==='chase'){setRoute(w,[[0,21],[3,21],[3,23],[8,23],[8,25]]);const sp={col:'#141519',max:235,acc:240,turn:2.9,grip:6,hp:999,L:40,Wd:19};const g=makeCar(sp,IX(0)+60,IX(21)+18,0,'run');g.aiId='civka';g.path=routePath(w,18);g.v=200;g.vx=200;w.cars.push(g);
       for(let k=0;k<2;k++){const p=makeCar(Object.assign({},POLICE,{max:228,hp:999}),IX(0)-80-k*70,IX(21)+(k?-18:18),0,'run');p.path=routePath(w,k?-18:18);p.v=200;p.vx=200;w.cars.push(p)}
-      promo.follow=g;w.cam.x=g.x;w.cam.y=g.y;const PL=['Ty šlapko, pomalu!','Do píče, fízlové!','Jeď, jeď, JEĎ!','Málem mě zajel, kretén!','To je ta černá kára!','Ty vole, točím to!','Zase honěj někoho…','Policie, kurva!'];
+      promo.follow=g;promo.cam='side';promo.gun=1;w.cam.x=g.x;w.cam.y=g.y;const PL=['Ty šlapko, pomalu!','Do píče, fízlové!','Jeď, jeď, JEĎ!','Málem mě zajel, kretén!','To je ta černá kára!','Ty vole, točím to!','Zase honěj někoho…','Policie, kurva!'];
       for(let k=0;k<8;k++){const q=makePed(k%3?'walker':'drunk',IX(0)+T*(2.5+k*3),IX(21)+(k%2?T*1.4:-T*1.4));q.sp=0;q.promoLine=PL[k%PL.length];w.peds.push(q)}}}
 }
 function updatePromo(dt){promo.t+=dt;const w=promo.w;let i=-1;for(let k=0;k<PROMO.length;k++)if(promo.t>=PROMO[k].t)i=k;
@@ -1180,7 +1184,8 @@ function updatePromo(dt){promo.t+=dt;const w=promo.w;let i=-1;for(let k=0;k<PROM
   if(i!==promo.shot){promo.shot=i;promoShot(i)}
   updateWorld(w,dt,{});
   for(const q of w.peds)if(q.promoLine&&promo.follow&&!q.said&&Math.hypot(q.x-promo.follow.x,q.y-promo.follow.y)<170&&!w.peds.some(o=>o.say&&o!==q&&Math.abs(o.x-q.x)<260&&Math.abs(o.y-q.y)<120)){q.said=1;q.say=q.promoLine;q.sayL=2.2}
-  if(promo.follow){const f=promo.follow;w.cam.x=lerp(w.cam.x,f.x+f.vx*.3,Math.min(1,dt*3));w.cam.y=lerp(w.cam.y,f.y+f.vy*.3,Math.min(1,dt*3));Snd.siren(.9,w.t)}
+  if(promo.gun&&promo.follow){promo.gT=(promo.gT||0)-dt;if(promo.gT<=0&&Math.sin(promo.t*2.2)>-.2){promo.gT=.11;const f=promo.follow;let tg=null,bd=1e9;for(const c of w.cars){if(!c.st||!c.st.police)continue;const d=Math.hypot(c.x-f.x,c.y-f.y);if(d<bd&&d<500){bd=d;tg=c}}if(tg){const a=Math.atan2(tg.y-f.y,tg.x-f.x)+rr(-.06,.06);w.bullets.push({x:f.x,y:f.y,px:f.x,py:f.y,vx:Math.cos(a)*950+f.vx,vy:Math.sin(a)*950+f.vy,life:.45,dmg:0});Snd.shot()}}}
+  if(promo.follow){const f=promo.follow;w.cam.x=lerp(w.cam.x,f.x+f.vx*.3,Math.min(1,dt*3));w.cam.y=lerp(w.cam.y,f.y+f.vy*.3,Math.min(1,dt*3));Snd.siren(promo.gun?.9:0,w.t)}
   else{w.cam.x+=promo.pan.vx*dt;w.cam.y+=promo.pan.vy*dt;Snd.siren(PROMO[promo.shot]&&PROMO[promo.shot].img==='bridge'?.7:0,w.t)}
   w.zoom=baseZoom()*(PROMO[promo.shot]&&PROMO[promo.shot].game==='chase'?.95:1.08);
 }
@@ -1725,7 +1730,7 @@ import {KTX2Loader} from './vendor/jsm/loaders/KTX2Loader.js';
 import {MeshoptDecoder} from './vendor/jsm/libs/meshopt_decoder.module.js';
 import * as SkeletonUtils from './vendor/jsm/utils/SkeletonUtils.js';
 window.THREE=THREE;window.TADD={EffectComposer,RenderPass,UnrealBloomPass,OutputPass,GLTFLoader,RGBELoader,SkeletonUtils,DRACOLoader,KTX2Loader,MeshoptDecoder};
-const s=document.createElement('script');s.src='r3.js?v=59';document.body.appendChild(s);
+const s=document.createElement('script');s.src='r3.js?v=60';document.body.appendChild(s);
 </script>
 </body>
 </html>
