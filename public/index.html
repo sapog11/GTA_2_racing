@@ -341,7 +341,7 @@ body.two.driving #twHint{display:flex}
   <button id="kL" data-k="l">◀</button>
   <button id="kR" data-k="r">▶</button>
   <button id="kA" data-k="a"><span id="kAt">PAL</span></button>
-  <button id="kF" data-k="f"><span>🔫</span></button>
+  <button id="kF" data-k="f"><span><svg viewBox="0 0 64 32" width="44" height="22" fill="#fff"><path d="M2 12h36l2-3h8v3h14v4H48l-2 3h-6v3l-6 9h-7l4-8v-4H20l-4 6h-6l3-6H2z"/><rect x="22" y="6" width="10" height="5" rx="1"/><rect x="52" y="10" width="2" height="8"/></svg></span></button>
   <button id="kU" data-k="u">PLYN</button>
   <button id="kD" data-k="d">BRZDA</button>
 </div>
@@ -489,11 +489,11 @@ const HOME={x:IX(3)+18,y:IX(27)-140,a:-Math.PI/2};
 /* ---------------- DATA ---------------- */
 const CARS=[
  {id:'civka',name:'Drago',desc:'Stará dobrá japonka. Černá jak noc, rychlá jak důchodce. Zatím.',col:'#141519',max:336,acc:190,drv:.27,turn:2.9,grip:6,hp:100,price:0,L:40,Wd:19},
- {id:'felda',name:'Škodovka Felda Turbo',desc:'Česká klasika s turbem z bazaru. Kouří, ale jede.',col:'#2d6b3a',max:262,acc:205,turn:2.85,grip:6.2,hp:105,price:40000,L:38,Wd:19},
- {id:'golfik',name:'Golfík IV GTI',desc:'Každej druhej na Klíši ho má. Ty budeš ten rychlejší.',col:'#c8ccd2',max:278,acc:220,turn:3.0,grip:6.5,hp:110,price:80000,L:39,Wd:20},
- {id:'bavorak',name:'Bavorák E46',desc:'Zadokolka. Bokem do každý zatáčky.',col:'#1d3f8a',max:300,acc:235,turn:2.9,grip:5.3,hp:120,price:150000,L:44,Wd:20},
- {id:'imprezka',name:'Imprezka WRX',desc:'Čtyřkolka z rallye. Na mokru král.',col:'#2448c8',max:318,acc:260,turn:3.2,grip:7.4,hp:115,price:250000,L:43,Wd:20,spoiler:1},
- {id:'koncept',name:'Koncept Z',desc:'Prototyp z budoucnosti. Nikdo neví, kde se v Ústí vzal. Dárek od ZORYX.',col:'#c8102e',max:300,acc:236,turn:3.1,grip:7.4,hp:120,price:0,L:46,Wd:21},
+ {id:'felda',name:'Škodovka Felda Turbo',desc:'Česká klasika s turbem z bazaru. Kouří, ale jede.',col:'#2d6b3a',max:347,acc:215,turn:2.85,grip:6.2,hp:105,price:40000,L:38,Wd:19},
+ {id:'golfik',name:'Golfík IV GTI',desc:'Každej druhej na Klíši ho má. Ty budeš ten rychlejší.',col:'#c8ccd2',max:380,acc:232,turn:3.0,grip:6.5,hp:110,price:80000,L:39,Wd:20},
+ {id:'bavorak',name:'Bavorák E46',desc:'Zadokolka. Bokem do každý zatáčky.',col:'#1d3f8a',max:420,acc:248,turn:2.9,grip:5.3,hp:120,price:150000,L:44,Wd:20},
+ {id:'imprezka',name:'Imprezka WRX',desc:'Čtyřkolka z rallye. Na mokru král.',col:'#2448c8',max:449,acc:275,turn:3.2,grip:7.4,hp:115,price:250000,L:43,Wd:20,spoiler:1},
+ {id:'koncept',name:'Koncept Z',desc:'Prototyp z budoucnosti. Nikdo neví, kde se v Ústí vzal. Dárek od ZORYX.',col:'#c8102e',max:400,acc:252,turn:3.1,grip:7.4,hp:120,price:0,L:46,Wd:21},
  {id:'mini',name:'Zéčko Mini',desc:'Malý, hbitý, zaparkuješ ho i v Předlicích mezi dvě popelnice.',col:'#ffd400',max:232,acc:200,turn:3.4,grip:6.6,hp:90,price:30000,L:36,Wd:19},
  {id:'kupe',name:'Zéčko Kupé',desc:'Nízký, dvoudveřový, na noční Masarykovu jak dělaný.',col:'#6a2cc8',max:320,acc:255,turn:3.1,grip:6.8,hp:110,price:200000,L:42,Wd:21},
  {id:'sedan',name:'Zéčko Limuzína',desc:'Dlouhá, tichá, s kůží. Jako by tě vezl starosta.',col:'#e9ecef',max:295,acc:225,turn:2.8,grip:6.6,hp:130,price:120000,L:50,Wd:21},
@@ -510,7 +510,7 @@ const CARS=[
  {id:'cessna',name:'Letadýlko',desc:'Malý vrtulový letadlo z letiště ve Všebořicích.',col:'#ddd',max:350,acc:200,turn:2.5,grip:8,hp:100,price:0,L:34,Wd:48,soon:'plane'},
  {id:'motorka',name:'Sportovní motorka',desc:'Rychlá jak blesk, nebezpečná jak tchýně.',col:'#c8102e',max:360,acc:330,turn:3.6,grip:6,hp:60,price:0,L:24,Wd:8,soon:'moto'},
  {id:'chopper',name:'Chopper',desc:'Na pohodu po nábřeží. Vousy povinný.',col:'#111',max:260,acc:220,turn:2.8,grip:6,hp:80,price:0,L:28,Wd:9,soon:'chopper'},
- {id:'supka',name:'Toyda Supka',desc:'Legenda nočních závodů. Kdo ji má, ten je někdo.',col:'#e8a21a',max:345,acc:270,turn:3.0,grip:6,hp:110,price:400000,L:44,Wd:21,spoiler:1},
+ {id:'supka',name:'Toyda Supka',desc:'Legenda nočních závodů. Kdo ji má, ten je někdo.',col:'#e8a21a',max:488,acc:292,turn:3.0,grip:6,hp:110,price:400000,L:44,Wd:21,spoiler:1},
 ];
 for(const c of CARS)if(c.soon&&SAVE.owned.includes(c.id)){SAVE.owned=SAVE.owned.filter(x=>x!==c.id);if(c.price)SAVE.cash+=c.price;if(SAVE.car===c.id)SAVE.car='civka'}
 const GANG={col:'#0c0c0e',max:296,acc:255,turn:2.9,grip:6.2,hp:70,L:46,Wd:22,gang:1};
@@ -521,6 +521,7 @@ const HEROES={
  lucie:{name:'Lucie „Kočka“',role:'Řidička',desc:'Za volantem od patnácti. Bokem projede i Mariánskej most.',perk:'Lepší ovladatelnost +15 %, nitro se nabíjí o 40 % rychleji.'},
  marek:{name:'Marek „Šrot“',role:'Střelec',desc:'Ex-boxer z Předlic. Když vytáhne kalacha, policajti brzdí.',perk:'Poškození +60 %, rychlejší palba, pomalejší přehřátí.'}
 };
+function chaseSpec(B,p){const m=p&&p.st?p.st.max:0,a=p&&p.st?p.st.acc*(p.st.drv||1):0;return Object.assign({},B,{max:Math.max(B.max,m*.96),acc:Math.max(B.acc,a*1.08)})}
 const LEVELS=[
  {id:'utek',name:'Útěk po loupeži',sub:'Noc • liják • policie',type:'chase',route:[[4,25],[2,25],[2,22],[4,22],[4,23],[7,23],[7,21],[8,21],[8,19],[3,19],[3,17]],
   blocks:[[2,.55],[5,.5],[7,.6],[8,.5]],reward:{resp:150,cash:50000},dark:.84,rain:true,from:'Mírové náměstí',to:'Úkryt v Neštěmicích',comic:'utek'},
@@ -906,7 +907,8 @@ function updateWorld(w,dt,pctl){
   carCollide(w);
   // bullets
   for(let i=w.bullets.length-1;i>=0;i--){const b=w.bullets[i];b.life-=dt;b.px=b.x;b.py=b.y;b.x+=b.vx*dt;b.y+=b.vy*dt;let dead=b.life<=0;
-    if(isSolid(tileAt(Math.floor(b.x/T),Math.floor(b.y/T)))){sparks(w,b.x,b.y,3);dead=true}
+    if(isSolid(tileAt(Math.floor(b.x/T),Math.floor(b.y/T)))){const hx=isSolid(tileAt(Math.floor(b.x/T),Math.floor(b.py/T))),hy=isSolid(tileAt(Math.floor(b.px/T),Math.floor(b.y/T)));sparks(w,b.px,b.py,8,'#ffd27a');if(w.parts.length<400)for(let k=0;k<3;k++)part(w,{x:b.px,y:b.py,vx:rr(-30,30),vy:rr(-30,30),life:rr(.4,.8),max:.8,type:'smoke',size:rr(4,7),z:0,col:1});
+      if(!b.rico&&R()<.3){b.rico=1;if(hx)b.vx=-b.vx*.6;if(hy||!hx)b.vy=-b.vy*.6;b.vx+=rr(-120,120);b.vy+=rr(-120,120);b.x=b.px;b.y=b.py;b.life=Math.min(b.life,.18);b.dmg*=.5;if(Math.random()<.5)Snd.tone(2400,900,.12,'square',.05)}else dead=true}
     if(!dead)for(const c of w.cars){if(c===w.player||c.wreck)continue;if(Math.hypot(c.x-b.x,c.y-b.y)<c.L*.5){c.hp-=b.dmg;sparks(w,b.x,b.y,12,'#fff3b0');c.hitT=.12;w.flash=Math.max(w.flash||0,.08);dead=true;break}}
     if(dead)w.bullets.splice(i,1)}
   // peds
@@ -1120,7 +1122,7 @@ function baseZoom(){return clamp(Math.min(VW,VH)/400,.8,1.6)}
 
 /* ---------------- GAME STATE ---------------- */
 const G={mode:'start',world:null,level:null,keys:{},cam:{x:IX(2),y:IX(6)}};
-function ambientWorld(){const w=newWorld({rain:true,dark:.74,civMax:9,pedMax:50,chatty:true});w.cam={x:IX(2)+150,y:IX(24)};for(let i=0;i<5;i++)spawnCiv(w);for(let i=0;i<24;i++)spawnPed(w,60,700);return w}
+function ambientWorld(){const w=newWorld({rain:true,dark:.74,civMax:14,pedMax:50,chatty:true});w.cam={x:IX(2)+150,y:IX(24)};for(let i=0;i<10;i++)spawnCiv(w);for(let i=0;i<24;i++)spawnPed(w,60,700);return w}
 
 /* ---------------- PROMO ---------------- */
 const ART=['keyart','street','heist','bridge','racestart','lucie','marek','kaja'];
@@ -1289,9 +1291,9 @@ function finishComic(){const d=comic.done;comic=null;if(d)d();else showComics()}
 
 /* ---------------- FREE ROAM ---------------- */
 function MARKERS(){const sel=(typeof RS!=='undefined'&&RS&&RS.target)||SAVE.sel;if(!sel)return[];return LEVELS.filter(L=>L.id===sel&&!L.soon&&(!SAVE.done[L.id]||SAVE.replay===L.id)).map(L=>{const r=L.route?L.route[0]:L.at;return{L,x:IX(r[0]),y:IX(r[1]),open:!L.soon}})}
-function startRoam(at,target){AN.ev('roam_start');hideAll();G.engineOff=false;$('keyB').classList.remove('off');$('keyB').style.display='';at=at||HOME;const w=newWorld({rain:R()<.45,dark:.8,civMax:8,pedMax:60});G.world=w;G.mode='roam';G.level=null;
+function startRoam(at,target){AN.ev('roam_start');hideAll();G.engineOff=false;$('keyB').classList.remove('off');$('keyB').style.display='';at=at||HOME;const w=newWorld({rain:R()<.45,dark:.8,civMax:15,pedMax:60});G.world=w;G.mode='roam';G.level=null;
   const car=CARS.find(c=>c.id===SAVE.car)||CARS[0];const p=makeCar(Object.assign({},car),at.x,at.y,at.a,'player');p.handMul=SAVE.hero==='lucie'?1.15:1;w.player=p;w.cars.push(p);
-  w.cam={x:p.x,y:p.y};w.zoom=baseZoom();for(let i=0;i<5;i++)spawnCiv(w);for(let i=0;i<48;i++)spawnPed(w,40,520);
+  w.cam={x:p.x,y:p.y};w.zoom=baseZoom();for(let i=0;i<11;i++)spawnCiv(w);for(let i=0;i<48;i++)spawnPed(w,40,520);
   RS={roam:true,nitro:.6,nitroFill:SAVE.hero==='lucie'?.098:.07,target:target||SAVE.sel||null,enterCD:2.5};G.roamDist='';
   $('hud').classList.add('on');if(isTouch)$('ctrl').classList.add('on');$('kU').style.display=SAVE.autoGas?'none':'block';$('kAt').textContent='NITRO';$('kA').classList.remove('hot');
   $('hMainL').textContent='ČTVRŤ';$('hMain').classList.add('small');$('bust').style.display='none';$('center').textContent='';$('obj').classList.add('on');
@@ -1331,7 +1333,7 @@ function startLevel(id){const L=LEVELS.find(l=>l.id===id);G.level=L;AN.ev('missi
   const go=()=>beginRace(L);
   if(!SAVE.seenIntro){SAVE.seenIntro=true;save();playComic('intro',()=>playComic(L.comic,go));return}
   playComic(L.comic,go)}
-function beginRace(L){hideAll();const w=newWorld({rain:L.rain,dark:L.dark,civMax:L.type==='race'?4:6,pedMax:42});setRoute(w,L.route);G.world=w;G.mode='race';
+function beginRace(L){hideAll();const w=newWorld({rain:L.rain,dark:L.dark,civMax:L.type==='race'?7:10,pedMax:42});setRoute(w,L.route);G.world=w;G.mode='race';
   const car=CARS.find(c=>c.id===SAVE.car)||CARS[0];const spec=Object.assign({},car);const lucie=SAVE.hero==='lucie';
   const r0=w.route[0],r1=w.route[1],a=Math.atan2(r1.y-r0.y,r1.x-r0.x),ca=Math.cos(a),sa=Math.sin(a),nx=-sa,ny=ca;
   RS={L,t:0,count:L.type==='race'?3.4:1.6,heat:0,over:false,nitro:.5,fireCD:0,kills:0,bust:0,end:0,finishOrder:[],spawnT:6,lucie,dmgMul:lucie?1:1.6,fireRate:lucie?.13:.085,heatPer:lucie?.075:.05,nitroFill:lucie?.098:.07};
@@ -1342,9 +1344,9 @@ function beginRace(L){hideAll();const w=newWorld({rain:L.rain,dark:L.dark,civMax
       const c=makeCar({col:R0.c,max:Math.max(262,spec.max*rr(1,1.06)),acc:Math.max(205,spec.acc*rr(1.25,1.4)),turn:2.9,grip:6.2,hp:100,L:42,Wd:20},r0.x+ca*sl[0]+nx*sl[1],r0.y+sa*sl[0]+ny*sl[1],a,'rival');c.name=R0.n;c.stripe='#111';c.lane=sl[1]*.6;c.path=routePath(w,c.lane);c.pi=0;w.cars.push(c)});
     p.x=r0.x+ca*200-nx*20;p.y=r0.y+sa*200-ny*20;
   }else{
-    if(L.gang){for(let k=0;k<L.gang;k++){const q=routeAt(w,w.total*(k+.6)/(L.gang+.5));const c=makeCar(GANG,q.x,q.y,q.a+Math.PI*(k%2),'police');c.v=80;c.gang=1;c.seg=q.i;c.s=w.total*(k+.6)/(L.gang+.5);w.cars.push(c)}}
-    if(L.cops!==0)for(let k=0;k<2;k++){const c=makeCar(POLICE,r0.x-ca*(260+k*80)+nx*(k?-18:18),r0.y-sa*(260+k*80)+ny*(k?-18:18),a,'police');c.v=120;w.cars.push(c)}
-    for(const b of(L.blocks||[])){const s=w.cum[b[0]]+(w.cum[b[0]+1]-w.cum[b[0]])*b[1];const q=routeAt(w,s);for(const side of[-1,1]){const c=makeCar(POLICE,q.x-Math.sin(q.a)*side*24,q.y+Math.cos(q.a)*side*24,q.a+Math.PI/2+side*.4,'police');c.parked=true;c.seg=q.i;c.s=s;w.cars.push(c)}}
+    if(L.gang){for(let k=0;k<L.gang;k++){const q=routeAt(w,w.total*(k+.6)/(L.gang+.5));const c=makeCar(chaseSpec(GANG,p),q.x,q.y,q.a+Math.PI*(k%2),'police');c.v=80;c.gang=1;c.seg=q.i;c.s=w.total*(k+.6)/(L.gang+.5);w.cars.push(c)}}
+    if(L.cops!==0)for(let k=0;k<2;k++){const c=makeCar(chaseSpec(POLICE,p),r0.x-ca*(260+k*80)+nx*(k?-18:18),r0.y-sa*(260+k*80)+ny*(k?-18:18),a,'police');c.v=120;w.cars.push(c)}
+    for(const b of(L.blocks||[])){const s=w.cum[b[0]]+(w.cum[b[0]+1]-w.cum[b[0]])*b[1];const q=routeAt(w,s);for(const side of[-1,1]){const c=makeCar(chaseSpec(POLICE,p),q.x-Math.sin(q.a)*side*24,q.y+Math.cos(q.a)*side*24,q.a+Math.PI/2+side*.4,'police');c.parked=true;c.seg=q.i;c.s=s;w.cars.push(c)}}
     w.onKill=c=>{RS.kills++;floatMsg(L.kills?`${Math.min(RS.kills,L.kills)} / ${L.kills}`:'+2 000 Kč')};
   }
   for(let i=0;i<4;i++)spawnCiv(w);for(let i=0;i<34;i++)spawnPed(w,80,800);
@@ -1502,7 +1504,7 @@ function updateRace(dt){const w=G.world,p=w.player,L=RS.L;RS.t+=dt;
   // police mgmt & siren
   let nearP=1e9;
   if(L.type==='chase'){let active=0;for(const c of w.cars)if(c.kind==='police'&&!c.wreck&&!c.gang){nearP=Math.min(nearP,Math.hypot(c.x-p.x,c.y-p.y));if(!c.parked)active++}
-    RS.spawnT-=dt;if(L.cops!==0&&RS.spawnT<0&&active<(L.kills&&!L.gang?5:4+Math.floor(p.s/w.total*3))&&(p.s>700||L.kills)&&!RS.end){RS.spawnT=rr(4.5,7.5);const q=routeAt(w,p.s-650);const c=makeCar(POLICE,q.x,q.y,q.a,'police');c.v=200;c.vx=Math.cos(q.a)*200;c.vy=Math.sin(q.a)*200;c.seg=Math.max(0,q.i);w.cars.push(c)}
+    RS.spawnT-=dt;if(L.cops!==0&&RS.spawnT<0&&active<(L.kills&&!L.gang?5:4+Math.floor(p.s/w.total*3))&&(p.s>700||L.kills)&&!RS.end){RS.spawnT=rr(4.5,7.5);const q=routeAt(w,p.s-650);const c=makeCar(chaseSpec(POLICE,p),q.x,q.y,q.a,'police');c.v=200;c.vx=Math.cos(q.a)*200;c.vy=Math.sin(q.a)*200;c.seg=Math.max(0,q.i);w.cars.push(c)}
     // bust
     let close=false;for(const c of w.cars)if(c.kind==='police'&&!c.wreck&&!c.parked&&Math.hypot(c.x-p.x,c.y-p.y)<62)close=true;
     if(close&&sp<35&&!RS.end)RS.bust+=dt;else RS.bust=Math.max(0,RS.bust-dt*1.5);
@@ -1714,7 +1716,7 @@ import {KTX2Loader} from './vendor/jsm/loaders/KTX2Loader.js';
 import {MeshoptDecoder} from './vendor/jsm/libs/meshopt_decoder.module.js';
 import * as SkeletonUtils from './vendor/jsm/utils/SkeletonUtils.js';
 window.THREE=THREE;window.TADD={EffectComposer,RenderPass,UnrealBloomPass,OutputPass,GLTFLoader,RGBELoader,SkeletonUtils,DRACOLoader,KTX2Loader,MeshoptDecoder};
-const s=document.createElement('script');s.src='r3.js?v=55';document.body.appendChild(s);
+const s=document.createElement('script');s.src='r3.js?v=57';document.body.appendChild(s);
 </script>
 </body>
 </html>

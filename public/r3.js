@@ -592,7 +592,7 @@ const T3=THREE,mods=['sedan','hatchback_sports','suv','sedan_sports','van'].filt
   const fl=new T3.Mesh(this.flG,this.flM);fl.position.set(-L/2-8,5*zs,0);fl.visible=false;g.add(fl);
   g.userData={beam,paint,pc:sp.p1,wheels:[],cw:wheels,ch,glow,fl,concept:true,knF:g.userData_kn,pop:kit.userData.pop,sx:bx,sy:by,sw:swSpin,dice:diceG,scr:scrM,brk,zs,zw,lo,tk:c.st?this.tuneKey(c.st.id):''};if(!noAdd)this.scene.add(g);return g},
  // ---------- 3D garage studio (far away in the same scene, so bloom + reflections work) ----------
- ck:{back:10,up:5.4,upP:5.7,pitchL:-6,pitchP:-9,fovL:60,fovP:74},
+ ck:{back:10,up:5.4,upP:5.6,pitchL:-6,pitchP:7,fovL:60,fovP:76},
  GX:-60000,GZ:-60000,
  garageBuild(){const T3=THREE,S=this.scene,gr=this.gRoom=new T3.Group();gr.position.set(this.GX,0,this.GZ);gr.visible=false;S.add(gr);const TL=new T3.TextureLoader();
   // hangar floor: polished concrete with yellow guide lines
@@ -706,15 +706,15 @@ const T3=THREE,mods=['sedan','hatchback_sports','suv','sedan_sports','van'].filt
   {const hp=this.hot.geometry.attributes.position.array,hc=this.hot.geometry.attributes.color.array,sp=this.smoke.geometry.attributes.position.array,sc=this.smoke.geometry.attributes.color.array;let nh=0,ns=0;
    for(const q of w.parts){const a=q.life/q.max;if(q.type==='smoke'){if(ns>=520)continue;sp.set([q.x,12+q.z*this.HK+(1-a)*40,q.y],ns*3);const v=q.col?.55:.3;sc.set([v*a+.1,v*a+.1,v*a+.12],ns*3);ns++}
     else{if(nh>=520)continue;hp.set([q.x,q.type==='fire'?10+(1-a)*25:6,q.y],nh*3);if(q.type==='fire')hc.set([1,.45+a*.4,.15],nh*3);else hc.set([1,.85,.45],nh*3);nh++}}
-   for(const b of w.bullets){if(nh>=520)break;hp.set([b.x,12,b.y],nh*3);hc.set([1,.95,.6],nh*3);nh++}
-   if(w.muzzle>0&&w.player){const p=w.player;hp.set([p.x+Math.cos(p.a)*(p.L*.5+8),14,p.y+Math.sin(p.a)*(p.L*.5+8)],nh*3);hc.set([1,.9,.5],nh*3);nh++}
+   const ckp=this.camMode==='cockpit'&&(G.mode==='roam'||G.mode==='race');if(!ckp)for(const b of w.bullets){if(nh>=520)break;hp.set([b.x,12,b.y],nh*3);hc.set([1,.95,.6],nh*3);nh++}
+   if(w.muzzle>0&&w.player&&!ckp){const p=w.player;hp.set([p.x+Math.cos(p.a)*(p.L*.5+8),14,p.y+Math.sin(p.a)*(p.L*.5+8)],nh*3);hc.set([1,.9,.5],nh*3);nh++}
    this.hot.geometry.setDrawRange(0,nh);this.smoke.geometry.setDrawRange(0,ns);this.hot.geometry.attributes.position.needsUpdate=this.hot.geometry.attributes.color.needsUpdate=true;this.smoke.geometry.attributes.position.needsUpdate=this.smoke.geometry.attributes.color.needsUpdate=true}
   // tracers (visible from the cockpit too): glowing stretched bolts
   {if(!this.trc){this.trc=new T3.InstancedMesh(new T3.BoxGeometry(1,1,1),new T3.MeshBasicMaterial({color:new T3.Color(1,.8,.35).multiplyScalar(3.5),transparent:true,opacity:.95,blending:T3.AdditiveBlending,depthWrite:false}),300);this.trc.frustumCulled=false;this.trc.count=0;this.scene.add(this.trc);
     this.mzl=new T3.Mesh(new T3.SphereGeometry(1,10,8),new T3.MeshBasicMaterial({color:new T3.Color(1,.75,.3).multiplyScalar(4),transparent:true,blending:T3.AdditiveBlending,depthWrite:false}));this.mzl.visible=false;this.scene.add(this.mzl);this.mzlL=new T3.PointLight(0xffb050,0,260,1.5);this.scene.add(this.mzlL);this._tm=new T3.Matrix4();this._tq=new T3.Quaternion();this._tv=new T3.Vector3();this._ts=new T3.Vector3();this._ay=new T3.Vector3(0,1,0)}
-   const cock=this.camMode==='cockpit',H=cock?9.5:12;let n=0;for(const b of w.bullets){if(n>=300)break;const ang=Math.atan2(b.vy,b.vx);this._tq.setFromAxisAngle(this._ay,-ang);this._tm.compose(this._tv.set(b.x-Math.cos(ang)*18,H,b.y-Math.sin(ang)*18),this._tq,this._ts.set(cock?60:36,cock?2.2:1.4,cock?2.2:1.4));this.trc.setMatrixAt(n++,this._tm)}
-   this.trc.count=n;this.trc.instanceMatrix.needsUpdate=true;
-   const mz=w.muzzle>0&&w.player;this.mzl.visible=!!mz;this.mzlL.intensity=mz?3:0;if(mz){const p=w.player,ca=Math.cos(p.a),sa=Math.sin(p.a),fw=cock?p.L*.62:p.L*.52,x=p.x+ca*fw-sa*6,y=p.y+sa*fw+ca*6;this.mzl.position.set(cock?x-sa*4:x,cock?13.5:13,cock?y+ca*4:y);this.mzl.scale.setScalar((cock?1.4:2.2)+Math.random()*1.2);this.mzlL.position.set(x,16,y)}}
+   const cock=this.camMode==='cockpit'&&(G.mode==='roam'||G.mode==='race'),H=cock?this.cam.position.y-1.6:12;let n=0;const PL=w.player;for(const b of w.bullets){if(n>=300)break;if(cock&&PL&&Math.hypot(b.x-PL.x,b.y-PL.y)<110)continue;const ang=Math.atan2(b.vy,b.vx);this._tq.setFromAxisAngle(this._ay,-ang);this._tm.compose(this._tv.set(b.x-Math.cos(ang)*18,H,b.y-Math.sin(ang)*18),this._tq,this._ts.set(cock?60:36,cock?1.5:1.4,cock?1.5:1.4));this.trc.setMatrixAt(n++,this._tm)}
+   this.trc.count=n;this.trc.instanceMatrix.needsUpdate=true;if(this.trc.material.depthTest===cock){this.trc.material.color.setRGB(1,.8,.35).multiplyScalar(cock?1.7:3.5);this.trc.material.depthTest=!cock;this.mzl.material.depthTest=!cock;this.trc.renderOrder=this.mzl.renderOrder=cock?999:0}
+   const mz=w.muzzle>0&&w.player;this.mzl.visible=!!mz&&!cock;this.mzlL.intensity=mz?(cock?1.2:3):0;if(mz){const p=w.player,ca=Math.cos(p.a),sa=Math.sin(p.a),fw=cock?p.L*.62:p.L*.52,x=p.x+ca*fw-sa*6,y=p.y+sa*fw+ca*6;this.mzl.position.set(cock?x-sa*4:x,cock?13.5:13,cock?y+ca*4:y);this.mzl.scale.setScalar((cock?1.4:2.2)+Math.random()*1.2);this.mzlL.position.set(x,16,y)}}
   // skids
   {const a=this.skid.geometry.attributes.position.array,n=Math.min(w.skids.length,1300);for(let i=0;i<n;i++){const s=w.skids[w.skids.length-n+i];a.set([s[0],.8,s[1],s[2],.8,s[3]],i*6)}this.skid.geometry.setDrawRange(0,n*2);this.skid.geometry.attributes.position.needsUpdate=true}
   // markers & route
