@@ -31,17 +31,26 @@ for i in range(80):
 def peak(lo,hi):
     idx=[i for i in range(80) if lo<=(bins[i]+bins[i+1])/2<=hi];w=wid[idx];m=w.max();sel=[idx[k] for k in range(len(idx)) if w[k]>=m-.01]
     xs=[(bins[i]+bins[i+1])/2 for i in sel];return (min(xs)+max(xs))/2,(max(xs)-min(xs))/2+.0125
-xf,hwf=peak(.05,.48);xr,hwr=peak(-.48,-.05)
-r=max(.07,min(.2,(hwf+hwr)/2*1.0));zc=r
-# tyre radius from the lowest-point profile: use vertical extent of outer-band vertices near each axle
-def radius(xc):
-    s=V[(np.abs(V[:,0]-xc)<.02)&(np.abs(V[:,1])>W*.8)];return (s[:,2].max()/2) if len(s) else r
-rf,rr=radius(xf),radius(xr);rf=min(max(rf,.08),.2);rr=min(max(rr,.08),.2)
+# wheels from the underside profile: the tyre bottom is the lowest arc near each axle
+side=V[np.abs(V[:,1])>W*.55];bw=.004;edges=np.arange(-.5,.5+bw,bw);zmin=np.full(len(edges)-1,9.0)
+ix=np.clip(((side[:,0]+.5)/bw).astype(int),0,len(zmin)-1)
+np.minimum.at(zmin,ix,side[:,2]);xs=(edges[:-1]+edges[1:])/2
+def fit(lo,hi):
+    m=(xs>lo)&(xs<hi)&(zmin<.05);c=xs[m];z=zmin[m]
+    if not len(c):return (lo+hi)/2,.09
+    z0=z.min();flat=c[z<=z0+.002];x0=(flat.min()+flat.max())/2
+    rs=[]
+    for xx,zz in zip(xs,zmin):
+        dx=abs(xx-x0);h=zz-z0
+        if .025<dx<.075 and .0015<h<.06:rs.append((dx*dx+h*h)/(2*h))
+    r=float(np.median(rs)) if rs else .09
+    return x0,min(max(r,.06),.14)
+xf,rf=fit(.08,.48);xr,rr=fit(-.48,-.08)
 print('wheels',round(xf,3),round(xr,3),'r',round(rf,3),round(rr,3),'W',round(W,3),'H',round(H,3))
 centers={'FL':(xf,1,rf),'FR':(xf,-1,rf),'RL':(xr,1,rr),'RR':(xr,-1,rr)}
 def lab(c):
     for (k,xc,rad) in(('F',xf,rf),('R',xr,rr)):
-        if math.hypot(c.x-xc,c.z-rad)<rad*1.04 and abs(c.y)>W-rad*1.15:return k+('L' if c.y>0 else 'R')
+        if math.hypot(c.x-xc,c.z-rad)<rad*1.0 and abs(c.y)>W-rad*.95:return k+('L' if c.y>0 else 'R')
     return None
 for k in('FL','FR','RL','RR'):
     bpy.ops.object.select_all(action='DESELECT');car.select_set(True);bpy.context.view_layer.objects.active=car

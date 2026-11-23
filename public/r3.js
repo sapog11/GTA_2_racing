@@ -449,13 +449,13 @@ const R3={ok:false,off:/[?&]2d/.test(location.search),chunks:new Map(),CH:16,PX:
  tuneKey(id){const t=typeof SAVE!=='undefined'&&SAVE.tune&&SAVE.tune[id];return(t?JSON.stringify(t):'')+'#'+(this.partsV||0)+(this.camMode==='cockpit'?'c':'')+(this.aiCars&&this.aiCars[id]?'a':'')},
  AICARS:['civka','felda','golfik','bavorak','imprezka','supka','koncept','traffic_kombi','traffic_taxi','traffic_police'],
  aiCar(id){if(!this.AICARS.includes(id))return null;this.aiCars=this.aiCars||{};const S=this.aiCars[id];
-  if(S===undefined){this.aiCars[id]=null;new TADD.GLTFLoader().load('models/cars/ai/'+id+'.glb?v=2',g=>{g.scene.traverse(o=>{if(o.isMesh&&o.material){o.material.envMapIntensity=1.2}});this.aiCars[id]=g.scene;this.partsV=(this.partsV||0)+1},undefined,()=>{this.aiCars[id]=false});return null}
+  if(S===undefined){this.aiCars[id]=null;new TADD.GLTFLoader().load('models/cars/ai/'+id+'.glb?v=3',g=>{g.scene.traverse(o=>{if(o.isMesh&&o.material){o.material.envMapIntensity=1.2}});this.aiCars[id]=g.scene;this.partsV=(this.partsV||0)+1},undefined,()=>{this.aiCars[id]=false});return null}
   if(!S)return null;
   return c=>{const T3=THREE,g=new T3.Group(),m=S.clone(true),L=c.L;m.scale.setScalar(L);const ch=new T3.Group();ch.add(m);g.add(ch);const aw=[];
    let dkP=0;const tn=(c.kind==='player'&&typeof SAVE!=='undefined'&&SAVE.tune&&c.st&&SAVE.tune[c.st.id])||{},repW=!!(tn.rims&&tn.rims!=='stock');
    if(tn.p1||tn.fin){const FIN={gloss:[.15,.3],matte:[.05,.75],metal:[.65,.28],chrome:[.95,.08]}[tn.fin];m.traverse(o=>{if(o.isMesh&&o.material&&o.material.map){const O=o.material,M=O.clone();if(tn.p1){const tx=this.aiPaint(id+(O.map.uuid||''),M.map,tn.p1);if(tx)M.map=tx}if(FIN){M.metalness=FIN[0];M.roughness=FIN[1];M.metalnessMap=null;M.roughnessMap=null}if(M.map&&M.map.userData.dark)dkP=1;o.material=M}})}
    const rimStyle=tn.rims||(this.ZB[c.st&&c.st.id]||{}).rims||'five',rimM=tn.rim?new T3.MeshStandardMaterial({color:tn.rim,metalness:.7,roughness:.28}):this.aiRimM||(this.aiRimM=new T3.MeshStandardMaterial({color:0xb8bcc4,metalness:.75,roughness:.28})),tyM=this.aiTyM||(this.aiTyM=new T3.MeshStandardMaterial({color:0x151517,roughness:.85,metalness:0}));
-   m.updateMatrixWorld(true);m.traverse(o=>{if(/^Wheel_/.test(o.name)){o.userData.front=/_F/.test(o.name);aw.push(o);
+   m.updateMatrixWorld(true);m.traverse(o=>{if(/^Wheel_/.test(o.name)){o.userData.front=/_F/.test(o.name);aw.push(o);o.position.z-=Math.sign(o.position.z)*this.aiIn;o.scale.setScalar(this.aiWs);
      const bb=new T3.Box3();o.traverse(q=>{if(q.isMesh)bb.expandByObject(q)});const inv=new T3.Matrix4().copy(o.matrixWorld).invert();bb.applyMatrix4(inv);const sz=bb.getSize(new T3.Vector3());
      if(!repW&&!dkP)return;
      const r=Math.min(Math.max(Math.min(o.position.y*.95,sz.y*.5),.06),.13),wd=Math.min(r*.62,sz.z*.9),side=o.position.z>0?1:-1;
@@ -466,7 +466,7 @@ const R3={ok:false,off:/[?&]2d/.test(location.search),chunks:new Map(),CH:16,PX:
    const fl=new T3.Mesh(this.flG,this.flM);fl.position.set(-L/2-8,4,0);fl.visible=false;g.add(fl);
    let glow=null;if(tn.glow&&tn.glow!=='off'){if(!this.ugTex)this.ugTex=this.glowTex('rgba(255,255,255,.9)');glow=new T3.Mesh(this.shGeo,new T3.MeshBasicMaterial({map:this.ugTex,color:tn.glow,transparent:true,opacity:.45,blending:T3.AdditiveBlending,depthWrite:false}));glow.scale.set(L*1.5,1,L*.75);glow.position.y=1;g.add(glow)}
    g.userData={beam,paint:{},wheels:[],aw,awR:L*.1,ch,glow,fl,aiCar:true,tk:c.st?this.tuneKey(c.st.id):''};if(!c.noAdd)this.scene.add(g);return g}},
- aiWK:.92,aiWheelSplit(G,r){this.aiWS=this.aiWS||new Map();if(this.aiWS.has(G))return this.aiWS.get(G);const g=G.clone(),P=g.attributes.position,I=g.index?g.index.array:null,n=I?I.length/3:P.count/3,a=[],b=[];
+ aiWK:.92,aiIn:0,aiWs:1,aiWheelSplit(G,r){this.aiWS=this.aiWS||new Map();if(this.aiWS.has(G))return this.aiWS.get(G);const g=G.clone(),P=g.attributes.position,I=g.index?g.index.array:null,n=I?I.length/3:P.count/3,a=[],b=[];
   for(let t=0;t<n;t++){let x=0,y=0;const tri=[];for(let k=0;k<3;k++){const v=I?I[t*3+k]:t*3+k;tri.push(v);x+=P.getX(v);y+=P.getY(v)}x/=3;y/=3;(Math.hypot(x,y)>r*this.aiWK?b:a).push(...tri)}
   g.setIndex(a.concat(b));g.clearGroups();g.addGroup(0,a.length,0);g.addGroup(a.length,b.length,1);this.aiWS.set(G,g);return g},
  aiPaint(id,map,hex){const k=id+hex;this.aiPT=this.aiPT||{};if(this.aiPT[k])return this.aiPT[k];const im=map&&map.image;if(!im||!im.width)return null;
@@ -609,7 +609,7 @@ const R3={ok:false,off:/[?&]2d/.test(location.search),chunks:new Map(),CH:16,PX:
   const c={L:def.L,Wd:def.Wd,col:(tune&&tune.p1)||def.col,st:{id:def.id},kind:'player'};let g;const AC=!def.soon&&!def.kenney&&this.aiCar(def.id);if(AC){c.noAdd=1;g=AC(c)}else if(def.soon){g=this.soonMesh(def);if(!g)return false}else if(def.kenney){if(!this.kReady||!this.km[def.kenney])return false;g=this.kenneyMesh(c,def.kenney);g.userData.beam.visible=false}else g=this.zMesh(c,this.zSpec(def.id,tune),true);g.position.y=2.45;if(g.userData.beam)g.userData.beam.visible=false;g.traverse(o=>{if(o.isMesh&&(o.geometry===this.shGeo||o.geometry===this.beamGeo))o.visible=false});this.gDisc.add(g);this.gCar=g;return true},
  garageRender(dt){if(!this.gRoom||!this.gCar)return false;const C=this.cam;this.gRoom.visible=true;this.sky.visible=false;const fogD=this.scene.fog.density;this.scene.fog.density=0;
   if(!this.gDrag)this.gYaw+=this.gVel*dt;this.gVel=lerp(this.gVel,.25,Math.min(1,dt*1.5));this.gDisc.rotation.y=this.gYaw;
-  const V=this.gView||{x:VW/2,y:VH/2,w:VW,h:VH},fov=40,tn=Math.tan(fov*Math.PI/360),av=Math.max(120,Math.min(V.w*.92,V.h*1.75)),d=clamp(45*VH/(2*tn*av),52,300),el=.13;
+  const V=this.gView||{x:VW/2,y:VH/2,w:VW,h:VH},fov=40,tn=Math.tan(fov*Math.PI/360),av=Math.max(120,Math.min(V.w*.92,V.h*1.75)),d=clamp((this.gZoom||55)*VH/(2*tn*av),60,330),el=.14;
   C.near=2;C.fov=fov;C.setViewOffset(VW,VH,VW/2-V.x,VH/2-V.y,VW,VH);
   const cx=this.GX,cz=this.GZ;C.position.set(cx+d*Math.cos(el)*.45,d*Math.sin(el)+8,cz+d*Math.cos(el)*.9);C.lookAt(cx,4,cz);
   const bs=this.bloom?this.bloom.strength:0;if(this.bloom)this.bloom.strength=.28;const env=this.scene.environment;if(this.env)this.scene.environment=this.env;
