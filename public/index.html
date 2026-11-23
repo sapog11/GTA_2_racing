@@ -259,6 +259,7 @@ body.two.driving #twHint{display:flex}
 #kA{right:24px;bottom:calc(max(16px,env(safe-area-inset-bottom)) + 86px);width:92px;height:92px;font-size:24px;background:conic-gradient(var(--acc2) var(--p,100%),rgba(10,12,20,.55) 0)!important}
 #kA.hot{background:conic-gradient(#4da3ff var(--p,100%),rgba(10,12,20,.55) 0)!important}
 #kF{right:30px;bottom:calc(max(16px,env(safe-area-inset-bottom)) + 192px);width:74px;height:74px;font-size:19px;font-family:Bangers,sans-serif;letter-spacing:1px;color:#fff;display:none;background:conic-gradient(#ff2e63 var(--p,100%),rgba(10,12,20,.55) 0)!important}body.gun #kF{display:block}#kF.hot{filter:saturate(.3) brightness(.7)}body.arrows #kF{right:max(18px,env(safe-area-inset-right));bottom:calc(max(18px,env(safe-area-inset-bottom)) + 232px);width:64px;height:64px;font-size:17px}body.wheel #kF{right:auto;left:max(28px,env(safe-area-inset-left));bottom:calc(max(16px,env(safe-area-inset-bottom)) + 262px);width:64px;height:64px;font-size:17px}#kF span{display:flex;align-items:center;justify-content:center;position:absolute;inset:5px;border-radius:50%;background:rgba(10,12,20,.85)}
+#mpop{position:absolute;left:50%;top:calc(max(10px,env(safe-area-inset-top)) + 108px);transform:translateX(-50%) translateY(-10px);width:min(330px,calc(100vw - 32px));background:rgba(10,12,20,.92);border:2px solid #4dd8ff;border-radius:12px;padding:10px 12px;color:#fff;pointer-events:auto;opacity:0;visibility:hidden;transition:opacity .25s,transform .25s;z-index:9;box-shadow:0 6px 24px rgba(0,0,0,.6)}#mpop.on{opacity:1;visibility:visible;transform:translateX(-50%)}#mpop.main{border-color:#ffcc1a}#mpop .mt{font-family:Bangers,sans-serif;letter-spacing:1.5px;font-size:14px;color:#4dd8ff}#mpop.main .mt{color:#ffcc1a}#mpop b{display:block;font-family:Bangers,sans-serif;font-size:26px;letter-spacing:1px;line-height:1.05;margin:2px 0}#mpop p{margin:4px 0 8px;font-size:13.5px;line-height:1.3;color:#d8dbe6}#mpop .mr{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:13px;color:#ffcc1a}#mpop .btn{margin:0}
 #kA span{display:flex;align-items:center;justify-content:center;position:absolute;inset:6px;border-radius:50%;background:rgba(10,12,20,.85)}
 #kA.on span{background:rgba(255,204,26,.8);color:#111}
 .res{max-width:520px;width:100%;margin-top:6vh;text-align:center}
@@ -324,7 +325,7 @@ body.two.driving #twHint{display:flex}
     <div style="display:flex;flex-direction:column;align-items:flex-end"><div style="display:flex;gap:4px"><button id="camB" title="Kamera (C)">🎥</button><button id="keyB" title="Motor (E)">🔑</button><button id="radioB" title="Rádio (R)">📻</button><button id="pauseB">II</button></div><canvas id="mm" width="192" height="192"></canvas></div>
   </div>
   <div id="bust"><b>POLICIE TĚ MÁ!</b><div class="hp"><i id="hBust"></i></div></div>
-  <div id="center"></div><div id="area"></div><div id="obj"></div><div id="street"></div><div id="nav"><div id="navA">⬆</div><div class="nt"><b id="navD"></b><span id="navS"></span><i id="navC"></i></div></div><div id="wgrip"></div><div id="drift"></div>
+  <div id="mpop"></div><div id="center"></div><div id="area"></div><div id="obj"></div><div id="street"></div><div id="nav"><div id="navA">⬆</div><div class="nt"><b id="navD"></b><span id="navS"></span><i id="navC"></i></div></div><div id="wgrip"></div><div id="drift"></div>
   <div id="spd"><div class="rpm" id="spR"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><b id="spN">0</b><em>km/h</em><span id="spG">N</span></div>
   <div id="hint"></div>
 </div>
@@ -618,7 +619,7 @@ const COMICS={
   {scene:'start',art:'racestart',who:['marek','kaja'],bubs:[{w:'kaja',t:'Chceš respekt? Závod. Pět kár, přes Mariánskej most na Střekov. Vítěz bere prachy.',x:36,y:8},{w:'marek',t:'Platí. Lucko, nakopni jim prdele.',x:4,y:40}]},
   {scene:'start2',art:'panel_start2',cap:'Platí jen první místo. Tlačítko NITRO = krátký zrychlení, nabíjí se samo.'}]},
  kuryr:{title:'Kurýr',panels:[
-  {art:'courier',bubs:[{w:'pepa',t:'Balík do Předlic. Za 75 vteřin, jinak tě sežerou.',x:44,y:8},{w:'lucie',t:'Co v tom je?',x:4,y:40}]},
+  {art:'courier',bubs:[{w:'pepa',t:'Balík do Předlic. Za 58 vteřin, jinak tě sežerou.',x:44,y:8},{w:'lucie',t:'Co v tom je?',x:4,y:40}]},
   {art:'courier',cap2:'Neptej se. JEĎ!'}]},
  pepa:{title:'Ožralej Pepa',panels:[
   {art:'drunk',bubs:[{w:'pepa',t:'Holka zlatá… vez mě domů… hik!',x:4,y:8,shout:1},{w:'lucie',t:'Jestli mi to tu pobleješ, vyhodím tě na mostě!',x:50,y:40}]},
@@ -1315,7 +1316,11 @@ function renderPanel(){const el=$('scr-comic'),C=comic.C,P=C.panels[comic.i];
 function finishComic(){const d=comic.done;comic=null;if(d)d();else showComics()}
 
 /* ---------------- FREE ROAM ---------------- */
-function MARKERS(){const sel=(typeof RS!=='undefined'&&RS&&RS.target)||SAVE.sel;if(!sel)return[];return LEVELS.filter(L=>L.id===sel&&!L.soon&&(!SAVE.done[L.id]||SAVE.replay===L.id)).map(L=>{const r=L.route?L.route[0]:L.at;return{L,x:IX(r[0]),y:IX(r[1]),open:!L.soon}})}
+function mainMission(){return LEVELS.find(L=>!L.soon&&L.comic&&['utek','zavod'].includes(L.id)&&!SAVE.done[L.id]&&(!L.req||SAVE.done[L.req]))||null}
+function MARKERS(){const mm=mainMission(),sel=(typeof RS!=='undefined'&&RS&&RS.target)||SAVE.sel;return LEVELS.filter(L=>!L.soon&&(!SAVE.done[L.id]||SAVE.replay===L.id)&&(!L.req||SAVE.done[L.req])).map(L=>{const r=L.route?L.route[0]:L.at;return{L,x:IX(r[0]),y:IX(r[1]),open:!L.soon,main:L===mm,sel:L.id===sel}})}
+function mStory(L){const C=COMICS[L.comic];if(!C)return L.sub||'';for(const P of C.panels){if(P.cap)return P.cap;if(P.bubs&&P.bubs[0])return '„'+P.bubs[0].t+'“'}return L.sub||''}
+let mPopId=null;function mPop(m){const el=$('mpop');if(!m){if(mPopId){el.classList.remove('on');mPopId=null}return}if(mPopId===m.L.id)return;mPopId=m.L.id;const L=m.L;
+  el.innerHTML=`<div class="mt">${m.main?'★ HLAVNÍ MISE':'VEDLEJŠÍ MISE'}${SAVE.done[L.id]?' • ZNOVU':''}</div><b>${L.name}</b><p>${mStory(L)}</p><div class="mr">${L.reward?'Odměna '+L.reward.cash.toLocaleString('cs-CZ')+' Kč':''}<button class="btn sm" id="mGo">VZÍT MISI ▶</button></div>`;el.className='on'+(m.main?' main':'');$('mGo').onclick=e=>{e.stopPropagation();Snd.click();mPop(null);if(SAVE.sel!==L.id){SAVE.sel=null;save()}enterMission(L)};Snd.click()}
 function startRoam(at,target){AN.ev('roam_start');hideAll();G.engineOff=false;$('keyB').classList.remove('off');$('keyB').style.display='';at=at||HOME;const w=newWorld({rain:R()<.45,dark:.8,civMax:11,pedMax:44});G.world=w;G.mode='roam';G.level=null;
   const car=CARS.find(c=>c.id===SAVE.car)||CARS[0];const p=makeCar(Object.assign({},car),at.x,at.y,at.a,'player');p.handMul=SAVE.hero==='lucie'?1.15:1;w.player=p;w.cars.push(p);
   w.cam={x:p.x,y:p.y};w.zoom=baseZoom();for(let i=0;i<11;i++)spawnCiv(w);for(let i=0;i<48;i++)spawnPed(w,40,520);
@@ -1343,12 +1348,12 @@ function updateRoam(dt){const w=G.world,p=w.player;
   if(tileAt(ptx,pty)===BRIDGE)d=BRIDGES[pty>>3]||d;
   if(d!==G.roamDist){G.roamDist=d;$('hMain').textContent=d.toUpperCase();const a=$('area');a.textContent=d.toUpperCase();a.classList.add('on');areaT=2.5}
   if(areaT>0){areaT-=dt;if(areaT<=0)$('area').classList.remove('on')}
-  RS.enterCD-=dt;const ms=MARKERS();let best=null,bd=1e9;
+  RS.enterCD-=dt;const ms=MARKERS();let best=null,bd=1e9,inM=null;
   for(const m of ms){const dd=Math.hypot(m.x-p.x,m.y-p.y);if(m.open&&(RS.target?m.L.id===RS.target:true)&&dd<bd){bd=dd;best=m}
-    if(dd<60&&RS.enterCD<=0){if(m.open){enterMission(m.L);return}else if(msgT<=0)floatMsg(m.L.soon?'BRZY':'ZAMČENO',1.2)}}
-  if(!best)for(const m of ms){const dd=Math.hypot(m.x-p.x,m.y-p.y);if(m.open&&dd<bd){bd=dd;best=m}}
-  RS.arrowTo=best;
-  $('obj').textContent=NAV.to?`🧭 ${NAV.to.name}`:best?`⭐ ${best.L.name} — jeď podle žluté navigace`:'Volná jízda';
+    if(dd<95&&m.open)inM=m}
+  if(!RS.target)best=null;
+  RS.arrowTo=best;mPop(inM);
+  $('obj').textContent=NAV.to?`🧭 ${NAV.to.name}`:best?`⭐ ${best.L.name} — jeď podle žluté navigace`:'Volná jízda • mise jsou kruhy ve městě';
   if(msgT>0){msgT-=dt;if(msgT<=0)$('center').textContent=''}
   $('hHp').style.width=clamp(p.hp/p.maxhp*100,0,100)+'%';$('hResp').textContent=SAVE.cash.toLocaleString('cs-CZ');spdSet(Math.round(sp*.42));streetHud(p);
   navUpdate(dt);drawMinimap()}
@@ -1588,6 +1593,7 @@ function drawMinimap(){const g=$('mm').getContext('2d'),w=G.world,p=w.player||w.
   if(w.player){g.save();g.translate(W/2,W/2);g.rotate(w.player.a);g.fillStyle='#fff';g.strokeStyle='#000';g.lineWidth=2;g.beginPath();g.moveTo(10,0);g.lineTo(-7,-7);g.lineTo(-4,0);g.lineTo(-7,7);g.closePath();g.fill();g.stroke();g.restore()}}
 
 /* ---------------- INPUT ---------------- */
+document.addEventListener('keydown',e=>{if((e.code==='Enter'||e.code==='KeyE')&&mPopId&&$('mGo')){$('mGo').click()}});
 const KEYMAP={ArrowLeft:'l',KeyA:'l',ArrowRight:'r',KeyD:'r',ArrowUp:'u',KeyW:'u',ArrowDown:'d',KeyS:'d',Space:'a',KeyF:'f',KeyK:'f',ShiftLeft:'h',ShiftRight:'h',KeyX:'h',KeyJ:'a'};
 addEventListener('keydown',e=>{const k=KEYMAP[e.code];if(k){G.keys[k]=true;if(G.mode==='race'||G.mode==='roam')e.preventDefault()}if((e.code==='KeyP'||e.code==='Escape')&&(G.mode==='race'||G.mode==='roam'))pause()});
 addEventListener('keyup',e=>{const k=KEYMAP[e.code];if(k)G.keys[k]=false});
@@ -1744,7 +1750,7 @@ import {KTX2Loader} from './vendor/jsm/loaders/KTX2Loader.js';
 import {MeshoptDecoder} from './vendor/jsm/libs/meshopt_decoder.module.js';
 import * as SkeletonUtils from './vendor/jsm/utils/SkeletonUtils.js';
 window.THREE=THREE;window.TADD={EffectComposer,RenderPass,UnrealBloomPass,OutputPass,GLTFLoader,RGBELoader,SkeletonUtils,DRACOLoader,KTX2Loader,MeshoptDecoder};
-const s=document.createElement('script');s.src='r3.js?v=65';document.body.appendChild(s);
+const s=document.createElement('script');s.src='r3.js?v=66';document.body.appendChild(s);
 </script>
 </body>
 </html>
