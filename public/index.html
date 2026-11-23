@@ -601,20 +601,20 @@ const COMICS={
  end_mosty:{title:'Tři mosty: Konec',end:1,panels:[{art:'end_mosty',cap:'Prachy v ruce, uznání v očích soupeře. Tři mosty, jedna královna silnice.'}]},
  intro:{title:'Kapitola 1: Novej ve městě',panels:[
   {scene:'city',art:'keyart',cap:'Ústí nad Labem. Město andělů. Chemička nikdy nespí, Labe teče furt stejně líně… a ty jsi tu novej.'},
-  {scene:'river',who:['lucie','marek'],bubs:[{w:'lucie',t:'Tak tohle je ono, Marku. Novej život.',x:4,y:8},{w:'marek',t:'Novej život, nový cíle. Ale tady jsme nikdo.',x:36,y:34}]},
+  {scene:'river',art:'panel_river',who:['lucie','marek'],bubs:[{w:'lucie',t:'Tak tohle je ono, Marku. Novej život.',x:4,y:8},{w:'marek',t:'Novej život, nový cíle. Ale tady jsme nikdo.',x:36,y:34}]},
   {scene:'fight',art:'street',who:[null,'kaja'],cap:'Fabriky, kopce, herny nonstop a ulice, kde se respekt nedědí.',bubs:[{w:'kaja',t:'Co čumíš, ty vole? Tohle je náš rajón, do píče!',x:8,y:40,shout:1}]},
   {scene:'fight',art:'street',cap:'Sídliště. Kluci se zase hádaj o nic.',bubs:[{w:'pepa',t:'Co na mě čumíš, ty šlapko?',x:4,y:30,shout:1},{w:'denis',t:'Vole, chceš do huby, nebo co?!',x:38,y:52},{w:'pepa',t:'Tak pojď, ty opice!',x:10,y:74,shout:1}]},
-  {scene:'car',who:['lucie','marek'],bubs:[{w:'marek',t:'Potřebujem prachy na káru a jméno.',x:40,y:10},{w:'lucie',t:'Já řídím. Ty střílíš. Jako vždycky.',x:4,y:34}],cap2:'Odpracuj si respekt.'}]},
+  {scene:'car',art:'panel_car',who:['lucie','marek'],bubs:[{w:'marek',t:'Potřebujem prachy na káru a jméno.',x:40,y:10},{w:'lucie',t:'Já řídím. Ty střílíš. Jako vždycky.',x:4,y:34}],cap2:'Odpracuj si respekt.'}]},
  utek:{title:'Kapitola 2: Zlatnictví',panels:[
-  {scene:'plaza',cap:'02:47. Zlatnictví u Mírového náměstí. Leje jak z konve.'},
+  {scene:'plaza',art:'panel_plaza',cap:'02:47. Zlatnictví u Mírového náměstí. Leje jak z konve.'},
   {scene:'plaza2',art:'heist',who:['lucie','marek'],bubs:[{w:'marek',t:'Máme to! Jeď, jeď, JEĎ!',x:38,y:10,shout:1},{w:'lucie',t:'Drž se, ty debile, budou tu za minutu!',x:4,y:34}]},
   {scene:'chase',art:'bridge',who:[null,'marek'],cap:'Sirény. Modrý světla. Celá Klíše je vzhůru.',bubs:[{w:'police',t:'Stůjte! Policie!',x:50,y:28,shout:1},{w:'marek',t:'Nasrat! Mám kalacha a dobrou náladu.',x:6,y:46}]},
-  {scene:'chase2',cap:'Dojeď do úkrytu v Neštěmicích a kšeft je tvůj. Policajty před sebou rozstřílej — tlačítko PAL.'}]},
+  {scene:'chase2',art:'panel_chase2',cap:'Dojeď do úkrytu v Neštěmicích a kšeft je tvůj. Policajty před sebou rozstřílej — tlačítko PAL.'}]},
  zavod:{title:'Kapitola 3: Předlice',panels:[
-  {scene:'cutoff',cap:'Předlice, sobota v noci. Na křižovatce tě někdo nahulí.'},
-  {scene:'cutoff2',who:['lucie','kaja'],bubs:[{w:'kaja',t:'Ty vole, kdo tě učil řídit? Šlapko jedna!',x:40,y:10,shout:1},{w:'lucie',t:'Cos to řek, ty pičo?',x:4,y:36}]},
+  {scene:'cutoff',art:'panel_cutoff',cap:'Předlice, sobota v noci. Na křižovatce tě někdo nahulí.'},
+  {scene:'cutoff2',art:'panel_cutoff2',who:['lucie','kaja'],bubs:[{w:'kaja',t:'Ty vole, kdo tě učil řídit? Šlapko jedna!',x:40,y:10,shout:1},{w:'lucie',t:'Cos to řek, ty pičo?',x:4,y:36}]},
   {scene:'start',art:'racestart',who:['marek','kaja'],bubs:[{w:'kaja',t:'Chceš respekt? Závod. Pět kár, přes Mariánskej most na Střekov. Vítěz bere prachy.',x:36,y:8},{w:'marek',t:'Platí. Lucko, nakopni jim prdele.',x:4,y:40}]},
-  {scene:'start2',cap:'Platí jen první místo. Tlačítko NITRO = krátký zrychlení, nabíjí se samo.'}]},
+  {scene:'start2',art:'panel_start2',cap:'Platí jen první místo. Tlačítko NITRO = krátký zrychlení, nabíjí se samo.'}]},
  kuryr:{title:'Kurýr',panels:[
   {art:'courier',bubs:[{w:'pepa',t:'Balík do Předlic. Za 75 vteřin, jinak tě sežerou.',x:44,y:8},{w:'lucie',t:'Co v tom je?',x:4,y:40}]},
   {art:'courier',cap2:'Neptej se. JEĎ!'}]},
@@ -1714,7 +1714,7 @@ import {KTX2Loader} from './vendor/jsm/loaders/KTX2Loader.js';
 import {MeshoptDecoder} from './vendor/jsm/libs/meshopt_decoder.module.js';
 import * as SkeletonUtils from './vendor/jsm/utils/SkeletonUtils.js';
 window.THREE=THREE;window.TADD={EffectComposer,RenderPass,UnrealBloomPass,OutputPass,GLTFLoader,RGBELoader,SkeletonUtils,DRACOLoader,KTX2Loader,MeshoptDecoder};
-const s=document.createElement('script');s.src='r3.js?v=54';document.body.appendChild(s);
+const s=document.createElement('script');s.src='r3.js?v=55';document.body.appendChild(s);
 </script>
 </body>
 </html>
