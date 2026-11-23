@@ -449,7 +449,7 @@ const R3={ok:false,off:/[?&]2d/.test(location.search),chunks:new Map(),CH:16,PX:
  tuneKey(id){const t=typeof SAVE!=='undefined'&&SAVE.tune&&SAVE.tune[id];return(t?JSON.stringify(t):'')+'#'+(this.partsV||0)+(this.camMode==='cockpit'?'c':'')+(this.aiCars&&this.aiCars[id]?'a':'')},
  AICARS:['civka','felda','golfik','bavorak','imprezka','supka','koncept','traffic_kombi','traffic_taxi','traffic_police'],
  aiCar(id){if(!this.AICARS.includes(id))return null;this.aiCars=this.aiCars||{};const S=this.aiCars[id];
-  if(S===undefined){this.aiCars[id]=null;new TADD.GLTFLoader().load('models/cars/ai/'+id+'.glb',g=>{g.scene.traverse(o=>{if(o.isMesh&&o.material){o.material.envMapIntensity=1.2}});this.aiCars[id]=g.scene;this.partsV=(this.partsV||0)+1},undefined,()=>{this.aiCars[id]=false});return null}
+  if(S===undefined){this.aiCars[id]=null;new TADD.GLTFLoader().load('models/cars/ai/'+id+'.glb?v=2',g=>{g.scene.traverse(o=>{if(o.isMesh&&o.material){o.material.envMapIntensity=1.2}});this.aiCars[id]=g.scene;this.partsV=(this.partsV||0)+1},undefined,()=>{this.aiCars[id]=false});return null}
   if(!S)return null;
   return c=>{const T3=THREE,g=new T3.Group(),m=S.clone(true),L=c.L;m.scale.setScalar(L);const ch=new T3.Group();ch.add(m);g.add(ch);const aw=[];
    let dkP=0;const tn=(c.kind==='player'&&typeof SAVE!=='undefined'&&SAVE.tune&&c.st&&SAVE.tune[c.st.id])||{},repW=!!(tn.rims&&tn.rims!=='stock');
