@@ -258,7 +258,7 @@ body.two.driving #twHint{display:flex}
 #kU{right:96px;bottom:max(16px,env(safe-area-inset-bottom));width:74px;height:74px;font-size:18px}
 #kA{right:24px;bottom:calc(max(16px,env(safe-area-inset-bottom)) + 86px);width:92px;height:92px;font-size:24px;background:conic-gradient(var(--acc2) var(--p,100%),rgba(10,12,20,.55) 0)!important}
 #kA.hot{background:conic-gradient(#4da3ff var(--p,100%),rgba(10,12,20,.55) 0)!important}
-#kF{right:30px;bottom:calc(max(16px,env(safe-area-inset-bottom)) + 192px);width:74px;height:74px;font-size:30px;display:none;background:conic-gradient(#ff2e63 var(--p,100%),rgba(10,12,20,.55) 0)!important}body.gun #kF{display:block}#kF.hot{filter:saturate(.3) brightness(.7)}body.arrows #kF{right:max(18px,env(safe-area-inset-right));bottom:calc(max(18px,env(safe-area-inset-bottom)) + 232px);width:64px;height:64px;font-size:26px}body.wheel #kF{right:auto;left:max(28px,env(safe-area-inset-left));bottom:calc(max(16px,env(safe-area-inset-bottom)) + 262px);width:64px;height:64px;font-size:26px}#kF span{display:flex;align-items:center;justify-content:center;position:absolute;inset:5px;border-radius:50%;background:rgba(10,12,20,.85)}
+#kF{right:30px;bottom:calc(max(16px,env(safe-area-inset-bottom)) + 192px);width:74px;height:74px;font-size:19px;font-family:Bangers,sans-serif;letter-spacing:1px;color:#fff;display:none;background:conic-gradient(#ff2e63 var(--p,100%),rgba(10,12,20,.55) 0)!important}body.gun #kF{display:block}#kF.hot{filter:saturate(.3) brightness(.7)}body.arrows #kF{right:max(18px,env(safe-area-inset-right));bottom:calc(max(18px,env(safe-area-inset-bottom)) + 232px);width:64px;height:64px;font-size:17px}body.wheel #kF{right:auto;left:max(28px,env(safe-area-inset-left));bottom:calc(max(16px,env(safe-area-inset-bottom)) + 262px);width:64px;height:64px;font-size:17px}#kF span{display:flex;align-items:center;justify-content:center;position:absolute;inset:5px;border-radius:50%;background:rgba(10,12,20,.85)}
 #kA span{display:flex;align-items:center;justify-content:center;position:absolute;inset:6px;border-radius:50%;background:rgba(10,12,20,.85)}
 #kA.on span{background:rgba(255,204,26,.8);color:#111}
 .res{max-width:520px;width:100%;margin-top:6vh;text-align:center}
@@ -342,7 +342,7 @@ body.two.driving #twHint{display:flex}
   <button id="kL" data-k="l">◀</button>
   <button id="kR" data-k="r">▶</button>
   <button id="kA" data-k="a"><span id="kAt">PAL</span></button>
-  <button id="kF" data-k="f"><span><svg viewBox="0 0 64 32" width="44" height="22" fill="#fff"><path d="M2 12h36l2-3h8v3h14v4H48l-2 3h-6v3l-6 9h-7l4-8v-4H20l-4 6h-6l3-6H2z"/><rect x="22" y="6" width="10" height="5" rx="1"/><rect x="52" y="10" width="2" height="8"/></svg></span></button>
+  <button id="kF" data-k="f"><span>PAL</span></button>
   <button id="kU" data-k="u">PLYN</button>
   <button id="kD" data-k="d">BRZDA</button>
 </div>
@@ -1204,7 +1204,7 @@ function endPromo(){$('promoTxt').innerHTML='';document.body.classList.remove('b
 
 /* ---------------- SCREENS ---------------- */
 const screens=['scr-start','scr-menu','scr-heroes','scr-garage','scr-levels','scr-comics','scr-comic','scr-pause','scr-result'];
-function hideAll(){for(const s of screens)$(s).classList.remove('on');$('hud').classList.remove('on');$('ctrl').classList.remove('on')}
+function hideAll(){for(const s of screens)$(s).classList.remove('on');$('hud').classList.remove('on');$('ctrl').classList.remove('on');document.body.classList.remove('gun')}
 function show(id){hideAll();$(id).classList.add('on');$(id).scrollTop=0}
 function moneyHTML(){return`<span>PRACHY <b>${SAVE.cash.toLocaleString('cs-CZ')} Kč</b></span>`}
 function ensureAmbient(){if(!G.world||G.mode==='race'||G.mode==='result'){G.world=ambientWorld()}G.mode='ambient'}
@@ -1332,6 +1332,8 @@ function freeGun(w,p,dt,fire){RS.gCD=(RS.gCD||0)-dt;if(RS.gOver){RS.gHeat-=dt*.4
   w.muzzle=Math.max(0,(w.muzzle||0)-dt)}
 function updateRoam(dt){const w=G.world,p=w.player;
   const ctl=playerCtl();const act=G.keys.a;
+  document.body.classList.toggle('gun',SAVE.hero!=='marek');
+  if(SAVE.hero!=='marek'){freeGun(w,p,dt,G.keys.f);$('kF').style.setProperty('--p',((1-(RS.gHeat||0))*100)+'%');$('kF').classList.toggle('hot',!!RS.gOver)}
   if(SAVE.hero==='marek'){freeGun(w,p,dt,act);p.boost=false;$('kA').style.setProperty('--p',((1-(RS.gHeat||0))*100)+'%');$('kA').classList.toggle('hot',!!RS.gOver)}else{if(act&&!RS.aPrev){RS.nLatch=!RS.nLatch&&RS.nitro>.08}RS.aPrev=act;if(RS.nLatch&&RS.nitro>.02){if(!p.boost)Snd.nitro();p.boost=true;RS.nitro=Math.max(0,RS.nitro-.42*dt)}else{p.boost=false;RS.nLatch=false;RS.nitro=Math.min(1,RS.nitro+RS.nitroFill*dt)}$('kA').style.setProperty('--p',(RS.nitro*100)+'%');$('kA').classList.toggle('hot',!!RS.nLatch)}
   updateWorld(w,dt,ctl);driftUpdate(p,w,dt,true);if(p.hp<p.maxhp)p.hp=Math.min(p.maxhp,p.hp+dt*3);if(p.hp<=5)p.hp=5;
   const sp=Math.hypot(p.vx,p.vy);w.cam.x=lerp(w.cam.x,p.x+p.vx*.42,Math.min(1,dt*4));w.cam.y=lerp(w.cam.y,p.y+p.vy*.42,Math.min(1,dt*4));
@@ -1510,7 +1512,7 @@ let lastEff='';function applySteerMode(){const m=effSteer();lastEff=m;document.b
 function updateRace(dt){const w=G.world,p=w.player,L=RS.L;RS.t+=dt;
   if(RS.count>0){RS.count-=dt;const n=Math.ceil(RS.count-.4);$('center').textContent=RS.count>.4?(L.type==='race'?String(n):'JEĎ!'):'JEĎ!';if(RS.count<=0){for(const c of w.cars)c.frozen=false;floatMsg('JEĎ!',.8)}}
   else if(msgT>0){msgT-=dt;if(msgT<=0)$('center').textContent=''}
-  const ctl=RS.end?{thr:-1,steer:0}:playerCtl();const shR=L.type==='race'&&SAVE.hero==='marek';if(shR&&!RS.end&&RS.count<=0)freeGun(w,p,dt,G.keys.a);
+  const ctl=RS.end?{thr:-1,steer:0}:playerCtl();const shR=L.type==='race'&&SAVE.hero==='marek';document.body.classList.toggle('gun',L.type==='race'&&!shR);if(L.type==='race'&&!RS.end&&RS.count<=0){freeGun(w,p,dt,shR?G.keys.a:G.keys.f);if(!shR){$('kF').style.setProperty('--p',((1-(RS.gHeat||0))*100)+'%');$('kF').classList.toggle('hot',!!RS.gOver)}}
   // action
   const act=G.keys.a&&!RS.end&&RS.count<=0;
   if(L.type==='chase'){RS.fireCD-=dt;if(RS.over){RS.heat-=dt*.45;if(RS.heat<=.25)RS.over=false}else RS.heat=Math.max(0,RS.heat-dt*.32);
@@ -1742,7 +1744,7 @@ import {KTX2Loader} from './vendor/jsm/loaders/KTX2Loader.js';
 import {MeshoptDecoder} from './vendor/jsm/libs/meshopt_decoder.module.js';
 import * as SkeletonUtils from './vendor/jsm/utils/SkeletonUtils.js';
 window.THREE=THREE;window.TADD={EffectComposer,RenderPass,UnrealBloomPass,OutputPass,GLTFLoader,RGBELoader,SkeletonUtils,DRACOLoader,KTX2Loader,MeshoptDecoder};
-const s=document.createElement('script');s.src='r3.js?v=64';document.body.appendChild(s);
+const s=document.createElement('script');s.src='r3.js?v=65';document.body.appendChild(s);
 </script>
 </body>
 </html>
