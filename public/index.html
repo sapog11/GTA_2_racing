@@ -521,19 +521,19 @@ const CIV_COLS=['#7a2222','#3a4a6a','#bdbdbd','#5a5a5a','#7a6a3a','#2f5f5a','#6a
 const RIVALS=[{n:'Kája',c:'#9dff00'},{n:'Pepa Turbo',c:'#ff2ec8'},{n:'Denis',c:'#ff7a00'},{n:'Žanetka',c:'#00e5ff'}];
 const HEROES={
  lucie:{name:'Lucie „Kočka“',role:'Řidička',desc:'Za volantem od patnácti. Bokem projede i Mariánskej most.',perk:'Lepší ovladatelnost +15 %, nitro se nabíjí o 40 % rychleji.'},
- marek:{name:'Marek „Šrot“',role:'Střelec',desc:'Ex-boxer z Předlic. Když vytáhne kalacha, policajti brzdí.',perk:'Poškození +60 %, rychlejší palba, pomalejší přehřátí.'}
+ marek:{name:'Marek „Šrot“',role:'Střelec',desc:'Ex-boxer z Předlic. Když vytáhne kalacha, gangy brzdí.',perk:'Poškození +60 %, rychlejší palba, pomalejší přehřátí.'}
 };
 function chaseSpec(B,p){const m=p&&p.st?p.st.max:0,a=p&&p.st?p.st.acc*(p.st.drv||1):0;return Object.assign({},B,{max:Math.max(B.max,m*.96),acc:Math.max(B.acc,a*1.08)})}
 const LEVELS=[
  {id:'utek',name:'Útěk po loupeži',sub:'Noc • liják • policie',type:'chase',route:[[4,25],[2,25],[2,22],[4,22],[4,23],[7,23],[7,21],[8,21],[8,19],[3,19],[3,17]],
-  blocks:[[2,.55],[5,.5],[7,.6],[8,.5]],reward:{resp:150,cash:50000},dark:.84,rain:true,from:'Mírové náměstí',to:'Úkryt v Neštěmicích',comic:'utek'},
+  pol:.5,blocks:[[2,.55],[5,.5],[7,.6],[8,.5]],reward:{resp:150,cash:50000},dark:.84,rain:true,from:'Mírové náměstí',to:'Úkryt v Neštěmicích',comic:'utek'},
  {id:'zavod',name:'Závod s místníma',sub:'Předlice → Střekov • 5 aut',type:'race',route:[[1,20],[3,20],[3,22],[1,22],[1,25],[4,25],[4,23],[9,23],[9,25],[7,25],[7,28]],
   reward:{resp:200,cash:25000},dark:.78,rain:false,from:'Předlice',to:'Střekov',comic:'zavod',req:'utek'},
- {id:'kuryr',name:'Kurýr do Předlic',sub:'Na čas • bez policie',type:'chase',cops:0,time:58,route:[[2,24],[2,27],[4,27],[4,29],[1,29]],reward:{resp:80,cash:30000},dark:.8,rain:true,comic:'kuryr'},
+ {id:'kuryr',name:'Kurýr do Předlic',sub:'Náhradní díly na čas',type:'chase',cops:0,time:58,route:[[2,24],[2,27],[4,27],[4,29],[1,29]],reward:{resp:80,cash:30000},dark:.8,rain:true,comic:'kuryr'},
  {id:'pepa',name:'Ožralej Pepa',sub:'Odvez ho domů, než se pobleje',type:'chase',cops:0,time:84,gentle:1,route:[[3,25],[4,25],[9,25],[9,21],[10,21],[10,18]],reward:{resp:80,cash:35000},dark:.82,rain:false,comic:'pepa'},
  {id:'cetky',name:'Zlatý řetězy',sub:'Rozstřílej 8 aut gangu za 110 s',type:'chase',cops:0,gang:8,kills:8,time:110,route:[[1,13],[4,13],[4,16],[1,16],[1,13]],reward:{resp:150,cash:60000},dark:.84,rain:true,comic:'cetky'},
- {id:'fizl',name:'Fízlové na Klíši',sub:'Sejmi 7 policejních aut',type:'chase',kills:7,time:140,route:[[1,18],[1,12],[3,12],[3,10],[0,10]],blocks:[[1,.5]],reward:{resp:150,cash:55000},dark:.84,rain:true,comic:'fizl'},
- {id:'chem',name:'Útěk z Chemičky',sub:'Přes most v Povrlech • policie',type:'chase',route:[[2,16],[2,14],[9,14],[9,11],[7,11]],blocks:[[1,.5],[2,.6]],reward:{resp:180,cash:70000},dark:.86,rain:true,comic:'chem'},
+ {id:'fizl',name:'Gang na Klíši',sub:'Sejmi 7 aut gangu',type:'chase',pol:0,kills:7,time:140,route:[[1,18],[1,12],[3,12],[3,10],[0,10]],reward:{resp:150,cash:55000},dark:.84,rain:true,comic:'fizl'},
+ {id:'chem',name:'Útěk z Chemičky',sub:'Přes most v Povrlech • gang v zádech',pol:.25,type:'chase',route:[[2,16],[2,14],[9,14],[9,11],[7,11]],blocks:[[1,.5],[2,.6]],reward:{resp:180,cash:70000},dark:.86,rain:true,comic:'chem'},
  {id:'mosty',name:'Závod přes mosty',sub:'Tři mosty • 5 aut',type:'race',route:[[4,14],[8,14],[8,19],[4,19],[4,23],[9,23],[9,26]],reward:{resp:200,cash:40000},dark:.78,rain:false,comic:'mosty'},
  {id:'l3',name:'Děčín',sub:'Zatím zavřeno',soon:true,at:[6,4]},
 ];
@@ -596,43 +596,43 @@ kaja:`<svg viewBox="0 0 200 250" xmlns="http://www.w3.org/2000/svg"><g stroke="#
 const COMICS={
  end_utek:{title:'Kapitola 2: Konec',end:1,panels:[{art:'end_utek',cap:'Úkryt v Neštěmicích. Zlato na kapotě, sirény se ztrácej v dešti. Dneska spíme jako králové.'}]},
  end_zavod:{title:'Kapitola 3: Konec',end:1,panels:[{art:'end_zavod',cap:'Most nad Labem, Střekov v zádech. Místní kluci koukaj s otevřenou pusou — nová jednička v Ústí.'}]},
- end_kuryr:{title:'Kurýr: Konec',end:1,panels:[{art:'end_kuryr',cap:'Balík předanej, obálka tlustá. Co v něm bylo? Radši se neptej.'}]},
+ end_kuryr:{title:'Kurýr: Konec',end:1,panels:[{art:'end_kuryr',cap:'Díly předaný, dílna jede dál. Mistr podává obálku: „Dobrá práce, příště zas.“'}]},
  end_pepa:{title:'Ožralej Pepa: Konec',end:1,panels:[{art:'end_pepa',cap:'Pepa doma, celej a spokojenej. Manželka s válečkem už čeká. Tohle už není tvůj problém.'}]},
- end_cetky:{title:'Zlatý řetězy: Konec',end:1,panels:[{art:'end_cetky',cap:'Gang je na šrot a jejich zlato visí na tvým krku. Herna nonstop dneska slaví jinou partu.'}]},
- end_fizl:{title:'Fízlové na Klíši: Konec',end:1,panels:[{art:'end_fizl',cap:'Hromada majáků na kopci a jen koncovky mizející dolů. Velitel si dneska čepici nezaslouží.'}]},
- end_chem:{title:'Chemička: Konec',end:1,panels:[{art:'end_chem',cap:'Svítá nad Chemičkou. Policajti hledaj dole v údolí. My jsme nahoře — a volní.'}]},
+ end_cetky:{title:'Zlatý řetězy: Konec',end:1,panels:[{art:'end_cetky',cap:'Gang je na šrot a jejich řetězy jsou v kufru. Ulice u herny je dneska klidná.'}]},
+ end_fizl:{title:'Gang na Klíši: Konec',end:1,panels:[{art:'end_fizl',cap:'Sedm kouřících vraků na kopci. Kájovi kluci dneska Klíši nedostanou.'}]},
+ end_chem:{title:'Chemička: Konec',end:1,panels:[{art:'end_chem',cap:'Svítá nad Chemičkou. Gang zůstal někde v údolí. Auto je zpátky a parťáci taky.'}]},
  end_mosty:{title:'Tři mosty: Konec',end:1,panels:[{art:'end_mosty',cap:'Prachy v ruce, uznání v očích soupeře. Tři mosty, jedna královna silnice.'}]},
  intro:{title:'Kapitola 1: Novej ve městě',panels:[
   {scene:'city',art:'keyart',cap:'Ústí nad Labem. Město andělů. Chemička nikdy nespí, Labe teče furt stejně líně… a ty jsi tu novej.'},
-  {scene:'river',art:'panel_river',who:['lucie','marek'],bubs:[{w:'lucie',t:'Tak tohle je ono, Marku. Novej život.',x:4,y:8},{w:'marek',t:'Novej život, nový cíle. Ale tady jsme nikdo.',x:36,y:34}]},
+  {scene:'river',art:'panel_river',who:['lucie','marek'],bubs:[{w:'lucie',t:'Tak tohle je Ústí, Marku. Začínáme od nuly.',x:4,y:8},{w:'marek',t:'Jo. Tady nás nikdo nezná. Zatím.',x:36,y:34}]},
   {scene:'fight',art:'street',who:[null,'kaja'],cap:'Fabriky, kopce, herny nonstop a ulice, kde se respekt nedědí.',bubs:[{w:'kaja',t:'Co čumíš, ty vole? Tohle je náš rajón, do píče!',x:8,y:40,shout:1}]},
   {scene:'fight',art:'street',cap:'Sídliště. Kluci se zase hádaj o nic.',bubs:[{w:'pepa',t:'Co na mě čumíš, ty šlapko?',x:4,y:30,shout:1},{w:'denis',t:'Vole, chceš do huby, nebo co?!',x:38,y:52},{w:'pepa',t:'Tak pojď, ty opice!',x:10,y:74,shout:1}]},
   {scene:'car',art:'panel_car',who:['lucie','marek'],bubs:[{w:'marek',t:'Potřebujem prachy na káru a jméno.',x:40,y:10},{w:'lucie',t:'Já řídím. Ty střílíš. Jako vždycky.',x:4,y:34}],cap2:'Odpracuj si respekt.'}]},
  utek:{title:'Kapitola 2: Zlatnictví',panels:[
   {scene:'plaza',art:'panel_plaza',cap:'02:47. Zlatnictví u Mírového náměstí. Leje jak z konve.'},
   {scene:'plaza2',art:'heist',who:['lucie','marek'],bubs:[{w:'marek',t:'Máme to! Jeď, jeď, JEĎ!',x:38,y:10,shout:1},{w:'lucie',t:'Drž se, ty debile, budou tu za minutu!',x:4,y:34}]},
-  {scene:'chase',art:'bridge',who:[null,'marek'],cap:'Sirény. Modrý světla. Celá Klíše je vzhůru.',bubs:[{w:'police',t:'Stůjte! Policie!',x:50,y:28,shout:1},{w:'marek',t:'Nasrat! Mám kalacha a dobrou náladu.',x:6,y:46}]},
-  {scene:'chase2',art:'panel_chase2',cap:'Dojeď do úkrytu v Neštěmicích a kšeft je tvůj. Policajty před sebou rozstřílej — tlačítko PAL.'}]},
+  {scene:'chase',art:'bridge',who:[null,'marek'],cap:'Sirény. Modrý světla. Celá Klíše je vzhůru.',bubs:[{w:'police',t:'Stůjte! Policie!',x:50,y:28,shout:1},{w:'marek',t:'Neboj, ujedeme jim. Jen se drž!',x:6,y:46}]},
+  {scene:'chase2',art:'panel_chase2',cap:'Dojeď do úkrytu v Neštěmicích. Policii ujeď — a za náma jede i Kájův gang. Jejich káry sejmi tlačítkem PAL.'}]},
  zavod:{title:'Kapitola 3: Předlice',panels:[
   {scene:'cutoff',art:'panel_cutoff',cap:'Předlice, sobota v noci. Na křižovatce tě někdo nahulí.'},
   {scene:'cutoff2',art:'panel_cutoff2',who:['lucie','kaja'],bubs:[{w:'kaja',t:'Ty vole, kdo tě učil řídit? Šlapko jedna!',x:40,y:10,shout:1},{w:'lucie',t:'Cos to řek, ty pičo?',x:4,y:36}]},
   {scene:'start',art:'racestart',who:['marek','kaja'],bubs:[{w:'kaja',t:'Chceš respekt? Závod. Pět kár, přes Mariánskej most na Střekov. Vítěz bere prachy.',x:36,y:8},{w:'marek',t:'Platí. Lucko, nakopni jim prdele.',x:4,y:40}]},
   {scene:'start2',art:'panel_start2',cap:'Platí jen první místo. Tlačítko NITRO = krátký zrychlení, nabíjí se samo.'}]},
  kuryr:{title:'Kurýr',panels:[
-  {art:'courier',bubs:[{w:'pepa',t:'Balík do Předlic. Za 58 vteřin, jinak tě sežerou.',x:44,y:8},{w:'lucie',t:'Co v tom je?',x:4,y:40}]},
-  {art:'courier',cap2:'Neptej se. JEĎ!'}]},
+  {art:'courier',bubs:[{w:'pepa',t:'Náhradní díly pro dílnu v Předlicích. Za 58 vteřin, jinak mistr zavře.',x:44,y:8},{w:'lucie',t:'Tak to stihneme.',x:4,y:40}]},
+  {art:'courier',cap2:'Mistr nečeká. JEĎ!'}]},
  pepa:{title:'Ožralej Pepa',panels:[
   {art:'drunk',bubs:[{w:'pepa',t:'Holka zlatá… vez mě domů… hik!',x:4,y:8,shout:1},{w:'lucie',t:'Jestli mi to tu pobleješ, vyhodím tě na mostě!',x:50,y:40}]},
   {art:'drunk',cap:'Jeď opatrně. Každej náraz = Pepovi je hůř.',cap2:'Krásný Březno, rychle!'}]},
  cetky:{title:'Zlatý řetězy',panels:[
   {art:'gang',bubs:[{w:'kaja',t:'Tohle je náš rajón, šlapko. Zlatý řetězy, černý káry.',x:40,y:6,shout:1},{w:'marek',t:'Pěkný řetízky. Budou se hodit do šrotu.',x:4,y:44}]},
   {art:'shootout',cap:'Šest černejch SUV. Dvě minuty.',cap2:'PAL!'}]},
- fizl:{title:'Fízlové na Klíši',panels:[
-  {art:'bridge',bubs:[{w:'police',t:'Tady hlídka. Ten černej hatchback zase jezdí.',x:40,y:8},{w:'marek',t:'Pět fízláků. Ani o jednoho víc.',x:4,y:44}]},
-  {art:'shootout',cap2:'Sejmi 5 aut policie!'}]},
+ fizl:{title:'Gang na Klíši',panels:[
+  {art:'gang',bubs:[{w:'kaja',t:'Klíše je teď naše. Kdo tu jezdí, platí.',x:40,y:8,shout:1},{w:'marek',t:'Sedm černejch kár. Ani o jednu víc.',x:4,y:44}]},
+  {art:'shootout',cap2:'Sejmi 7 aut gangu!'}]},
  chem:{title:'Chemička',panels:[
-  {art:'shootout',cap:'Noc u Spolchemie. Někdo zmáčkl alarm.',bubs:[{w:'marek',t:'Mám to v kufru. Teď jen přes most v Povrlech.',x:40,y:50}]},
-  {art:'bridge',cap2:'Ujeď policii!'}]},
+  {art:'shootout',cap:'Noc u Spolchemie. Kájův gang nám ukrad auto a schoval ho v areálu.',bubs:[{w:'marek',t:'Mám ho. Teď jen přes most v Povrlech — a za náma půlka gangu.',x:40,y:50}]},
+  {art:'gang',cap2:'Ujeď gangu!'}]},
  mosty:{title:'Tři mosty',panels:[
   {art:'racestart',bubs:[{w:'kaja',t:'Odveta. Tři mosty, žádný zkratky.',x:40,y:8,shout:1},{w:'lucie',t:'Zase prohraješ, šneku.',x:4,y:40}]},
   {art:'keyart',cap2:'Jen první místo!'}]},
@@ -805,7 +805,7 @@ function spawnCiv(w){for(let tries=0;tries<12;tries++){const ci=Math.round((w.ca
 
 /* ---- peds ---- */
 const DIALOG=[['Čau! Jak se máš?','Ale jo, ujde to.'],['Viděls ten zápas?','Jo, hrůza. Zase prohráli.'],['Půjčíš mi stovku?','Zapomeň, vole.'],['Ty jo, dlouho jsme se neviděli!','No jo, makám jak blázen.'],['Jdeš večer ven?','Jasně, do Pivnice.'],['Slyšels o tý honičce?','Jo, prej to byla černá kára.'],['Kde bydlíš teď?','Na Severní Terase.'],['Máš práci?','Jo, v Chemičce.'],['Co děláš o víkendu?','Spím. Celej víkend.'],['Hele, nemáš oheň?','Jasně, tumáš.']];
-const LINES={pub:['Na zdraví, vole!','Ještě jedno a jdem.','Kdo platí tuhle rundu?','Ty vole, já tě mám rád!','Hospoda je můj druhej domov.','Pivo za 29? To je dar!','Zavolej mi taxíka…','Půjč mi kilo do pátku!','Hele, ty nejsi odsud, co?'],car:['Ty šlapko!','Ty opice!','Kam čumíš, vole?!','Naučíš se řídit?!','Debile!','Do píče, moje auto!','Papíry máš z Lidlu?!','Ty kreténe!'],police:['Zastavte vozidlo!','Policie! Stůjte!','Okamžitě zastav!','Máme tě, kreténe!','Ruce na volant!'],rival:['Čau, šnečku!','Papa, loosere!','Tohle sou Předlice, vole!','Seš pomalej jak tramvaj!','Ty opice!'],drunk:['Já jsem v pohodě, fakt!','Kde je moje bunda?','Ještě jednu a domů… hik.','Miluju tohle město!','Hik…','Máš cigo?','Půjč mi kilo do pátku!','Ty vole, kde je hospoda?','Ještě jedno, pane vrchní!','Já nejsem ožralej!','Pivo je tekutej chleba!'],fight:['Ty šlapko!','Do píče!','Co čumíš?!','Dej mi ty prachy!','Chceš do huby?','Vole, nech toho!','Pojď sem, ty kreténe!'],girl:['Svezeš mě, zlato?','Ahoj fešáku…','Tady je zima jak sviňa.','Máš cígo?'],hit:['Ty opice!','Ty kreténe!','Pomalu, vole!','Debile!','Kurva!','Jezdi pořádně!','Do píče, málem!'],worker:['Ještě dvě hodiny a padla.','Mistr je kretén.','Zejtra zas ranní.','Výplata až v pátek…','Zase noční šichta…','Chemička smrdí jak vždycky.','Kde je ten autobus?'],bump:['Promiň!','Dávej bacha, vole!','Kam čumíš?','Pardon, pane.','Jejda, sorry!','Nešlapej mi na boty!','Ty máš oči na zádech?','Uhni, spěchám!'],
+const LINES={pub:['Na zdraví, vole!','Ještě jedno a jdem.','Kdo platí tuhle rundu?','Ty vole, já tě mám rád!','Hospoda je můj druhej domov.','Pivo za 29? To je dar!','Zavolej mi taxíka…','Půjč mi kilo do pátku!','Hele, ty nejsi odsud, co?'],car:['Ty šlapko!','Ty opice!','Kam čumíš, vole?!','Naučíš se řídit?!','Debile!','Do píče, moje auto!','Papíry máš z Lidlu?!','Ty kreténe!'],police:['Zastavte vozidlo!','Policie! Stůjte!','Okamžitě zastavte!','Vypněte motor!','Ruce na volant!'],gang:['Tohle je náš rajón!','Zastav, ty vole!','Dej sem tu káru!','Máme tě!','Za to zaplatíš!'],rival:['Čau, šnečku!','Papa, loosere!','Tohle sou Předlice, vole!','Seš pomalej jak tramvaj!','Ty opice!'],drunk:['Já jsem v pohodě, fakt!','Kde je moje bunda?','Ještě jednu a domů… hik.','Miluju tohle město!','Hik…','Máš cigo?','Půjč mi kilo do pátku!','Ty vole, kde je hospoda?','Ještě jedno, pane vrchní!','Já nejsem ožralej!','Pivo je tekutej chleba!'],fight:['Ty šlapko!','Do píče!','Co čumíš?!','Dej mi ty prachy!','Chceš do huby?','Vole, nech toho!','Pojď sem, ty kreténe!'],girl:['Nevíš, kdy jede tramvaj?','Hezký auto!','Tady je zima jak sviňa.','Máš cígo?'],hit:['Ty opice!','Ty kreténe!','Pomalu, vole!','Debile!','Kurva!','Jezdi pořádně!','Do píče, málem!'],worker:['Ještě dvě hodiny a padla.','Mistr je kretén.','Zejtra zas ranní.','Výplata až v pátek…','Zase noční šichta…','Chemička smrdí jak vždycky.','Kde je ten autobus?'],bump:['Promiň!','Dávej bacha, vole!','Kam čumíš?','Pardon, pane.','Jejda, sorry!','Nešlapej mi na boty!','Ty máš oči na zádech?','Uhni, spěchám!'],
  group:['A pak mu řekla, že je to jeho dítě!','Kdo jde na jedno?','Viděli jste včera Slavii?','Šéf mě zase sjel…','Tady se nic nezmění, vole.','Prej zdražujou tramvaj.','Já bych odsud vypadnul.','Hele, támhle jede ta černá kára!','Pátek, pátek, pátek!','Kdo má cígo?','Ty vole, to není možný!','Haha, to je dobrý!','Kam dneska večer?','Na Střekově je párty.','Kamarád prodává káru, levně.'],
  shot:['Střílí!!','Lehni!','Pomoc!','Utíkej!','Do píče, kulky!','Policie, pomoc!'],greet:['Čau!','Nazdar, jak se máš?','Ahoj, co děláš?','Taky prší, co?','Viděls ten zápas?','Ty jo, dlouho jsme se neviděli!'],near:['Pěkná kára!','Hezký auto, vole.','Svezeš mě kousek?','Ty máš ale bourák!','Neblokuj chodník!','Co tu stojíš?'],walker:['Kolik je hodin?','Zase jsem nestih autobus.','Prší jak sviňa.','Kde je tu bankomat?','Tohle město mě jednou zabije.','Ještě že je pátek.','Ten nájem je šílenej.','Mám hlad jak vlk.','Máš cigo?','Ty vole, prší.','Máš drobný?','Kam jdeš?','Půjč mi kilo do pátku.','Vrátím ti to, fakt!']};
 const PEDCOL=['#3a6ea5','#a53a3a','#4a8a4a','#8a6a3a','#555','#7a3a8a','#c8c8c8','#2a2a2a','#b8862b'];
@@ -906,18 +906,18 @@ function updateWorld(w,dt,pctl){
   w.t+=dt;
   for(const c of w.cars){const ctl=c===w.player?pctl:ai(w,c,dt);if(c.frozen){c.vx=c.vy=0;c.v=0;continue}
     if(!c.wreck)carPhysics(w,c,ctl,dt);else{c.vx*=1-2*dt;c.vy*=1-2*dt;c.x+=c.vx*dt;c.y+=c.vy*dt}
-    if(c.hp<=0&&!c.wreck&&c!==w.player){c.wreck=1;c.hp=0;explode(w,c.x,c.y);if((c.kind==='police'||c.gang)&&w.onKill)w.onKill(c)}
+    if(c.hp<=0&&!c.wreck&&c!==w.player){c.wreck=1;c.hp=0;explode(w,c.x,c.y);if(c.gang||(c.st&&c.st.gang)){setTimeout(()=>explode(w,c.x+rr(-12,12),c.y+rr(-12,12)),180);if(w.player&&Math.hypot(c.x-w.player.x,c.y-w.player.y)<500)shakeA=Math.max(shakeA,9)}if((c.kind==='police'||c.gang)&&w.onKill)w.onKill(c)}
     if(c.hp<c.maxhp*.4||c.wreck){c.smokeT-=dt;if(c.smokeT<0){c.smokeT=c.wreck?.08:.18;part(w,{x:c.x,y:c.y,vx:rr(-10,10),vy:rr(-10,10),life:rr(.8,1.6),max:1.6,type:c.wreck&&R()<.5?'fire':'smoke',size:rr(6,11),z:.02})}}
     if(c.wreck)c.wreck+=dt;
     if(c.say){c.sayL-=dt;if(c.sayL<=0)c.say=null}
-    if(w.player&&c!==w.player&&!c.say&&!c.wreck&&R()<dt*.25){const d=Math.hypot(c.x-w.player.x,c.y-w.player.y);if(d<260&&(c.kind==='police'&&!c.parked||c.kind==='rival')){c.say=pick(LINES[c.kind]);c.sayL=2}else if(c.kind==='civ'&&d<120){c.say=pick(LINES.car);c.sayL=1.8;Snd.honk()}}
+    if(w.player&&c!==w.player&&!c.say&&!c.wreck&&R()<dt*.25){const d=Math.hypot(c.x-w.player.x,c.y-w.player.y);if(d<260&&(c.kind==='police'&&!c.parked||c.kind==='rival')){c.say=pick(LINES[c.gang||(c.st&&c.st.gang)?'gang':c.kind]);c.sayL=2}else if(c.kind==='civ'&&d<120){c.say=pick(LINES.car);c.sayL=1.8;Snd.honk()}}
   }
   carCollide(w);
   // bullets
   for(let i=w.bullets.length-1;i>=0;i--){const b=w.bullets[i];b.life-=dt;b.px=b.x;b.py=b.y;b.x+=b.vx*dt;b.y+=b.vy*dt;let dead=b.life<=0;
-    if(isSolid(tileAt(Math.floor(b.x/T),Math.floor(b.y/T)))){const hx=isSolid(tileAt(Math.floor(b.x/T),Math.floor(b.py/T))),hy=isSolid(tileAt(Math.floor(b.px/T),Math.floor(b.y/T)));sparks(w,b.px,b.py,8,'#ffd27a');if(w.parts.length<400)for(let k=0;k<3;k++)part(w,{x:b.px,y:b.py,vx:rr(-30,30),vy:rr(-30,30),life:rr(.4,.8),max:.8,type:'smoke',size:rr(4,7),z:0,col:1});
+    if(isSolid(tileAt(Math.floor(b.x/T),Math.floor(b.y/T)))){if(R()<.35){for(let k=0;k<7;k++){const an=R()*6.28,sp=rr(30,110);part(w,{x:b.px,y:b.py,vx:Math.cos(an)*sp,vy:Math.sin(an)*sp,life:rr(.2,.45),max:.45,type:'fire',size:rr(3,6)})}w.flashL={x:b.px,y:b.py,t:.12};Snd.tone(160,40,.18,'sawtooth',.12)}const hx=isSolid(tileAt(Math.floor(b.x/T),Math.floor(b.py/T))),hy=isSolid(tileAt(Math.floor(b.px/T),Math.floor(b.y/T)));sparks(w,b.px,b.py,8,'#ffd27a');if(w.parts.length<400)for(let k=0;k<3;k++)part(w,{x:b.px,y:b.py,vx:rr(-30,30),vy:rr(-30,30),life:rr(.4,.8),max:.8,type:'smoke',size:rr(4,7),z:0,col:1});
       if(!b.rico&&R()<.3){b.rico=1;if(hx)b.vx=-b.vx*.6;if(hy||!hx)b.vy=-b.vy*.6;b.vx+=rr(-120,120);b.vy+=rr(-120,120);b.x=b.px;b.y=b.py;b.life=Math.min(b.life,.18);b.dmg*=.5;if(Math.random()<.5)Snd.tone(2400,900,.12,'square',.05)}else dead=true}
-    if(!dead)for(const c of w.cars){if(c===w.player||c.wreck)continue;if(Math.hypot(c.x-b.x,c.y-b.y)<c.L*.5){c.hp-=b.dmg;sparks(w,b.x,b.y,12,'#fff3b0');c.hitT=.12;w.flash=Math.max(w.flash||0,.08);dead=true;break}}
+    if(!dead)for(const c of w.cars){if(c===w.player||c.wreck)continue;if(Math.hypot(c.x-b.x,c.y-b.y)<c.L*.5){if(c.st&&c.st.police&&!c.st.gang){sparks(w,b.x,b.y,5,'#bcd4ff');dead=true;break}c.hp-=b.dmg;sparks(w,b.x,b.y,12,'#fff3b0');c.hitT=.12;w.flash=Math.max(w.flash||0,.08);dead=true;break}}
     if(dead)w.bullets.splice(i,1)}
   // peds
   if(w.peds.length<w.pedMax&&R()<.5)spawnPed(w,G.mode==='ambient'||G.mode==='promo'?300:620,G.mode==='ambient'||G.mode==='promo'?520:1000);
@@ -1188,7 +1188,7 @@ function promoShot(i){const w=promo.w,s=PROMO[i];cineCut();
       for(let k=0;k<12;k++)spawnPed(w,80,500)}
     if(s.game==='chase'){setRoute(w,[[0,21],[3,21],[3,23],[8,23],[8,25]]);const sp={col:'#141519',max:235,acc:240,turn:2.9,grip:6,hp:999,L:40,Wd:19};const g=makeCar(sp,IX(0)+60,IX(21)+18,0,'run');g.aiId='civka';g.path=routePath(w,18);g.v=200;g.vx=200;w.cars.push(g);
       for(let k=0;k<2;k++){const p=makeCar(Object.assign({},POLICE,{max:228,hp:999}),IX(0)-80-k*70,IX(21)+(k?-18:18),0,'run');p.path=routePath(w,k?-18:18);p.v=200;p.vx=200;w.cars.push(p)}
-      promo.follow=g;promo.cam='side';promo.gun=1;w.cam.x=g.x;w.cam.y=g.y;const PL=['Ty šlapko, pomalu!','Do píče, fízlové!','Jeď, jeď, JEĎ!','Málem mě zajel, kretén!','To je ta černá kára!','Ty vole, točím to!','Zase honěj někoho…','Policie, kurva!'];
+      promo.follow=g;promo.cam='side';promo.gun=1;w.cam.x=g.x;w.cam.y=g.y;const PL=['Ty šlapko, pomalu!','Ty jo, honička!','Jeď, jeď, JEĎ!','Málem mě zajel, kretén!','To je ta černá kára!','Ty vole, točím to!','Zase honěj někoho…','Policie jede!'];
       for(let k=0;k<8;k++){const q=makePed(k%3?'walker':'drunk',IX(0)+T*(2.5+k*3),IX(21)+(k%2?T*1.4:-T*1.4));q.sp=0;q.promoLine=PL[k%PL.length];w.peds.push(q)}}}
 }
 function updatePromo(dt){promo.t+=dt;const w=promo.w;let i=-1;for(let k=0;k<PROMO.length;k++)if(promo.t>=PROMO[k].t)i=k;
@@ -1299,7 +1299,7 @@ function comicScene(name){
   {const dy=(name==='plaza'||name==='plaza2'?21:19)*8*T;sc.y+=dy;for(const o of w.cars)o.y+=dy;for(const o of w.peds)o.y+=dy;for(const o of w.parts)o.y+=dy;for(const k of w.skids){k[1]+=dy;k[3]+=dy}}
   return{w,sc}}
 function renderPanel(){const el=$('scr-comic'),C=comic.C,P=C.panels[comic.i];
-  let h=`<div class="tag" style="margin-bottom:8px">${C.title}</div><div class="panel" id="panel">${P.art?`<div class="art" style="background-image:url(art/${P.art}.jpg?v=3)"></div>`:'<canvas id="pcv"></canvas>'}<div class="halftone"></div>`;
+  let h=`<div class="tag" style="margin-bottom:8px">${C.title}</div><div class="panel" id="panel">${P.art?`<div class="art" style="background-image:url(art/${P.art}.jpg?v=4)"></div>`:'<canvas id="pcv"></canvas>'}<div class="halftone"></div>`;
   if(P.who){if(P.who[0])h+=`<div class="inset l" style="background-image:url(art/${P.who[0]}.jpg)"></div>`;if(P.who[1])h+=`<div class="inset r" style="background-image:url(art/${P.who[1]}.jpg)"></div>`}
   if(P.cap)h+=`<div class="cap">${P.cap}</div>`;
   for(const b of P.bubs||[])h+=`<div class="bub ${b.shout?'shout':''}" style="left:${b.x}%;top:${b.y}%"><small>${WHO_NAME[b.w]}</small>${b.t}</div>`;
@@ -1331,7 +1331,7 @@ function startRoam(at,target){AN.ev('roam_start');hideAll();G.engineOff=false;$(
   Snd.setCar&&Snd.setCar(SAVE.car);Snd.startMusic(false);Snd.setStyle(SAVE.radio||'macht');Snd.rain(w.rain);drawMinimapBg();setTimeout(()=>{const a=$('area');if(G.mode==='roam'){a.textContent='📻 '+STY[Snd.style].name;a.classList.add('on');areaT=2.2}},2600)}
 let areaT=0;
 function freeGun(w,p,dt,fire){RS.gCD=(RS.gCD||0)-dt;if(RS.gOver){RS.gHeat-=dt*.45;if(RS.gHeat<=.25)RS.gOver=false}else RS.gHeat=Math.max(0,(RS.gHeat||0)-dt*.3);
-  if(fire&&!RS.gOver&&RS.gCD<=0){RS.gCD=.1;let a=p.a,best=null,bd=1e9;for(const c of w.cars){if(c===p||c.wreck||c.parked)continue;const dx=c.x-p.x,dy=c.y-p.y,d=Math.hypot(dx,dy);if(d>480)continue;const da=Math.abs(wrapA(Math.atan2(dy,dx)-p.a));if(da<.5&&d<bd){bd=d;best=c}}
+  if(fire&&!RS.gOver&&RS.gCD<=0){RS.gCD=.1;let a=p.a,best=null,bd=1e9;for(const c of w.cars){if(c===p||c.wreck||c.parked||(c.st&&c.st.police&&!c.st.gang))continue;const dx=c.x-p.x,dy=c.y-p.y,d=Math.hypot(dx,dy);if(d>480)continue;const da=Math.abs(wrapA(Math.atan2(dy,dx)-p.a));if(da<.5&&d<bd){bd=d;best=c}}
     if(best)a=Math.atan2(best.y-p.y,best.x-p.x);a+=rr(-.05,.05);const ca=Math.cos(p.a),sa=Math.sin(p.a);
     w.bullets.push({x:p.x+ca*p.L*.55-sa*6,y:p.y+sa*p.L*.55+ca*6,vx:Math.cos(a)*950+p.vx,vy:Math.sin(a)*950+p.vy,life:.5,dmg:12});w.muzzle=.05;Snd.shot();RS.gHeat+=.055;if(RS.gHeat>=1){RS.gHeat=1;RS.gOver=true;floatMsg('PŘEHŘÁTO!',.7)}}
   w.muzzle=Math.max(0,(w.muzzle||0)-dt)}
@@ -1377,7 +1377,7 @@ function beginRace(L){hideAll();const w=newWorld({rain:L.rain,dark:L.dark,civMax
     p.x=r0.x+ca*200-nx*20;p.y=r0.y+sa*200-ny*20;
   }else{
     if(L.gang){for(let k=0;k<L.gang;k++){const q=routeAt(w,w.total*(k+.6)/(L.gang+.5));const c=makeCar(chaseSpec(GANG,p),q.x,q.y,q.a+Math.PI*(k%2),'police');c.v=80;c.gang=1;c.seg=q.i;c.s=w.total*(k+.6)/(L.gang+.5);w.cars.push(c)}}
-    if(L.cops!==0)for(let k=0;k<2;k++){const c=makeCar(chaseSpec(POLICE,p),r0.x-ca*(260+k*80)+nx*(k?-18:18),r0.y-sa*(260+k*80)+ny*(k?-18:18),a,'police');c.v=120;w.cars.push(c)}
+    if(L.cops!==0)for(let k=0;k<2;k++){const isPol=k<Math.round(2*(L.pol??.35));const c=makeCar(chaseSpec(isPol?POLICE:GANG,p),r0.x-ca*(260+k*80)+nx*(k?-18:18),r0.y-sa*(260+k*80)+ny*(k?-18:18),a,'police');if(!isPol)c.gang=1;c.v=120;w.cars.push(c)}
     for(const b of(L.blocks||[])){const s=w.cum[b[0]]+(w.cum[b[0]+1]-w.cum[b[0]])*b[1];const q=routeAt(w,s);for(const side of[-1,1]){const c=makeCar(chaseSpec(POLICE,p),q.x-Math.sin(q.a)*side*24,q.y+Math.cos(q.a)*side*24,q.a+Math.PI/2+side*.4,'police');c.parked=true;c.seg=q.i;c.s=s;w.cars.push(c)}}
     w.onKill=c=>{RS.kills++;floatMsg(L.kills?`${Math.min(RS.kills,L.kills)} / ${L.kills}`:'+2 000 Kč')};
   }
@@ -1521,7 +1521,7 @@ function updateRace(dt){const w=G.world,p=w.player,L=RS.L;RS.t+=dt;
   // action
   const act=G.keys.a&&!RS.end&&RS.count<=0;
   if(L.type==='chase'){RS.fireCD-=dt;if(RS.over){RS.heat-=dt*.45;if(RS.heat<=.25)RS.over=false}else RS.heat=Math.max(0,RS.heat-dt*.32);
-    if(act&&!RS.over&&RS.fireCD<=0){RS.fireCD=RS.fireRate;let a=p.a;let best=null,bd=1e9;for(const c of w.cars){if((c.kind!=='police'&&!(L.kills&&c.kind==='civ'&&false))||c.wreck)continue;const dx=c.x-p.x,dy=c.y-p.y,d=Math.hypot(dx,dy);if(d>480)continue;const da=Math.abs(wrapA(Math.atan2(dy,dx)-p.a));if(da<.5&&d<bd){bd=d;best=c}}
+    if(act&&!RS.over&&RS.fireCD<=0){RS.fireCD=RS.fireRate;let a=p.a;let best=null,bd=1e9;for(const c of w.cars){if(c.kind!=='police'||c.wreck||(c.st&&c.st.police&&!c.st.gang))continue;const dx=c.x-p.x,dy=c.y-p.y,d=Math.hypot(dx,dy);if(d>480)continue;const da=Math.abs(wrapA(Math.atan2(dy,dx)-p.a));if(da<.5&&d<bd){bd=d;best=c}}
       if(best)a=Math.atan2(best.y-p.y,best.x-p.x);a+=rr(-.05,.05);const ca=Math.cos(p.a),sa=Math.sin(p.a);
       w.bullets.push({x:p.x+ca*p.L*.55-sa*6,y:p.y+sa*p.L*.55+ca*6,vx:Math.cos(a)*950+p.vx,vy:Math.sin(a)*950+p.vy,life:.5,dmg:10*RS.dmgMul});w.muzzle=.05;Snd.shot();RS.heat+=RS.heatPer;if(RS.heat>=1){RS.heat=1;RS.over=true;floatMsg('PŘEHŘÁTO!',.7)}}
     w.muzzle=Math.max(0,(w.muzzle||0)-dt);
@@ -1537,7 +1537,7 @@ function updateRace(dt){const w=G.world,p=w.player,L=RS.L;RS.t+=dt;
   // police mgmt & siren
   let nearP=1e9;
   if(L.type==='chase'){let active=0;for(const c of w.cars)if(c.kind==='police'&&!c.wreck&&!c.gang){nearP=Math.min(nearP,Math.hypot(c.x-p.x,c.y-p.y));if(!c.parked)active++}
-    RS.spawnT-=dt;if(L.cops!==0&&RS.spawnT<0&&active<(L.kills&&!L.gang?5:4+Math.floor(p.s/w.total*3))&&(p.s>700||L.kills)&&!RS.end){RS.spawnT=rr(4.5,7.5);const q=routeAt(w,p.s-650);const c=makeCar(chaseSpec(POLICE,p),q.x,q.y,q.a,'police');c.v=200;c.vx=Math.cos(q.a)*200;c.vy=Math.sin(q.a)*200;c.seg=Math.max(0,q.i);w.cars.push(c)}
+    RS.spawnT-=dt;if(L.cops!==0&&RS.spawnT<0&&active<(L.kills&&!L.gang?5:4+Math.floor(p.s/w.total*3))&&(p.s>700||L.kills)&&!RS.end){RS.spawnT=rr(4.5,7.5);const q=routeAt(w,p.s-650);const isPol=R()<(L.pol??.35);const c=makeCar(chaseSpec(isPol?POLICE:GANG,p),q.x,q.y,q.a,'police');if(!isPol)c.gang=1;c.v=200;c.vx=Math.cos(q.a)*200;c.vy=Math.sin(q.a)*200;c.seg=Math.max(0,q.i);w.cars.push(c)}
     // bust
     let close=false;for(const c of w.cars)if(c.kind==='police'&&!c.wreck&&!c.parked&&Math.hypot(c.x-p.x,c.y-p.y)<62)close=true;
     if(close&&sp<35&&!RS.end)RS.bust+=dt;else RS.bust=Math.max(0,RS.bust-dt*1.5);
@@ -1554,7 +1554,7 @@ function updateRace(dt){const w=G.world,p=w.player,L=RS.L;RS.t+=dt;
   if(L.type==='race')for(const c of w.cars){if(c.kind!=='rival')continue;const gap=c.s-p.s;c.speedMul=gap>900?.97:gap<-350?1.12:1.02;if(!c.finished&&(c.atFinish||c.seg>=w.route.length-2&&c.segT>=.97)){c.finished=RS.t;RS.finishOrder.push(c.name)}if(c.finished){c.path=null}}
   // end checks
   if(!RS.end&&RS.count<=0&&L.time&&RS.t>L.time){endRace(false,'ČAS VYPRŠEL',L.kills?'Nestihl jsi to. Gang se ti směje.':'Pozdě. Kšeft je fuč.')}
-  if(!RS.end&&L.kills&&RS.kills>=L.kills){endRace(true,'HOTOVO!',L.gang?'Zlatý řetězy jsou tvoje. Gang je na šrotu.':'Pět fízláků na šrotu. Klíše tě má za krále.')}
+  if(!RS.end&&L.kills&&RS.kills>=L.kills){endRace(true,'HOTOVO!',L.gang?'Zlatý řetězy jsou tvoje. Gang je na šrotu.':'Sedm aut gangu na šrotu. Klíše je zase klidná.')}
   if(!RS.end&&L.gentle&&p.hp<p.maxhp*.55){endRace(false,'POBLIL SE!','Pepa ti to pozvracel celý. Smrdí to až do Děčína.')}
   if(!RS.end){if(p.hp<=0){p.hp=0;explode(w,p.x,p.y);endRace(false,'AUTO NA ŠROT','Tvoje kára to nedala. Zkus to znova.')}
     else if(!L.kills&&(p.atFinish||(p.seg>=w.route.length-2&&p.segT>=.97))){p.finished=RS.t;
@@ -1570,7 +1570,7 @@ function endRace(win,title,text){AN.ev('mission_end',{mission:RS.L.id,result:win
   SAVE.resp+=RS.gain.resp;SAVE.cash+=RS.gain.cash;save()}
 function showResult(){DJ.stop();G.mode='result';if(RS.win&&SAVE.replay===RS.L.id){SAVE.replay=null;save()}{const r=G.world.route,e=r[r.length-1],q=r[r.length-2];const a=Math.atan2(e.y-q.y,e.x-q.x);G.lastPos={x:e.x-Math.sin(a)*18+Math.cos(a)*60,y:e.y+Math.cos(a)*18+Math.sin(a)*60,a}}Snd.engine(0,false);Snd.siren(0,0);const el=$('scr-result'),L=RS.L;
   el.innerHTML=`<div class="res"><div class="tag">${L.name}</div><h2 style="color:${RS.win?'var(--acc)':'var(--acc2)'}">${RS.title}</h2><p>${RS.text}</p>
-  <div class="lines"><div><span>Čas</span><b>${RS.t.toFixed(1)} s</b></div>${L.type==='chase'?`<div><span>Zničení policajti</span><b>${RS.kills}</b></div>`:`<div><span>Umístění</span><b>${RS.win?1:RS.finishOrder.length+1}. / 5</b></div>`}
+  <div class="lines"><div><span>Čas</span><b>${RS.t.toFixed(1)} s</b></div>${L.type==='chase'?`<div><span>Zničená auta gangu</span><b>${RS.kills}</b></div>`:`<div><span>Umístění</span><b>${RS.win?1:RS.finishOrder.length+1}. / 5</b></div>`}
   <div><span>Výdělek</span><b>+${RS.gain.cash.toLocaleString('cs-CZ')} Kč</b></div><div><span>Celkem v kapse</span><b>${SAVE.cash.toLocaleString('cs-CZ')} Kč</b></div></div>
   <div class="row">${RS.win?'':`<button class="btn" data-lvlgo="${L.id}">ZKUSIT ZNOVU</button>`}<button class="btn pink" data-go="city">DO MĚSTA</button><button class="btn dark" data-go="garage">GARÁŽ</button></div>
   ${RS.win&&L.id==='zavod'?'<p class="note">Další mapa se odemkne v příští verzi.</p>':''}</div>`;
@@ -1750,7 +1750,7 @@ import {KTX2Loader} from './vendor/jsm/loaders/KTX2Loader.js';
 import {MeshoptDecoder} from './vendor/jsm/libs/meshopt_decoder.module.js';
 import * as SkeletonUtils from './vendor/jsm/utils/SkeletonUtils.js';
 window.THREE=THREE;window.TADD={EffectComposer,RenderPass,UnrealBloomPass,OutputPass,GLTFLoader,RGBELoader,SkeletonUtils,DRACOLoader,KTX2Loader,MeshoptDecoder};
-const s=document.createElement('script');s.src='r3.js?v=66';document.body.appendChild(s);
+const s=document.createElement('script');s.src='r3.js?v=67';document.body.appendChild(s);
 </script>
 </body>
 </html>
