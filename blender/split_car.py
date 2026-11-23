@@ -68,6 +68,7 @@ tris=sum(len(p.vertices)-2 for p in car.data.polygons)
 if tris>30000:
     m=car.modifiers.new('d','DECIMATE');m.ratio=30000/tris;bpy.context.view_layer.objects.active=car;bpy.ops.object.modifier_apply(modifier='d')
 for img in bpy.data.images:
-    if img.size[0]>1024:img.scale(1024,1024)
+    TXS=int(__import__('os').environ.get('TX','1024'))
+    if img.size[0]>TXS:img.scale(TXS,TXS)
 bpy.ops.export_scene.gltf(filepath=dst,export_format='GLB',export_image_format='JPEG',export_jpeg_quality=82)
 print('exported',[o.name for o in bpy.context.scene.objects])
