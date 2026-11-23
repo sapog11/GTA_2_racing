@@ -1298,7 +1298,7 @@ function comicScene(name){
   {const dy=(name==='plaza'||name==='plaza2'?21:19)*8*T;sc.y+=dy;for(const o of w.cars)o.y+=dy;for(const o of w.peds)o.y+=dy;for(const o of w.parts)o.y+=dy;for(const k of w.skids){k[1]+=dy;k[3]+=dy}}
   return{w,sc}}
 function renderPanel(){const el=$('scr-comic'),C=comic.C,P=C.panels[comic.i];
-  let h=`<div class="tag" style="margin-bottom:8px">${C.title}</div><div class="panel" id="panel">${P.art?`<div class="art" style="background-image:url(art/${P.art}.jpg)"></div>`:'<canvas id="pcv"></canvas>'}<div class="halftone"></div>`;
+  let h=`<div class="tag" style="margin-bottom:8px">${C.title}</div><div class="panel" id="panel">${P.art?`<div class="art" style="background-image:url(art/${P.art}.jpg?v=3)"></div>`:'<canvas id="pcv"></canvas>'}<div class="halftone"></div>`;
   if(P.who){if(P.who[0])h+=`<div class="inset l" style="background-image:url(art/${P.who[0]}.jpg)"></div>`;if(P.who[1])h+=`<div class="inset r" style="background-image:url(art/${P.who[1]}.jpg)"></div>`}
   if(P.cap)h+=`<div class="cap">${P.cap}</div>`;
   for(const b of P.bubs||[])h+=`<div class="bub ${b.shout?'shout':''}" style="left:${b.x}%;top:${b.y}%"><small>${WHO_NAME[b.w]}</small>${b.t}</div>`;
@@ -1320,19 +1320,19 @@ function startRoam(at,target){AN.ev('roam_start');hideAll();G.engineOff=false;$(
   const car=CARS.find(c=>c.id===SAVE.car)||CARS[0];const p=makeCar(Object.assign({},car),at.x,at.y,at.a,'player');p.handMul=SAVE.hero==='lucie'?1.15:1;w.player=p;w.cars.push(p);
   w.cam={x:p.x,y:p.y};w.zoom=baseZoom();for(let i=0;i<11;i++)spawnCiv(w);for(let i=0;i<48;i++)spawnPed(w,40,520);
   RS={roam:true,nitro:.6,nitroFill:SAVE.hero==='lucie'?.098:.07,target:target||SAVE.sel||null,enterCD:2.5};G.roamDist='';
-  $('hud').classList.add('on');if(isTouch)$('ctrl').classList.add('on');$('kU').style.display=SAVE.autoGas?'none':'block';$('kAt').textContent='NITRO';$('kA').classList.remove('hot');
+  $('hud').classList.add('on');if(isTouch)$('ctrl').classList.add('on');$('kU').style.display=SAVE.autoGas?'none':'block';$('kAt').textContent=SAVE.hero==='marek'?'PAL':'NITRO';$('kA').classList.remove('hot');
   $('hMainL').textContent='ČTVRŤ';$('hMain').classList.add('small');$('bust').style.display='none';$('center').textContent='';$('obj').classList.add('on');
   $('hint').textContent=isTouch?'':'←→ řízení • ↑ plyn • ↓ brzda • MEZERNÍK nitro • SHIFT smyk • C kamera • R rádio • P pauza';if(isTouch&&effSteer()==='wheel'&&!SAVE.wheelTip){SAVE.wheelTip=1;save();floatMsg('🛞 TOČ VOLANTEM PRSTEM',3);}
   Snd.setCar&&Snd.setCar(SAVE.car);Snd.startMusic(false);Snd.setStyle(SAVE.radio||'macht');Snd.rain(w.rain);drawMinimapBg();setTimeout(()=>{const a=$('area');if(G.mode==='roam'){a.textContent='📻 '+STY[Snd.style].name;a.classList.add('on');areaT=2.2}},2600)}
 let areaT=0;
-function freeGun(w,p,dt){RS.gCD=(RS.gCD||0)-dt;if(RS.gOver){RS.gHeat-=dt*.45;if(RS.gHeat<=.25)RS.gOver=false}else RS.gHeat=Math.max(0,(RS.gHeat||0)-dt*.3);
-  if(G.keys.f&&!RS.gOver&&RS.gCD<=0){RS.gCD=.1;let a=p.a,best=null,bd=1e9;for(const c of w.cars){if(c===p||c.wreck||c.parked)continue;const dx=c.x-p.x,dy=c.y-p.y,d=Math.hypot(dx,dy);if(d>480)continue;const da=Math.abs(wrapA(Math.atan2(dy,dx)-p.a));if(da<.5&&d<bd){bd=d;best=c}}
+function freeGun(w,p,dt,fire){RS.gCD=(RS.gCD||0)-dt;if(RS.gOver){RS.gHeat-=dt*.45;if(RS.gHeat<=.25)RS.gOver=false}else RS.gHeat=Math.max(0,(RS.gHeat||0)-dt*.3);
+  if(fire&&!RS.gOver&&RS.gCD<=0){RS.gCD=.1;let a=p.a,best=null,bd=1e9;for(const c of w.cars){if(c===p||c.wreck||c.parked)continue;const dx=c.x-p.x,dy=c.y-p.y,d=Math.hypot(dx,dy);if(d>480)continue;const da=Math.abs(wrapA(Math.atan2(dy,dx)-p.a));if(da<.5&&d<bd){bd=d;best=c}}
     if(best)a=Math.atan2(best.y-p.y,best.x-p.x);a+=rr(-.05,.05);const ca=Math.cos(p.a),sa=Math.sin(p.a);
     w.bullets.push({x:p.x+ca*p.L*.55-sa*6,y:p.y+sa*p.L*.55+ca*6,vx:Math.cos(a)*950+p.vx,vy:Math.sin(a)*950+p.vy,life:.5,dmg:12});w.muzzle=.05;Snd.shot();RS.gHeat+=.055;if(RS.gHeat>=1){RS.gHeat=1;RS.gOver=true;floatMsg('PŘEHŘÁTO!',.7)}}
-  w.muzzle=Math.max(0,(w.muzzle||0)-dt);const k=$('kF');k.style.setProperty('--p',((1-(RS.gHeat||0))*100)+'%');k.classList.toggle('hot',!!RS.gOver)}
+  w.muzzle=Math.max(0,(w.muzzle||0)-dt)}
 function updateRoam(dt){const w=G.world,p=w.player;
-  const ctl=playerCtl();const act=G.keys.a;freeGun(w,p,dt);
-  if(act&&!RS.aPrev){RS.nLatch=!RS.nLatch&&RS.nitro>.08}RS.aPrev=act;if(RS.nLatch&&RS.nitro>.02){if(!p.boost)Snd.nitro();p.boost=true;RS.nitro=Math.max(0,RS.nitro-.42*dt)}else{p.boost=false;RS.nLatch=false;RS.nitro=Math.min(1,RS.nitro+RS.nitroFill*dt)}$('kA').style.setProperty('--p',(RS.nitro*100)+'%');$('kA').classList.toggle('hot',!!RS.nLatch);
+  const ctl=playerCtl();const act=G.keys.a;
+  if(SAVE.hero==='marek'){freeGun(w,p,dt,act);p.boost=false;$('kA').style.setProperty('--p',((1-(RS.gHeat||0))*100)+'%');$('kA').classList.toggle('hot',!!RS.gOver)}else{if(act&&!RS.aPrev){RS.nLatch=!RS.nLatch&&RS.nitro>.08}RS.aPrev=act;if(RS.nLatch&&RS.nitro>.02){if(!p.boost)Snd.nitro();p.boost=true;RS.nitro=Math.max(0,RS.nitro-.42*dt)}else{p.boost=false;RS.nLatch=false;RS.nitro=Math.min(1,RS.nitro+RS.nitroFill*dt)}$('kA').style.setProperty('--p',(RS.nitro*100)+'%');$('kA').classList.toggle('hot',!!RS.nLatch)}
   updateWorld(w,dt,ctl);driftUpdate(p,w,dt,true);if(p.hp<p.maxhp)p.hp=Math.min(p.maxhp,p.hp+dt*3);if(p.hp<=5)p.hp=5;
   const sp=Math.hypot(p.vx,p.vy);w.cam.x=lerp(w.cam.x,p.x+p.vx*.42,Math.min(1,dt*4));w.cam.y=lerp(w.cam.y,p.y+p.vy*.42,Math.min(1,dt*4));
   w.zoom=lerp(w.zoom||baseZoom(),baseZoom()*(1-clamp(sp/p.st.max,0,1.3)*.2),Math.min(1,dt*2));shakeA=Math.max(0,shakeA-dt*30);
@@ -1378,7 +1378,7 @@ function beginRace(L){hideAll();const w=newWorld({rain:L.rain,dark:L.dark,civMax
   w.cam={x:p.x,y:p.y};for(const c of w.cars)c.frozen=true;
   $('hud').classList.add('on');if(isTouch)$('ctrl').classList.add('on');
   $('kU').style.display=SAVE.autoGas?'none':'block';
-  $('kAt').textContent=L.type==='race'?'NITRO':'PAL';
+  $('kAt').textContent=L.type==='race'&&SAVE.hero!=='marek'?'NITRO':'PAL';
   $('hint').textContent=isTouch?'':(L.type==='race'?'←→ řízení • ↑ plyn • ↓ brzda • MEZERNÍK nitro • SHIFT smyk • C kamera • R rádio • P pauza':'←→ řízení • ↑ plyn • ↓ brzda • MEZERNÍK střelba • P pauza');
   $('keyB').style.display='none';G.engineOff=false;
   $('hMainL').textContent=L.type==='race'?'POZICE':L.kills?'ZNIČENO':L.time?'ČAS':'DO CÍLE';$('hMain').classList.remove('small');$('obj').classList.remove('on');$('area').classList.remove('on');
@@ -1510,7 +1510,7 @@ let lastEff='';function applySteerMode(){const m=effSteer();lastEff=m;document.b
 function updateRace(dt){const w=G.world,p=w.player,L=RS.L;RS.t+=dt;
   if(RS.count>0){RS.count-=dt;const n=Math.ceil(RS.count-.4);$('center').textContent=RS.count>.4?(L.type==='race'?String(n):'JEĎ!'):'JEĎ!';if(RS.count<=0){for(const c of w.cars)c.frozen=false;floatMsg('JEĎ!',.8)}}
   else if(msgT>0){msgT-=dt;if(msgT<=0)$('center').textContent=''}
-  const ctl=RS.end?{thr:-1,steer:0}:playerCtl();if(L.type==='race'&&!RS.end&&RS.count<=0)freeGun(w,p,dt);
+  const ctl=RS.end?{thr:-1,steer:0}:playerCtl();const shR=L.type==='race'&&SAVE.hero==='marek';if(shR&&!RS.end&&RS.count<=0)freeGun(w,p,dt,G.keys.a);
   // action
   const act=G.keys.a&&!RS.end&&RS.count<=0;
   if(L.type==='chase'){RS.fireCD-=dt;if(RS.over){RS.heat-=dt*.45;if(RS.heat<=.25)RS.over=false}else RS.heat=Math.max(0,RS.heat-dt*.32);
@@ -1519,7 +1519,7 @@ function updateRace(dt){const w=G.world,p=w.player,L=RS.L;RS.t+=dt;
       w.bullets.push({x:p.x+ca*p.L*.55-sa*6,y:p.y+sa*p.L*.55+ca*6,vx:Math.cos(a)*950+p.vx,vy:Math.sin(a)*950+p.vy,life:.5,dmg:10*RS.dmgMul});w.muzzle=.05;Snd.shot();RS.heat+=RS.heatPer;if(RS.heat>=1){RS.heat=1;RS.over=true;floatMsg('PŘEHŘÁTO!',.7)}}
     w.muzzle=Math.max(0,(w.muzzle||0)-dt);
     $('kA').style.setProperty('--p',((1-RS.heat)*100)+'%');$('kA').classList.toggle('hot',RS.over);
-  }else{if(act&&!RS.aPrev){RS.nLatch=!RS.nLatch&&RS.nitro>.08}RS.aPrev=act;if(RS.nLatch&&RS.nitro>.02){if(!p.boost)Snd.nitro();p.boost=true;RS.nitro=Math.max(0,RS.nitro-.42*dt)}else{p.boost=false;RS.nLatch=false;RS.nitro=Math.min(1,RS.nitro+RS.nitroFill*dt)}$('kA').style.setProperty('--p',(RS.nitro*100)+'%');$('kA').classList.toggle('hot',!!RS.nLatch);}
+  }else if(shR){$('kA').style.setProperty('--p',((1-(RS.gHeat||0))*100)+'%');$('kA').classList.toggle('hot',!!RS.gOver)}else{if(act&&!RS.aPrev){RS.nLatch=!RS.nLatch&&RS.nitro>.08}RS.aPrev=act;if(RS.nLatch&&RS.nitro>.02){if(!p.boost)Snd.nitro();p.boost=true;RS.nitro=Math.max(0,RS.nitro-.42*dt)}else{p.boost=false;RS.nLatch=false;RS.nitro=Math.min(1,RS.nitro+RS.nitroFill*dt)}$('kA').style.setProperty('--p',(RS.nitro*100)+'%');$('kA').classList.toggle('hot',!!RS.nLatch);}
   updateWorld(w,dt,ctl);if(!RS.end&&RS.count<=0)driftUpdate(p,w,dt,false);
   for(const c of w.cars)if(w.route&&(c.kind!=='civ'))progress(w,c);
   // camera
@@ -1723,7 +1723,7 @@ function frame(now){const dt=Math.min(REC?.1:.033,(now-last)/1000);last=now;
       const Zm=baseZoom()*1.15*(G.menuZoom||1);if($('scr-menu').classList.contains('on')&&w.userPan){}else if($('scr-menu').classList.contains('on')&&w.stage){const tx=w.stage.x-VW*.17/Zm+Math.sin(w.t*.15)*30,ty=w.stage.y-VH*.14/Zm;if(Math.hypot(w.cam.x-tx,w.cam.y-ty)>900){w.cam.x=tx;w.cam.y=ty}w.cam.x=lerp(w.cam.x,tx,dt*1.5);w.cam.y=lerp(w.cam.y,ty,dt*1.5)}else if(amb.tgt){w.cam.x=lerp(w.cam.x,amb.tgt.x,dt*.8);w.cam.y=lerp(w.cam.y,amb.tgt.y,dt*.8)}w.zoom=Zm}}}
   if($('scr-garage').classList.contains('on')&&typeof R3!=='undefined'&&R3.ok){if(R3.concept&&(!R3.gCar||G.g3!==gList()[gIdx].id+R3.tuneKey(gList()[gIdx].id))){garage3D();if(!$('gstage'))renderGarage()}{const r=$('gstage')&&$('gstage').getBoundingClientRect();R3.gView=r&&r.width?{x:r.left+r.width/2,y:r.top+r.height/2,w:r.width,h:r.height}:null}if(R3.garageRender(dt)){ctx.clearRect(0,0,VW,VH);requestAnimationFrame(frame);return}}
   const w=G.world;const O3={labels:menuOn()&&(G.menuZoom||1)<.8,arrow:G.mode==='race',arrowTo:G.mode==='roam'&&RS?RS.arrowTo:null,markers:G.mode==='roam'?MARKERS():null};
-  if(w&&typeof R3!=='undefined'&&R3.ok){R3.camMode=(G.mode==='roam'||G.mode==='race')?(SAVE.cam||'chase'):(G.mode==='ambient'||G.mode==='promo')?'cine':'top';document.body.classList.toggle('driving',G.mode==='roam'||G.mode==='race');document.body.classList.toggle('gun',G.mode==='roam'||(G.mode==='race'&&!!RS&&!!RS.L&&RS.L.type==='race'));document.body.classList.toggle('cock',R3.camMode==='cockpit'&&!!(w.player&&R3.cars.get(w.player)&&R3.cars.get(w.player).userData.concept));R3.render(w,O3,dt);overlay3D(ctx,w,VW,VH,O3)}else if(w&&G.mode!=='ambient'&&G.mode!=='promo')render(ctx,w,VW,VH,w.cam,w.zoom||baseZoom(),{labels:menuOn()&&(G.menuZoom||1)<.8,arrow:G.mode==='race',arrowTo:G.mode==='roam'&&RS?RS.arrowTo:null,markers:G.mode==='roam'?MARKERS():null});
+  if(w&&typeof R3!=='undefined'&&R3.ok){R3.camMode=(G.mode==='roam'||G.mode==='race')?(SAVE.cam||'chase'):(G.mode==='ambient'||G.mode==='promo')?'cine':'top';document.body.classList.toggle('driving',G.mode==='roam'||G.mode==='race');document.body.classList.toggle('cock',R3.camMode==='cockpit'&&!!(w.player&&R3.cars.get(w.player)&&R3.cars.get(w.player).userData.concept));R3.render(w,O3,dt);overlay3D(ctx,w,VW,VH,O3)}else if(w&&G.mode!=='ambient'&&G.mode!=='promo')render(ctx,w,VW,VH,w.cam,w.zoom||baseZoom(),{labels:menuOn()&&(G.menuZoom||1)<.8,arrow:G.mode==='race',arrowTo:G.mode==='roam'&&RS?RS.arrowTo:null,markers:G.mode==='roam'?MARKERS():null});
   }catch(err){console.error(err)}
   requestAnimationFrame(frame)}
 requestAnimationFrame(frame);
@@ -1742,7 +1742,7 @@ import {KTX2Loader} from './vendor/jsm/loaders/KTX2Loader.js';
 import {MeshoptDecoder} from './vendor/jsm/libs/meshopt_decoder.module.js';
 import * as SkeletonUtils from './vendor/jsm/utils/SkeletonUtils.js';
 window.THREE=THREE;window.TADD={EffectComposer,RenderPass,UnrealBloomPass,OutputPass,GLTFLoader,RGBELoader,SkeletonUtils,DRACOLoader,KTX2Loader,MeshoptDecoder};
-const s=document.createElement('script');s.src='r3.js?v=63';document.body.appendChild(s);
+const s=document.createElement('script');s.src='r3.js?v=64';document.body.appendChild(s);
 </script>
 </body>
 </html>
