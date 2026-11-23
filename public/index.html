@@ -1636,7 +1636,7 @@ document.addEventListener('click',e=>{const t=e.target.closest('button,[data-lvl
   if(t.dataset.buy){const c=CARS.find(x=>x.id===t.dataset.buy);if(c.soon)return;if(SAVE.cash>=c.price){AN.ev('car_unlock',{car:c.id});SAVE.cash-=c.price;SAVE.owned.push(c.id);SAVE.car=c.id;save();renderGarage()}return}
 });
 const pv=$('pv');
-if(!location.search.includes('rec')){const v=innerWidth<innerHeight?'vertical':'landscape';pv.poster='promo/'+v+'.jpg';pv.src='promo/'+v+'.mp4?v=2';pv.play&&pv.play().catch(()=>{})}
+if(!location.search.includes('rec')){const v=innerWidth<innerHeight?'vertical':'landscape';pv.poster='promo/'+v+'.jpg?v=2';pv.src='promo/'+v+'.mp4?v=2';pv.play&&pv.play().catch(()=>{})}
 $('bStart').onclick=()=>{AN.ev('game_open');Snd.unlock();pv.pause();Snd.startMusic(true);showMenu()};
 $('bSound').onclick=()=>{AN.ev('promo_sound');Snd.unlock();try{navigator.vibrate&&navigator.vibrate([40,30,60])}catch(e){}pv.loop=false;pv.muted=false;pv.currentTime=0;pv.play().catch(()=>{});$('scr-start').classList.add('full')};
 pv.addEventListener('timeupdate',()=>{if(pv.muted&&pv.currentTime<4.5)pv.currentTime=4.7});
