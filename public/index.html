@@ -204,7 +204,7 @@ body.cock #nav{top:calc(max(10px,env(safe-area-inset-top)) + 120px)}
 #bust{position:absolute;left:50%;top:22%;transform:translateX(-50%);text-align:center;display:none}
 #bust b{font-family:Bangers;font-size:30px;color:#4da3ff;text-shadow:2px 2px 0 #000;letter-spacing:2px}
 #bust .hp{width:180px;margin:4px auto}#bust .hp i{background:#4da3ff}
-body.cock #spd{display:none}
+body.cock #spd{display:none}body.cock #hint{display:none}
 #spd{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(14px + env(safe-area-inset-bottom));width:236px;height:92px;pointer-events:none;background:rgba(0,0,0,.72);border:1px solid rgba(255,122,26,.35);border-radius:10px;font-family:Audiowide,Oswald,sans-serif}
 #spd .rpm{position:absolute;left:10px;bottom:16px;display:flex;align-items:flex-end;gap:3px}#spd .rpm i{display:block;width:6px;background:#2a1608;border-radius:1px}
 #spd .rpm i.on{background:#ff7a1a;box-shadow:0 0 6px #ff7a1a}#spd .rpm i.on.y{background:#ffd02e;box-shadow:0 0 6px #ffd02e}#spd .rpm i.on.r{background:#ff2040;box-shadow:0 0 6px #ff2040}
@@ -1131,7 +1131,7 @@ function baseZoom(){return clamp(Math.min(VW,VH)/400,.8,1.6)}
 
 /* ---------------- GAME STATE ---------------- */
 const G={mode:'start',world:null,level:null,keys:{},cam:{x:IX(2),y:IX(6)}};
-function ambientWorld(){const w=newWorld({rain:true,dark:.74,civMax:14,pedMax:40,chatty:true});w.cam={x:IX(2)+150,y:IX(24)};for(let i=0;i<10;i++)spawnCiv(w);for(let i=0;i<30;i++)spawnPed(w,40,480);return w}
+function ambientWorld(){const w=newWorld({rain:true,dark:.74,civMax:10,pedMax:32,chatty:true});w.cam={x:IX(2)+150,y:IX(24)};for(let i=0;i<10;i++)spawnCiv(w);for(let i=0;i<30;i++)spawnPed(w,40,480);return w}
 
 /* ---------------- PROMO ---------------- */
 const ART=['keyart','street','heist','bridge','racestart','lucie','marek','kaja'];
@@ -1305,7 +1305,7 @@ function finishComic(){const d=comic.done;comic=null;if(d)d();else showComics()}
 
 /* ---------------- FREE ROAM ---------------- */
 function MARKERS(){const sel=(typeof RS!=='undefined'&&RS&&RS.target)||SAVE.sel;if(!sel)return[];return LEVELS.filter(L=>L.id===sel&&!L.soon&&(!SAVE.done[L.id]||SAVE.replay===L.id)).map(L=>{const r=L.route?L.route[0]:L.at;return{L,x:IX(r[0]),y:IX(r[1]),open:!L.soon}})}
-function startRoam(at,target){AN.ev('roam_start');hideAll();G.engineOff=false;$('keyB').classList.remove('off');$('keyB').style.display='';at=at||HOME;const w=newWorld({rain:R()<.45,dark:.8,civMax:15,pedMax:60});G.world=w;G.mode='roam';G.level=null;
+function startRoam(at,target){AN.ev('roam_start');hideAll();G.engineOff=false;$('keyB').classList.remove('off');$('keyB').style.display='';at=at||HOME;const w=newWorld({rain:R()<.45,dark:.8,civMax:11,pedMax:44});G.world=w;G.mode='roam';G.level=null;
   const car=CARS.find(c=>c.id===SAVE.car)||CARS[0];const p=makeCar(Object.assign({},car),at.x,at.y,at.a,'player');p.handMul=SAVE.hero==='lucie'?1.15:1;w.player=p;w.cars.push(p);
   w.cam={x:p.x,y:p.y};w.zoom=baseZoom();for(let i=0;i<11;i++)spawnCiv(w);for(let i=0;i<48;i++)spawnPed(w,40,520);
   RS={roam:true,nitro:.6,nitroFill:SAVE.hero==='lucie'?.098:.07,target:target||SAVE.sel||null,enterCD:2.5};G.roamDist='';
@@ -1730,7 +1730,7 @@ import {KTX2Loader} from './vendor/jsm/loaders/KTX2Loader.js';
 import {MeshoptDecoder} from './vendor/jsm/libs/meshopt_decoder.module.js';
 import * as SkeletonUtils from './vendor/jsm/utils/SkeletonUtils.js';
 window.THREE=THREE;window.TADD={EffectComposer,RenderPass,UnrealBloomPass,OutputPass,GLTFLoader,RGBELoader,SkeletonUtils,DRACOLoader,KTX2Loader,MeshoptDecoder};
-const s=document.createElement('script');s.src='r3.js?v=60';document.body.appendChild(s);
+const s=document.createElement('script');s.src='r3.js?v=61';document.body.appendChild(s);
 </script>
 </body>
 </html>
