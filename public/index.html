@@ -348,7 +348,7 @@ body.two.driving #twHint{display:flex}
   <button id="kD" data-k="d">BRZDA</button>
 </div>
 
-<script src="map/usti.js?v=1"></script>
+<script src="map/usti.js?v=2"></script>
 <script>
 'use strict';
 /* =========================================================
@@ -454,7 +454,7 @@ function genCityOSM(){const r=rng(20260124),rp=a=>a[Math.floor(r()*a.length)];
   for(let ty=1;ty<MAPH-1;ty++)for(let tx=1;tx<MAPW-1;tx++){const t=tiles[ty*MAPW+tx],h=H(tx,ty),X=tx*T,Y=ty*T;
     if(t===WALK){if(h<.22&&(tileAt(tx+1,ty)===ROAD||tileAt(tx-1,ty)===ROAD||tileAt(tx,ty+1)===ROAD||tileAt(tx,ty-1)===ROAD)&&(tx+ty)%3===0)lamps.push({x:X+T/2,y:Y+T/2})}
     else if(t===GRASS){if(h<.05){let nearR=false;for(let d=1;d<=3&&!nearR;d++)nearR=tileAt(tx+d,ty)===WALK||tileAt(tx-d,ty)===WALK||tileAt(tx,ty+d)===WALK||tileAt(tx,ty-d)===WALK;if(nearR||h<.012)trees.push({x:X+T*H(ty,tx),y:Y+T*H(tx+7,ty),r:13+r()*11,c:rp(['#1f4a26','#295a2c','#1b3f22','#33602f'])})}}
-    else if(t===FOREST){if(h<.09)trees.push({x:X+T*H(ty,tx),y:Y+T*H(tx+3,ty),r:16+r()*14,c:rp(['#163a1c','#1d4522','#123018','#24502a'])})}
+    else if(t===FOREST){if(h<.02&&trees.length<45000&&(tileAt(tx+4,ty)!==FOREST||tileAt(tx-4,ty)!==FOREST||tileAt(tx,ty+4)!==FOREST||tileAt(tx,ty-4)!==FOREST))trees.push({x:X+T*H(ty,tx),y:Y+T*H(tx+3,ty),r:16+r()*14,c:rp(['#163a1c','#1d4522','#123018','#24502a'])})}
     else if(t===LOT){if(h<.2&&parked.length<2500){const hz=tileAt(tx-1,ty)===ROAD||tileAt(tx+1,ty)===ROAD;parked.push({x:X+T/2,y:Y+T/2,a:hz?0:Math.PI/2,col:rp(['#8a1c1c','#d8d8d8','#2a3d6b','#3b3b3b','#6b6b2a','#1f5a4f']),L:38,Wd:19})}}}
   for(const[n,t,x,y]of U0.places){DPL.push({n,x:x*T,y:y*T,t});if(t==='suburb'||t==='quarter'||t==='town'||t==='village')DLABELS.push({n:n.replace(/^Ústí nad Labem-/,'').toUpperCase(),x:x*T,y:y*T})}
   const lm=GEO(50.6437,14.0455);landmarks.push({x:lm.x,y:lm.y,name:'HRAD STŘEKOV'});
@@ -584,7 +584,7 @@ const LEVELS=[
 // real-map mission routes (lat,lon waypoints, routed along real streets)
 const GEOR={utek:[[50.6611,14.0384],[50.6668,14.0590],[50.6718,14.0860]],zavod:[[50.6605,13.9990],[50.6600,14.0250],[50.6577,14.0472],[50.6480,14.0560]],
  kuryr:[[50.6600,14.0410],[50.6600,14.0200],[50.6590,14.0010]],pepa:[[50.6590,14.0440],[50.6640,14.0560],[50.6690,14.0700]],cetky:[[50.6690,14.0190],[50.6780,14.0100],[50.6850,14.0060]],
- fizl:[[50.6700,14.0280],[50.6760,14.0330],[50.6830,14.0390]],chem:[[50.6580,14.0230],[50.6577,14.0472],[50.6470,14.0530],[50.6380,14.0520]],mosty:[[50.6604,14.0230],[50.6577,14.0472],[50.6470,14.0550],[50.6620,14.0420],[50.6690,14.0700]],l3:[[50.6990,14.0990]]};
+ fizl:[[50.6700,14.0280],[50.6760,14.0330],[50.6830,14.0390]],chem:[[50.6580,14.0230],[50.6577,14.0472],[50.6470,14.0530],[50.6380,14.0520]],mosty:[[50.6604,14.0230],[50.6577,14.0472],[50.6470,14.0550],[50.6620,14.0420],[50.6690,14.0700]],l3:[[50.7790,14.2120]]};
 function prepLevels(){if(!U0)return;for(const L of LEVELS){const g=GEOR[L.id];if(!g)continue;const W=g.map(q=>roadNear(GEO(q[0],q[1]).x,GEO(q[0],q[1]).y));L.pos=W[0];if(L.soon||W.length<2){L.route=null;continue}
   let pts=[];for(let i=1;i<W.length;i++){const seg=navPath(W[i-1].x,W[i-1].y,W[i].x,W[i].y);if(!seg)continue;pts=pts.concat(pts.length?seg.slice(1):seg)}L.route=pts.length>1?pts:null;
   if(L.blocks)L.blocksF=L.blocks.map((b,i)=>[.25+i*.18,0]);if(L.id==='chem')L.sub='Přes Mariánský most • gang v zádech';if(L.id==='utek')L.to='Úkryt v Krásném Březně'}}
@@ -1819,7 +1819,7 @@ import {KTX2Loader} from './vendor/jsm/loaders/KTX2Loader.js';
 import {MeshoptDecoder} from './vendor/jsm/libs/meshopt_decoder.module.js';
 import * as SkeletonUtils from './vendor/jsm/utils/SkeletonUtils.js';
 window.THREE=THREE;window.TADD={EffectComposer,RenderPass,UnrealBloomPass,OutputPass,GLTFLoader,RGBELoader,SkeletonUtils,DRACOLoader,KTX2Loader,MeshoptDecoder};
-const s=document.createElement('script');s.src='r3.js?v=82';document.body.appendChild(s);
+const s=document.createElement('script');s.src='r3.js?v=83';document.body.appendChild(s);
 </script>
 </body>
 </html>

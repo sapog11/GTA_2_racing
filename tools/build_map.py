@@ -2,7 +2,7 @@
 # Scale: real world compressed 2x; 1 game tile (T=48 units) = 9.6 m real.
 import glob,json,math,base64,zlib,random,xml.etree.ElementTree as ET
 from PIL import Image,ImageDraw
-LA0,LA1,LO0,LO1=50.62,50.70,13.98,14.10;MY=111320;MX=111320*math.cos(math.radians(50.66));TM=9.6
+LA0,LA1,LO0,LO1=50.62,50.80,13.98,14.24;MY=111320;MX=111320*math.cos(math.radians(50.66));TM=9.6
 W=int((LO1-LO0)*MX/TM);H=int((LA1-LA0)*MY/TM)
 def P(lat,lon):return((lon-LO0)*MX/TM,(LA1-lat)*MY/TM)  # tile coords (float)
 nodes={};ways={};rels={};places={}
@@ -20,11 +20,12 @@ for f in sorted(glob.glob('design/osm/tiles/*.xml')):
             rels[el.get('id')]=([(m.get('type'),m.get('ref'),m.get('role')) for m in el.findall('member')],{x.get('k'):x.get('v') for x in el.findall('tag')});el.clear()
 G=lambda nd:[P(*nodes[n]) for n in nd if n in nodes]
 ROADW={'motorway':3,'trunk':3,'primary':2,'secondary':2,'tertiary':2,'motorway_link':1,'trunk_link':1,'primary_link':1,'secondary_link':1,'tertiary_link':1,'unclassified':1,'residential':1,'living_street':1}
-roads=[];water=[];forest=[];park=[];ind=[];peds=[];bldg=[];rail=[]
+paths=[];roads=[];water=[];forest=[];park=[];ind=[];peds=[];bldg=[];rail=[]
 for wid,(nd,tg) in ways.items():
     h=tg.get('highway')
     if h in ROADW and tg.get('tunnel')!='yes' and tg.get('access')!='private':roads.append((wid,nd,ROADW[h],h,tg.get('name',''),tg.get('bridge')=='yes',tg.get('oneway')=='yes'))
     elif h in('pedestrian','footway') and tg.get('area')=='yes':peds.append(G(nd))
+    elif h in('footway','path','pedestrian','steps','service','track','cycleway'):paths.append(G(nd))
     elif tg.get('building'):
         try:lv=float(tg.get('building:levels','0') or 0)
         except:lv=0
@@ -51,12 +52,17 @@ def mask(polys,closed=True,width=0):
     return im.resize((W,H),Image.BOX)
 import numpy as np
 def A(im,th=110):return np.asarray(im)>th
-tiles=np.full((H,W),GRASS,np.uint8)
+tiles=np.full((H,W),FOREST,np.uint8)
+cov=np.zeros((H,W),bool)
+for f in glob.glob('design/osm/tiles/*.xml'):
+    la,lo=map(float,f.split('/')[-1][2:-4].split('_'));x0,y1=P(la,lo);x1,y0=P(la+.02,lo+.02);cov[max(0,int(y0)):min(H,int(y1)+1),max(0,int(x0)):min(W,int(x1)+1)]=True
+tiles[cov]=GRASS
 tiles[A(mask(forest))]=FOREST
 tiles[A(mask(park))]=GRASS
 tiles[A(mask(ind))]=LOT
 wat=A(mask(water),100);tiles[wat]=WATER
 tiles[A(mask(peds))]=PLAZA
+pm=A(mask(paths,closed=False,width=1.1),70)
 # buildings: per building tile set -> rectangles
 bmask=np.zeros((H,W),np.int32)
 for i,(g,lv,bt,nm) in enumerate(bldg):
@@ -85,9 +91,10 @@ rmask=np.asarray(rim.resize((W,H),Image.BOX))>70;wmask=np.asarray(wim.resize((W,
 side=wmask&~rmask
 tiles[(bmask>0)]=BUILD
 tiles[side&~wat]=WALK;tiles[side&wat]=WALK
+tiles[pm&~wat&(tiles!=FOREST)]=WALK
 tiles[rmask]=ROAD
 tiles[rmask&(wat|bridge)]=BRIDGE
-bmask[side|rmask]=0
+bmask[side|rmask|(pm&(tiles==WALK))]=0
 # building rectangles (greedy max rectangles inside each building's tile set)
 rects=[];visited=np.zeros((H,W),bool);rnd=random.Random(7)
 bt_of={i+1:bldg[i] for i in range(len(bldg))}
