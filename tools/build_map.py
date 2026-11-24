@@ -19,7 +19,7 @@ for f in sorted(glob.glob('design/osm/tiles/*.xml')):
         elif t=='relation':
             rels[el.get('id')]=([(m.get('type'),m.get('ref'),m.get('role')) for m in el.findall('member')],{x.get('k'):x.get('v') for x in el.findall('tag')});el.clear()
 G=lambda nd:[P(*nodes[n]) for n in nd if n in nodes]
-ROADW={'motorway':3,'trunk':3,'primary':2,'secondary':2,'tertiary':2,'motorway_link':1,'trunk_link':1,'primary_link':1,'secondary_link':1,'tertiary_link':1,'unclassified':1,'residential':1,'living_street':1}
+ROADW={'motorway':4,'trunk':4,'primary':3,'secondary':3,'tertiary':2.5,'motorway_link':2,'trunk_link':2,'primary_link':2,'secondary_link':2,'tertiary_link':2,'unclassified':2,'residential':2,'living_street':1.6}
 paths=[];roads=[];water=[];forest=[];park=[];ind=[];peds=[];bldg=[];rail=[]
 for wid,(nd,tg) in ways.items():
     h=tg.get('highway')
@@ -85,7 +85,7 @@ dr,dw,db=ImageDraw.Draw(rim),ImageDraw.Draw(wim),ImageDraw.Draw(bim)
 for wid,nd,wd,h,nm,br,ow in roads:
     q=[(x*SS,y*SS) for x,y in G(nd)]
     if len(q)<2:continue
-    dr.line(q,fill=255,width=int(wd*SS*.95),joint='curve');dw.line(q,fill=255,width=int((wd+1.6)*SS),joint='curve')
+    dr.line(q,fill=255,width=int(wd*SS*.95),joint='curve');dw.line(q,fill=255,width=int((wd+1.4)*SS),joint='curve')
     if br:db.line(q,fill=255,width=int(wd*SS),joint='curve')
 rmask=np.asarray(rim.resize((W,H),Image.BOX))>70;wmask=np.asarray(wim.resize((W,H),Image.BOX))>60;bridge=np.asarray(bim.resize((W,H),Image.BOX))>60
 side=wmask&~rmask
@@ -119,13 +119,12 @@ for wid,nd,wd,h,nm,br,ow in roads:
     for n in nd:cnt[n]=cnt.get(n,0)+1
 edges=[];names=[]
 for wid,nd,wd,h,nm,br,ow in roads:
-    if wd<1:continue
     seg=[nd[0]]
     for n in nd[1:]:
         seg.append(n)
         if cnt.get(n,0)>1 or n==nd[-1]:
             pts=[P(*nodes[m]) for m in seg if m in nodes]
-            if len(pts)>=2:edges.append([seg[0],seg[-1],[[round(x,2),round(y,2)] for x,y in pts],wd,1 if ow else 0])
+            if len(pts)>=2:edges.append([seg[0],seg[-1],[[round(x,2),round(y,2)] for x,y in pts],wd,1 if ow else 0,1 if br else 0])
             seg=[n]
 # label points for street names (long named roads)
 lab=[]

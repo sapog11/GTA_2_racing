@@ -138,7 +138,7 @@ const R3={ok:false,off:/[?&]2d/.test(location.search),chunks:new Map(),CH:16,PX:
  chunkKey(cx,cy){return cx+','+cy},
  makeChunk(cx,cy){const T3=THREE,CH=this.CH,PX=this.PX,S=CH*T,cv=document.createElement('canvas');cv.width=cv.height=CH*PX;const g=cv.getContext('2d'),k=PX/T;
   g.setTransform(k,0,0,k,-cx*S*k,-cy*S*k);const x0=cx*S,y0=cy*S,x1=x0+S-1,y1=y0+S-1;
-  drawGround(g,x0,y0,x1,y1,0,true);
+  drawGround(g,x0,y0,x1,y1,0,true);if(typeof drawRoadsOSM==='function')drawRoadsOSM(g,x0,y0,x1,y1);
   for(const a of awn)if(a.x>x0-100&&a.x<x1&&a.y>y0-20&&a.y<y1){const n=Math.max(2,a.w/10|0);for(let q=0;q<n;q++){g.fillStyle=q%2?'#efe9dc':a.c;g.fillRect(a.x+q*a.w/n,a.y,a.w/n+.5,12)}}
   {const fx=(8*3+5)*T,fy=(8*24+5)*T;if(fx>x0-60&&fx<x1+60&&fy>y0-60&&fy<y1+60){g.fillStyle='#6d665e';g.beginPath();g.arc(fx,fy,34,0,7);g.fill();g.fillStyle='#1c4a60';g.beginPath();g.arc(fx,fy,27,0,7);g.fill()}}
   g.textAlign='center';g.textBaseline='middle';g.font='700 13px Oswald, sans-serif';g.fillStyle='rgba(240,240,230,.55)';
@@ -181,7 +181,7 @@ const R3={ok:false,off:/[?&]2d/.test(location.search),chunks:new Map(),CH:16,PX:
    mkR(RL,this.railM);mkR(PO,this.postM)}
   {const NE={pink:{pos:[]},orange:{pos:[]}},box=(o,x0b,z0b,x1b,z1b,h0,h1)=>{const v=[[x0b,h0,z0b],[x1b,h0,z0b],[x1b,h0,z1b],[x0b,h0,z1b],[x0b,h1,z0b],[x1b,h1,z0b],[x1b,h1,z1b],[x0b,h1,z1b]],f=[[4,5,6,7],[0,1,5,4],[1,2,6,5],[2,3,7,6],[3,0,4,7]];for(const q of f){o.pos.push(...v[q[0]],...v[q[1]],...v[q[2]],...v[q[0]],...v[q[2]],...v[q[3]])}};
    const isR=t=>t===ROAD||t===BRIDGE,tx0=Math.floor(x0/T),ty0=Math.floor(y0/T);
-   for(let ty=ty0;ty<ty0+CH;ty++)for(let tx=tx0;tx<tx0+CH;tx++){const t0=tileAt(tx,ty);if(!isR(t0))continue;const o=t0===BRIDGE?NE.orange:NE.pink,X=tx*T,Y=ty*T,w=1.6,h1=2.6;
+   for(let ty=ty0;ty<ty0+CH;ty++)for(let tx=tx0;tx<tx0+CH;tx++){if(window.USTI)break;const t0=tileAt(tx,ty);if(!isR(t0))continue;const o=t0===BRIDGE?NE.orange:NE.pink,X=tx*T,Y=ty*T,w=1.6,h1=2.6;
     if(!isR(tileAt(tx,ty-1)))box(o,X,Y,X+T,Y+w,.5,h1);if(!isR(tileAt(tx,ty+1)))box(o,X,Y+T-w,X+T,Y+T,.5,h1);if(!isR(tileAt(tx-1,ty)))box(o,X,Y,X+w,Y+T,.5,h1);if(!isR(tileAt(tx+1,ty)))box(o,X+T-w,Y,X+T,Y+T,.5,h1)}
    if(!this.neonM){const mk=(tint)=>{const m=new T3.MeshLambertMaterial({color:tint,emissive:0x1a120c});const tx=this.curbTex||(this.curbTex=new T3.TextureLoader().load('art/tex/curb.jpg',t=>{t.colorSpace=T3.SRGBColorSpace}));tx.wrapS=tx.wrapT=T3.RepeatWrapping;m.map=tx;
      m.onBeforeCompile=sh=>{sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vCW;').replace('#include <begin_vertex>','#include <begin_vertex>\nvCW=(modelMatrix*vec4(position,1.)).xyz;');

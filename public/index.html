@@ -348,7 +348,7 @@ body.two.driving #twHint{display:flex}
   <button id="kD" data-k="d">BRZDA</button>
 </div>
 
-<script src="map/usti.js?v=2"></script>
+<script src="map/usti.js?v=3"></script>
 <script>
 'use strict';
 /* =========================================================
@@ -1068,10 +1068,20 @@ function drawPed(c2,p){c2.save();c2.translate(p.x,p.y);c2.rotate(p.a);
   if(p.type==='girl'){c2.fillStyle=p.hair;c2.beginPath();c2.ellipse(-2.5,0,3,4.2,0,0,7);c2.fill()}
   if(p.type==='drunk'||p.type==='party'){c2.fillStyle=p.type==='party'?'#c9a04a':'#2f7a2f';c2.fillRect(-sw*.6+1,-8.5,4,2)}
   c2.restore()}
+let RDB=null;function drawRoadsOSM(c2,x0,y0,x1,y1){if(!U0)return;if(!RDB){RDB=U0.edges.map(e=>{let a=1e9,b=1e9,c=-1e9,d=-1e9;for(const p of e[2]){a=Math.min(a,p[0]);b=Math.min(b,p[1]);c=Math.max(c,p[0]);d=Math.max(d,p[1])}return[a*T,b*T,c*T,d*T]})}
+  const E=[];U0.edges.forEach((e,i)=>{const r=RDB[i],m=(e[3]+2)*T;if(r[2]+m<x0||r[0]-m>x1||r[3]+m<y0||r[1]-m>y1)return;E.push(e)});E.sort((a,b)=>a[3]-b[3]);
+  const path=e=>{c2.beginPath();e[2].forEach((p,i)=>i?c2.lineTo(p[0]*T,p[1]*T):c2.moveTo(p[0]*T,p[1]*T))};c2.lineJoin='round';c2.lineCap='round';
+  const pw=pat('walk'),pa=pat('asphalt');
+  for(const e of E){if(e[5])continue;path(e);c2.strokeStyle=pw||'#5a595f';c2.lineWidth=(e[3]+1.3)*T;c2.stroke();c2.strokeStyle='rgba(20,20,28,.3)';c2.stroke()}
+  for(const e of E){path(e);c2.strokeStyle='#8c8a92';c2.lineWidth=(e[3]+.16)*T;c2.stroke()}
+  for(const e of E){path(e);c2.strokeStyle=pa||'#2b2c31';c2.lineWidth=e[3]*T;c2.stroke();c2.strokeStyle=e[5]?'rgba(90,90,100,.25)':'rgba(10,14,22,.32)';c2.stroke()}
+  for(const e of E){if(e[3]<2)continue;c2.save();c2.setLineDash(e[4]?[]:[T*.55,T*.55]);c2.strokeStyle='rgba(235,235,220,.65)';c2.lineWidth=2.4;if(e[4]){c2.restore();continue}path(e);c2.stroke();c2.restore()}
+  for(const e of E){if(e[3]<2.5)continue;c2.save();c2.strokeStyle='rgba(235,235,220,.45)';c2.lineWidth=1.6;for(const sd of[-1,1]){c2.beginPath();const P=e[2];for(let i=0;i<P.length;i++){const A=P[Math.max(0,i-1)],B=P[Math.min(P.length-1,i+1)],L=Math.hypot(B[0]-A[0],B[1]-A[1])||1,nx=-(B[1]-A[1])/L,ny=(B[0]-A[0])/L,o=(e[3]/2-.12)*sd;const x=(P[i][0]+nx*o)*T,y=(P[i][1]+ny*o)*T;i?c2.lineTo(x,y):c2.moveTo(x,y)}c2.stroke()}c2.restore()}}
 function drawGround(c2,x0,y0,x1,y1,t,wet){
   const tx0=Math.max(-1,Math.floor(x0/T)),tx1=Math.min(MAPW,Math.floor(x1/T)),ty0=Math.max(-1,Math.floor(y0/T)),ty1=Math.min(MAPH,Math.floor(y1/T));
   for(let ty=ty0;ty<=ty1;ty++)for(let tx=tx0;tx<=tx1;tx++){const k=tileAt(tx,ty),X=tx*T,Y=ty*T,mx=((tx%8)+8)%8,my=((ty%8)+8)%8,h=((tx*73856093)^(ty*19349663))>>>0;
     if(tx<0||ty<0||tx>=MAPW||ty>=MAPH){c2.fillStyle='#10200f';c2.fillRect(X,Y,T+.5,T+.5);continue}
+    if(U0&&(k===ROAD||k===BRIDGE||k===WALK)){if(k===BRIDGE){c2.fillStyle='#1c4a60';c2.fillRect(X,Y,T+.5,T+.5)}else{let urb=0;for(let d=1;d<=2&&!urb;d++)urb=tileAt(tx+d,ty)===BUILD||tileAt(tx-d,ty)===BUILD||tileAt(tx,ty+d)===BUILD||tileAt(tx,ty-d)===BUILD;const pp=pat(urb?'walk':'grass');c2.fillStyle=pp||(urb?'#57565c':'#22391f');c2.fillRect(X,Y,T+.5,T+.5);c2.fillStyle=urb?'rgba(20,20,28,.35)':'rgba(0,10,0,.25)';c2.fillRect(X,Y,T+.5,T+.5)}continue}
     switch(k){
     case ROAD:case BRIDGE:{const pa=pat('asphalt');c2.fillStyle=pa||(k===ROAD?(wet?'#24262b':'#2b2c31'):'#34363c');c2.fillRect(X,Y,T+.5,T+.5);if(pa){c2.fillStyle=k===BRIDGE?'rgba(90,90,100,.25)':wet?'rgba(10,14,22,.35)':'rgba(0,0,0,.18)';c2.fillRect(X,Y,T+.5,T+.5)}
       else if(h%7===0){c2.fillStyle='rgba(0,0,0,.18)';c2.fillRect(X+(h%30),Y+(h>>5)%30,10,6)}
@@ -1821,7 +1831,7 @@ import {KTX2Loader} from './vendor/jsm/loaders/KTX2Loader.js';
 import {MeshoptDecoder} from './vendor/jsm/libs/meshopt_decoder.module.js';
 import * as SkeletonUtils from './vendor/jsm/utils/SkeletonUtils.js';
 window.THREE=THREE;window.TADD={EffectComposer,RenderPass,UnrealBloomPass,OutputPass,GLTFLoader,RGBELoader,SkeletonUtils,DRACOLoader,KTX2Loader,MeshoptDecoder};
-const s=document.createElement('script');s.src='r3.js?v=84';document.body.appendChild(s);
+const s=document.createElement('script');s.src='r3.js?v=86';document.body.appendChild(s);
 </script>
 </body>
 </html>
