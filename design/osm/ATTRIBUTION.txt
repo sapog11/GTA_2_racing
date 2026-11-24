@@ -1,0 +1,2 @@
+Map data © OpenStreetMap contributors, available under the Open Database License (ODbL): https://www.openstreetmap.org/copyright
+Source: api.openstreetmap.org, bbox 50.62-50.70 N, 13.98-14.10 E (Ústí nad Labem).
