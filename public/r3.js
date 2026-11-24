@@ -470,7 +470,7 @@ const T3=THREE,mods=['sedan','hatchback_sports','suv','sedan_sports','van'].filt
    const rimStyle=(tn.rims&&tn.rims!=='stock'?tn.rims:this.AIRIM[id])||(this.ZB[c.st&&c.st.id]||{}).rims||'five',rimM=tn.rim?new T3.MeshStandardMaterial({color:tn.rim,metalness:.7,roughness:.28}):this.aiRimM||(this.aiRimM=new T3.MeshStandardMaterial({color:0xb8bcc4,metalness:.75,roughness:.28})),tyM=this.aiTyM||(this.aiTyM=new T3.MeshStandardMaterial({color:0x151517,roughness:.85,metalness:0}));
    m.updateMatrixWorld(true);m.traverse(o=>{if(/^Wheel_/.test(o.name)){o.userData.front=/_F/.test(o.name);aw.push(o);o.position.z-=Math.sign(o.position.z)*this.aiIn;o.scale.setScalar(this.aiWs);
      const bb=new T3.Box3();o.traverse(q=>{if(q.isMesh)bb.expandByObject(q)});const inv=new T3.Matrix4().copy(o.matrixWorld).invert();bb.applyMatrix4(inv);const sz=bb.getSize(new T3.Vector3());
-     if(!repW&&!dkP)return;const tyreFix=dkP||(id in this.AIRIM);
+     if(!repW)return;const tyreFix=(id in this.AIRIM);
      const r=Math.min(Math.max(Math.min(o.position.y*.95,sz.y*.5),.06),.13),wd=Math.min(r*.62,sz.z*.9),side=o.position.z>0?1:-1;
      const outer=side>0?bb.max.z:bb.min.z,rg=new T3.Group();if(tyreFix){const rr=Math.min(o.position.y,sz.y*.5)*1.01,tw=Math.min(sz.z*.8,rr*.75),tg=this.aiTyG||(this.aiTyG=new T3.CylinderGeometry(1,1,1,32,1).rotateX(Math.PI/2)),ty=new T3.Mesh(tg,tyM);ty.scale.set(rr,rr,tw);ty.position.z=outer-side*tw*.5;o.add(ty)}rg.rotation.y=-side*Math.PI/2;rg.position.z=outer-side*Math.min(sz.z*.12,.006);const rs=this.rimSet(rimStyle==='stock'?'five':rimStyle,rimM);rs.scale.setScalar(Math.min(sz.y*.5,r)*.78/.292);rg.add(rs);o.add(rg)}});
    if(!this.shTex){this.shTex=this.glowTex('rgba(0,0,0,.85)');this.shGeo=new T3.PlaneGeometry(1,1);this.shGeo.rotateX(-Math.PI/2);this.shMat=new T3.MeshBasicMaterial({map:this.shTex,transparent:true,depthWrite:false})}
@@ -494,9 +494,9 @@ const T3=THREE,mods=['sedan','hatchback_sports','suv','sedan_sports','van'].filt
   const hist=new Float32Array(36);let sat=0;for(let i=0;i<n;i+=7){const q=hsl(d[i*4]/255,d[i*4+1]/255,d[i*4+2]/255);if(q[1]>.35&&q[2]>.12&&q[2]<.85){hist[Math.floor(q[0]/10)%36]++;sat++}}
   let hb=0;for(let i=1;i<36;i++)if(hist[i]>hist[hb])hb=i;const chrom=sat/(n/7)>.08,h0=hb*10+5;
   const T=new THREE.Color(hex),tr=T.r,tg=T.g,tb=T.b;T.convertLinearToSRGB();const tl=Math.max(.06,(T.r+T.g+T.b)/3),ts=[T.r,T.g,T.b];
-  const wOf=q=>{if(chrom){const dh=Math.min(Math.abs(q[0]-h0),360-Math.abs(q[0]-h0));return q[1]<.18?0:Math.max(0,Math.min(1,(28-dh)/10))*Math.min(1,(q[1]-.18)/.15)}return q[1]>.22?0:q[2]>.6?0:Math.min(1,(.22-q[1])/.1)*Math.min(1,(.6-q[2])/.12)};
+  const wOf=q=>{if(chrom){const dh=Math.min(Math.abs(q[0]-h0),360-Math.abs(q[0]-h0));return q[1]<.18?0:Math.max(0,Math.min(1,(28-dh)/10))*Math.min(1,(q[1]-.18)/.15)}return q[1]>.22?0:q[2]>.3?0:Math.min(1,(.22-q[1])/.1)*Math.min(1,(.3-q[2])/.08)};
   let ls=0,lc=0;for(let i=0;i<n;i+=5){const q=hsl(d[i*4]/255,d[i*4+1]/255,d[i*4+2]/255);if(wOf(q)>.5){ls+=q[2];lc++}}const bl=Math.max(.04,lc?ls/lc:.3);
-  for(let i=0;i<n;i++){const o=i*4,q=hsl(d[o]/255,d[o+1]/255,d[o+2]/255),w=wOf(q);if(!w)continue;const f=Math.min(2.4,Math.max(.12,q[2]/bl));for(let c=0;c<3;c++){const v=Math.min(1,ts[c]*f)*255;d[o+c]=d[o+c]*(1-w)+v*w}}
+  for(let i=0;i<n;i++){const o=i*4,q=hsl(d[o]/255,d[o+1]/255,d[o+2]/255),w=wOf(q);if(!w)continue;const f=chrom?Math.min(2.4,Math.max(.12,q[2]/bl)):.45+.55*Math.min(2.2,q[2]/bl);for(let c=0;c<3;c++){const v=Math.min(1,ts[c]*f)*255;d[o+c]=d[o+c]*(1-w)+v*w}}
   x.putImageData(D,0,0);const t=new THREE.CanvasTexture(cv);t.flipY=map.flipY;t.colorSpace=map.colorSpace;t.wrapS=map.wrapS;t.wrapT=map.wrapT;t.channel=map.channel;t.anisotropy=4;t.userData.dark=!chrom;return this.aiPT[k]=t},
  zSpec(id,tune){const b=this.ZB[id]||this.ZB.koncept,t=tune||{},o=Object.assign({},b,t);let kit=b.kit.slice();if(t.wing===1&&!kit.includes('wing'))kit=kit.filter(k=>k!=='duck').concat('wing');if(t.wing===0)kit=kit.filter(k=>k!=='wing');o.kit=kit;return o},
  zMesh(c,sp,noAdd){const T3=THREE,L=c.L,bx=sp.sx||1,by=sp.sy||1,zs=L/(46*bx),zw=(sp.w||1)*(sp.armor?1.04:1),g=new T3.Group(),m=this.concept.clone(true),B=this.zB;
