@@ -1,0 +1,35 @@
+<!doctype html><html><body style="margin:0;background:#222"><canvas id="c"></canvas>
+<script type="importmap">{"imports":{"three":"../vendor/three.module.min.js"}}</script>
+<script type="module">
+import * as THREE from 'three';import {GLTFLoader} from '../vendor/jsm/loaders/GLTFLoader.js';
+const q=new URLSearchParams(location.search),id=q.get('car'),views=(q.get('views')||'left,right,front,back').split(',');
+const VIEWS={left:{d:[0,0,1],up:[0,1,0],w:1.2,h:.675,c:[0,.17,0]},right:{d:[0,0,-1],up:[0,1,0],w:1.2,h:.675,c:[0,.17,0]},front:{d:[1,0,0],up:[0,1,0],w:.64,h:.48,c:[0,.18,0]},back:{d:[-1,0,0],up:[0,1,0],w:.64,h:.48,c:[0,.18,0]},top:{d:[0,1,0],up:[-1,0,0],w:.675,h:1.2,c:[0,0,0]}};
+const R=new THREE.WebGLRenderer({canvas:document.getElementById('c'),preserveDrawingBuffer:true});R.setPixelRatio(1);
+window.ready=false;window.out=null;
+const cam=v=>{const V=VIEWS[v],C=new THREE.OrthographicCamera(-V.w/2,V.w/2,V.h/2,-V.h/2,.01,10);C.position.set(V.c[0]+V.d[0]*3,V.c[1]+V.d[1]*3,V.c[2]+V.d[2]*3);C.up.set(...V.up);C.lookAt(...V.c);C.updateMatrixWorld();C.updateProjectionMatrix();return C};
+new GLTFLoader().load('../models/cars/ai/'+id+'.glb?x='+Date.now(),async g=>{
+ const S=new THREE.Scene();S.add(g.scene);g.scene.updateMatrixWorld(true);
+ let map=null;g.scene.traverse(o=>{if(o.isMesh&&o.material.map&&!map)map=o.material.map});const TW=map.image.width,TH=map.image.height;map.colorSpace=THREE.NoColorSpace;map.needsUpdate=true;
+ // depth maps
+ const DS=1536,deps={},cams={},imgs={};
+ const dm=new THREE.ShaderMaterial({vertexShader:'varying float vz;void main(){vec4 p=projectionMatrix*modelViewMatrix*vec4(position,1.);vz=p.z/p.w*.5+.5;gl_Position=p;}',fragmentShader:'varying float vz;void main(){gl_FragColor=vec4(vz,0.,0.,1.);}',side:THREE.DoubleSide});
+ S.overrideMaterial=dm;
+ for(const v of views){const rt=new THREE.WebGLRenderTarget(DS,DS,{type:THREE.FloatType});cams[v]=cam(v);R.setRenderTarget(rt);R.setClearColor(0xffffff,1);R.clear();R.render(S,cams[v]);deps[v]=rt.texture;
+  imgs[v]=await new THREE.TextureLoader().loadAsync('redraw/'+id+'_'+v+'.png?x='+Date.now());imgs[v].flipY=true;imgs[v].colorSpace=THREE.NoColorSpace}
+ S.overrideMaterial=null;R.setRenderTarget(null);
+ // UV-space bake
+ const N=views.length;let uni={uMap:{value:map}};let decl='uniform sampler2D uMap;',body='';
+ views.forEach((v,i)=>{uni['uD'+i]={value:deps[v]};uni['uI'+i]={value:imgs[v]};uni['uM'+i]={value:new THREE.Matrix4().multiplyMatrices(cams[v].projectionMatrix,cams[v].matrixWorldInverse)};uni['uV'+i]={value:new THREE.Vector3(...VIEWS[v].d)};
+  decl+=`uniform sampler2D uD${i},uI${i};uniform mat4 uM${i};uniform vec3 uV${i};`;
+  body+=`{vec4 p=uM${i}*vec4(vW,1.);vec3 n3=p.xyz/p.w*.5+.5;float dd=texture2D(uD${i},n3.xy).r;float vis=(n3.z<=dd+.004&&n3.x>0.&&n3.x<1.&&n3.y>0.&&n3.y<1.)?1.:0.;float w=pow(max(0.,dot(normalize(vN),uV${i})),2.)*vis;vec3 c=texture2D(uI${i},n3.xy).rgb;if(min(c.r,min(c.g,c.b))>.93)w=0.;acc+=c*w;wsum+=w;}`});
+ const bm=new THREE.ShaderMaterial({uniforms:uni,side:THREE.DoubleSide,vertexShader:'varying vec3 vW,vN;varying vec2 vUv;void main(){vUv=uv;vW=(modelMatrix*vec4(position,1.)).xyz;vN=normalize(mat3(modelMatrix)*normal);gl_Position=vec4(uv*2.-1.,0.,1.);}',
+  fragmentShader:decl+'varying vec3 vW,vN;varying vec2 vUv;void main(){vec3 acc=vec3(0.);float wsum=0.;'+body+'vec3 o=texture2D(uMap,vUv).rgb;float k=smoothstep(.05,.35,wsum);vec3 col=wsum>0.?acc/wsum:o;gl_FragColor=vec4(mix(o,col,k),1.);}'});
+ const rt=new THREE.WebGLRenderTarget(TW,TH);R.setRenderTarget(rt);R.setClearColor(0x000000,0);R.clear();
+ // render base texture first (so untouched texels keep original)
+ const sc2=new THREE.Scene();const quad=new THREE.Mesh(new THREE.PlaneGeometry(2,2),new THREE.ShaderMaterial({uniforms:{uMap:{value:map}},vertexShader:'varying vec2 vUv;void main(){vUv=uv;gl_Position=vec4(position.xy,0.,1.);}',fragmentShader:'uniform sampler2D uMap;varying vec2 vUv;void main(){gl_FragColor=vec4(texture2D(uMap,vUv).rgb,1.);}'}));sc2.add(quad);R.render(sc2,new THREE.Camera());
+ R.autoClear=false;g.scene.traverse(o=>{if(o.isMesh)o.material=bm});R.render(S,new THREE.Camera());R.autoClear=true;
+ const px=new Uint8Array(TW*TH*4);R.readRenderTargetPixels(rt,0,0,TW,TH,px);
+ const cv=document.createElement('canvas');cv.width=TW;cv.height=TH;const x=cv.getContext('2d'),id2=x.createImageData(TW,TH);
+ id2.data.set(px);x.putImageData(id2,0,0);
+ window.out=cv.toDataURL('image/png');window.ready=true});
+</script></body></html>
