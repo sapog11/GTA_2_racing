@@ -145,6 +145,7 @@ const R3={ok:false,off:/[?&]2d/.test(location.search),chunks:new Map(),CH:16,PX:
   for(const st of STREETS){if(st.v!==undefined){const x=IX(st.v);if(x<x0-40||x>x1+40)continue;for(let j=st.a;j<st.b;j++){const y=(8*j+5)*T;if(y<y0||y>y1)continue;g.save();g.translate(x,y);g.rotate(-Math.PI/2);g.fillText(st.n,0,0);g.restore()}}
    else{const y=IX(st.h);if(y<y0-40||y>y1+40)continue;for(let i=st.a;i<st.b;i++){const x=(8*i+5)*T;if(x<x0||x>x1)continue;g.fillText(st.n,x,y)}}}
   for(const j in BRIDGES){const y=IX(+j),x=(8*RIVER+5)*T;if(y>y0-40&&y<y1+40&&x>x0-200&&x<x1+200)g.fillText(BRIDGES[j].toUpperCase(),x,y)}
+  if(window.USTI){g.font='700 11px Oswald, sans-serif';for(const L of USTI.labels){const x=L[1]*T,y=L[2]*T;if(x<x0-200||x>x1+200||y<y0-200||y>y1+200)continue;let a=L[3];if(a>Math.PI/2)a-=Math.PI;if(a<-Math.PI/2)a+=Math.PI;g.save();g.translate(x,y);g.rotate(a);g.fillStyle=L[4]?'rgba(255,220,120,.7)':'rgba(240,240,230,.55)';g.fillText(L[0],0,0);g.restore()}}
   const tex=new T3.CanvasTexture(cv);tex.colorSpace=T3.SRGBColorSpace;tex.anisotropy=Math.min(4,this.renderer.capabilities.getMaxAnisotropy());
   const grp=new T3.Group();const gm=new T3.Mesh(this.groundGeo,this.groundMat(tex));gm.rotation.x=-Math.PI/2;gm.position.set(x0+S/2,0,y0+S/2);grp.add(gm);
   // buildings whose centre lies in this chunk
