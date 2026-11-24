@@ -452,10 +452,11 @@ function genCityOSM(){const r=rng(20260124),rp=a=>a[Math.floor(r()*a.length)];
     if(ind&&tw*th>=6&&r()<.12)addB(x+w-T*.8,y+T*.2,T*.6,T*.6,.75,'#8a3d2c',{chimney:1})}
   const H=(x,y)=>{let h=(x*374761393+y*668265263)>>>0;h=(h^(h>>>13))*1274126177>>>0;return((h^(h>>>16))>>>0)/4294967296};
   for(let ty=1;ty<MAPH-1;ty++)for(let tx=1;tx<MAPW-1;tx++){const t=tiles[ty*MAPW+tx],h=H(tx,ty),X=tx*T,Y=ty*T;
-    if(t===WALK){if(h<.22&&(tileAt(tx+1,ty)===ROAD||tileAt(tx-1,ty)===ROAD||tileAt(tx,ty+1)===ROAD||tileAt(tx,ty-1)===ROAD)&&(tx+ty)%3===0)lamps.push({x:X+T/2,y:Y+T/2})}
-    else if(t===GRASS){if(h<.05){let nearR=false;for(let d=1;d<=3&&!nearR;d++)nearR=tileAt(tx+d,ty)===WALK||tileAt(tx-d,ty)===WALK||tileAt(tx,ty+d)===WALK||tileAt(tx,ty-d)===WALK;if(nearR||h<.012)trees.push({x:X+T*H(ty,tx),y:Y+T*H(tx+7,ty),r:13+r()*11,c:rp(['#1f4a26','#295a2c','#1b3f22','#33602f'])})}}
+    if(t===GRASS){if(h<.05){let nearR=false;for(let d=1;d<=3&&!nearR;d++)nearR=tileAt(tx+d,ty)===WALK||tileAt(tx-d,ty)===WALK||tileAt(tx,ty+d)===WALK||tileAt(tx,ty-d)===WALK;if(nearR||h<.012)trees.push({x:X+T*H(ty,tx),y:Y+T*H(tx+7,ty),r:13+r()*11,c:rp(['#1f4a26','#295a2c','#1b3f22','#33602f'])})}}
     else if(t===FOREST){if(h<.02&&trees.length<45000&&(tileAt(tx+4,ty)!==FOREST||tileAt(tx-4,ty)!==FOREST||tileAt(tx,ty+4)!==FOREST||tileAt(tx,ty-4)!==FOREST))trees.push({x:X+T*H(ty,tx),y:Y+T*H(tx+3,ty),r:16+r()*14,c:rp(['#163a1c','#1d4522','#123018','#24502a'])})}
     else if(t===LOT){if(h<.2&&parked.length<2500){const hz=tileAt(tx-1,ty)===ROAD||tileAt(tx+1,ty)===ROAD;parked.push({x:X+T/2,y:Y+T/2,a:hz?0:Math.PI/2,col:rp(['#8a1c1c','#d8d8d8','#2a3d6b','#3b3b3b','#6b6b2a','#1f5a4f']),L:38,Wd:19})}}}
+  {const occ=new Set();for(const e of U0.edges){if(e[3]<1)continue;const P=e[2];let acc=0,side=1;for(let i=1;i<P.length;i++){const ax=P[i-1][0],ay=P[i-1][1],bx=P[i][0],by=P[i][1],L=Math.hypot(bx-ax,by-ay);if(L<.01)continue;const nx=-(by-ay)/L,ny=(bx-ax)/L;
+    for(let d=(5-acc%5)%5;d<L;d+=5){const off=e[3]/2+.75;side=-side;const px=ax+(bx-ax)*d/L+nx*off*side,py=ay+(by-ay)*d/L+ny*off*side,tx=Math.floor(px),ty=Math.floor(py);if(tileAt(tx,ty)!==WALK)continue;const key=(tx>>1)+','+(ty>>1);if(occ.has(key))continue;occ.add(key);lamps.push({x:px*T,y:py*T})}acc+=L}}}
   for(const[n,t,x,y]of U0.places){DPL.push({n,x:x*T,y:y*T,t});if(t==='suburb'||t==='quarter'||t==='town'||t==='village')DLABELS.push({n:n.replace(/^Ústí nad Labem-/,'').toUpperCase(),x:x*T,y:y*T})}
   const lm=GEO(50.6437,14.0455);landmarks.push({x:lm.x,y:lm.y,name:'HRAD STŘEKOV'});
   for(const[txt,lat,lon,col]of[['FORUM',50.6597,14.0428,'#2ef0ff'],['HOTEL BOHEMIA',50.6627,14.0384,'#ffd02e'],['ZLATNICTVÍ',50.6611,14.0390,'#ffd02e'],['KOSTEL',50.6603,14.0406,'#ffd02e'],['HLAVNÍ NÁDRAŽÍ',50.6596,14.0451,'#2ef0ff'],['HRAD STŘEKOV',50.6437,14.0455,'#ffd02e']]){const g=GEO(lat,lon);signs.push({x:g.x,y:g.y,text:txt,col,ht:.15,big:1})}
@@ -530,7 +531,8 @@ let MAINR=null;function mainRoads(){if(MAINR||!U0)return MAINR;MAINR=new Uint8Ar
   for(const c of best)MAINR[c]=1;return MAINR}
 const isMain=(tx,ty)=>{const m=mainRoads();return m?(tx>=0&&ty>=0&&tx<MAPW&&ty<MAPH&&m[ty*MAPW+tx]===1):(tileAt(tx,ty)===ROAD||tileAt(tx,ty)===BRIDGE)};
 function roadNear(x,y){const tx=Math.floor(x/T),ty=Math.floor(y/T);for(let rad=0;rad<60;rad++)for(let dy=-rad;dy<=rad;dy++)for(let dx=-rad;dx<=rad;dx++){if(Math.max(Math.abs(dx),Math.abs(dy))!==rad)continue;if(isMain(tx+dx,ty+dy))return{x:(tx+dx+.5)*T,y:(ty+dy+.5)*T}}return{x,y}}
-const HOME=U0?Object.assign(roadNear(GEO(50.6628,14.0352).x,GEO(50.6628,14.0352).y),{a:0}):{x:IX(3)+18,y:IX(27)-140,a:-Math.PI/2};
+function homeSpot(lat,lon){const g=GEO(lat,lon);let best=null,bd=1e18;for(const E of RG.edges){if(E.w<2)continue;for(let i=1;i<E.pts.length;i++){const A=E.pts[i-1],B=E.pts[i],mx=(A.x+B.x)/2,my=(A.y+B.y)/2,d=(mx-g.x)**2+(my-g.y)**2;if(d<bd&&Math.hypot(B.x-A.x,B.y-A.y)>T*3){bd=d;best={x:mx,y:my,a:Math.atan2(B.y-A.y,B.x-A.x)}}}}if(!best)return Object.assign(roadNear(g.x,g.y),{a:0});const nx=-Math.sin(best.a),ny=Math.cos(best.a);best.x+=nx*14;best.y+=ny*14;return best}
+const HOME=U0?homeSpot(50.6628,14.0352):{x:IX(3)+18,y:IX(27)-140,a:-Math.PI/2};
 
 /* ---------------- DATA ---------------- */
 const CARS=[
@@ -1819,7 +1821,7 @@ import {KTX2Loader} from './vendor/jsm/loaders/KTX2Loader.js';
 import {MeshoptDecoder} from './vendor/jsm/libs/meshopt_decoder.module.js';
 import * as SkeletonUtils from './vendor/jsm/utils/SkeletonUtils.js';
 window.THREE=THREE;window.TADD={EffectComposer,RenderPass,UnrealBloomPass,OutputPass,GLTFLoader,RGBELoader,SkeletonUtils,DRACOLoader,KTX2Loader,MeshoptDecoder};
-const s=document.createElement('script');s.src='r3.js?v=83';document.body.appendChild(s);
+const s=document.createElement('script');s.src='r3.js?v=84';document.body.appendChild(s);
 </script>
 </body>
 </html>
