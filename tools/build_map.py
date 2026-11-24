@@ -19,7 +19,7 @@ for f in sorted(glob.glob('design/osm/tiles/*.xml')):
         elif t=='relation':
             rels[el.get('id')]=([(m.get('type'),m.get('ref'),m.get('role')) for m in el.findall('member')],{x.get('k'):x.get('v') for x in el.findall('tag')});el.clear()
 G=lambda nd:[P(*nodes[n]) for n in nd if n in nodes]
-ROADW={'motorway':4,'trunk':4,'primary':3,'secondary':3,'tertiary':2.5,'motorway_link':2,'trunk_link':2,'primary_link':2,'secondary_link':2,'tertiary_link':2,'unclassified':2,'residential':2,'living_street':1.6}
+ROADW={'motorway':5,'trunk':4.5,'primary':4,'secondary':3.6,'tertiary':3.2,'motorway_link':2.6,'trunk_link':2.6,'primary_link':2.6,'secondary_link':2.6,'tertiary_link':2.6,'unclassified':2.6,'residential':2.6,'living_street':2.2}
 paths=[];roads=[];water=[];forest=[];park=[];ind=[];peds=[];bldg=[];rail=[]
 for wid,(nd,tg) in ways.items():
     h=tg.get('highway')
