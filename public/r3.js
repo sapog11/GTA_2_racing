@@ -459,10 +459,10 @@ const T3=THREE,mods=['sedan','hatchback_sports','suv','sedan_sports','van'].filt
  archCheck(g){const T3=THREE,out=[];g.updateMatrixWorld(true);const U=g.userData;if(!U.cw)return out;const rc=new T3.Raycaster(),body=[];g.traverse(o=>{if(o.isMesh&&o.visible&&!/Wheel|^mesh_9/.test((o.parent&&o.parent.name)||'')&&/Paint|Mechanical/.test(o.material.name||''))body.push(o)});
   for(const wn of U.cw){const c=new T3.Vector3();wn.getWorldPosition(c);const r=(new T3.Box3().setFromObject(wn).getSize(new T3.Vector3()).y)/2;let gap=1e9;for(let a=.3;a<2.9;a+=.2){const d=new T3.Vector3(Math.cos(a),Math.sin(a),0);rc.set(c,d);const h=rc.intersectObjects(body,false)[0];if(h)gap=Math.min(gap,h.distance-r)}out.push(+gap.toFixed(2))}return out},
  tuneKey(id){const t=typeof SAVE!=='undefined'&&SAVE.tune&&SAVE.tune[id];return(t?JSON.stringify(t):'')+'#'+(this.partsV||0)+(this.camMode==='cockpit'?'c':'')+(this.aiCars&&this.aiCars[id]?'a':'')},
- AIRIM:{bavorak:'multi'},
+ AIRIM:{},
  AICARS:['civka','krosik','felda','golfik','bavorak','imprezka','supka','koncept','traffic_kombi','traffic_taxi','traffic_police','traffic_jeep','traffic_truck','traffic_sedan','traffic_mini','traffic_mpv'],
  aiCar(id){if(!this.AICARS.includes(id))return null;this.aiCars=this.aiCars||{};const S=this.aiCars[id];
-  if(S===undefined){this.aiCars[id]=null;new TADD.GLTFLoader().load('models/cars/ai/'+id+'.glb?v=20',g=>{g.scene.traverse(o=>{if(o.isMesh&&o.material){o.material.envMapIntensity=1.2;o.material.side=THREE.DoubleSide;if(o.name==='Body'&&!/^traffic/.test(id))o.material=this.aiCoat(o.material)}});this.aiCars[id]=g.scene;this.partsV=(this.partsV||0)+1},undefined,()=>{this.aiCars[id]=false});return null}
+  if(S===undefined){this.aiCars[id]=null;new TADD.GLTFLoader().load('models/cars/ai/'+id+'.glb?v=21',g=>{g.scene.traverse(o=>{if(o.isMesh&&o.material){o.material.envMapIntensity=1.2;o.material.side=THREE.DoubleSide;if(o.name==='Body'&&!/^traffic/.test(id))o.material=this.aiCoat(o.material)}});this.aiCars[id]=g.scene;this.partsV=(this.partsV||0)+1},undefined,()=>{this.aiCars[id]=false});return null}
   if(!S)return null;
   return c=>{const T3=THREE,g=new T3.Group(),m=S.clone(true),L=c.L;m.scale.setScalar(L);const ch=new T3.Group();ch.add(m);g.add(ch);const aw=[];
    let dkP=0;const tn=(c.kind==='player'&&typeof SAVE!=='undefined'&&SAVE.tune&&c.st&&SAVE.tune[c.st.id])||{},repW=!!(tn.rims&&tn.rims!=='stock')||(id in this.AIRIM);
