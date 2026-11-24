@@ -222,6 +222,7 @@ const R3={ok:false,off:/[?&]2d/.test(location.search),chunks:new Map(),CH:16,PX:
    const ge=new T3.ExtrudeGeometry(sh,{depth,bevelEnabled:true,bevelThickness:bev,bevelSize:bev,bevelSegments:2,curveSegments:2});ge.translate(0,0,-depth/2);ge.computeVertexNormals();return ge};
   const c=P.cab;return this.carGeo[key]={low:ex(P.low,W-3,1.5),cab:ex(c,W*.8-2,1),roofX:[c[1][0]*L,c[2][0]*L],roofY:Math.max(c[1][1],c[2][1])}},
  carMesh(c){if(c.kind==='player'&&c.st&&c.st.kenney&&this.kReady&&this.km[c.st.kenney]){const t=(typeof SAVE!=='undefined'&&SAVE.tune&&SAVE.tune[c.st.id])||{};const g=this.kenneyMesh(Object.assign({},c,{col:t.p1||c.col}),c.st.kenney);g.userData.tk=this.tuneKey(c.st.id);return g}
+  if(c.st&&c.st.gang){const A=this.aiCar('traffic_jeep');if(A){const g=A(c);if(!this.gangM)this.gangM=new Map();g.traverse(o=>{if(o.isMesh&&o.material&&o.material.map&&o.material.visible!==false){let M=this.gangM.get(o.material);if(!M){M=o.material.clone();M.color=new THREE.Color(0x2a2a2e);M.roughness=.35;M.metalness=.5;this.gangM.set(o.material,M)}o.material=M}});g.userData.paint={};return g}}
   if(c.aiId){const A=this.aiCar(c.aiId);if(A){const g=A(c);g.userData.paint={};return g}}
   if(c.kind==='player'&&c.st&&!c.st.kenney&&this.camMode!=='cockpit'){const A=this.aiCar(c.st.id);if(A)return A(c)}
   if(c.kind==='civ'||(c.st&&c.st.police&&!c.parked)){const id=c.st&&c.st.police?'traffic_police':['traffic_kombi','traffic_taxi','traffic_kombi'][Math.floor((c.L*97)%3)];const A=this.aiCar(id);if(A){const g=A(c);g.userData.paint={};return g}}
