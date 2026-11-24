@@ -799,8 +799,9 @@ function canGo(i,j,ni,nj){if(nj===j&&Math.min(i,ni)===RIVER&&!BRIDGES[j])return 
 function nbrs(i,j){const o=[];if(i>0&&canGo(i,j,i-1,j))o.push([i-1,j]);if(i<NX-1&&canGo(i,j,i+1,j))o.push([i+1,j]);if(j>0)o.push([i,j-1]);if(j<NY-1)o.push([i,j+1]);return o}
 function civPath(i,j,pi,pj,n){const out=[];let ci=i,cj=j,li=pi,lj=pj;for(let k=0;k<n;k++){let o=nbrs(ci,cj).filter(q=>!(q[0]===li&&q[1]===lj));if(!o.length)o=nbrs(ci,cj);const q=pick(o);li=ci;lj=cj;ci=q[0];cj=q[1];out.push({i:ci,j:cj,pi:li,pj:lj})}return out}
 function civTarget(c){const P=c.path[c.pi];const dx=P.i-P.pi,dy=P.j-P.pj;return{x:IX(P.i)-dy*24,y:IX(P.j)+dx*24}}
+const CIV_TYPES=[{id:'traffic_kombi',L:[40,44],W:19},{id:'traffic_taxi',L:[40,44],W:19},{id:'traffic_sedan',L:[40,44],W:19},{id:'traffic_sedan',L:[40,44],W:19},{id:'traffic_mini',L:[32,35],W:17},{id:'traffic_mini',L:[32,35],W:17},{id:'traffic_mpv',L:[41,45],W:20},{id:'traffic_jeep',L:[42,46],W:21,hp:1.6},{id:'traffic_truck',L:[60,66],W:24,sp:.8,hp:3}];
 function spawnCiv(w){for(let tries=0;tries<12;tries++){const ci=Math.round((w.cam.x/T-1)/8),cj=Math.round((w.cam.y/T-1)/8),i=clamp(ci+Math.floor(rr(-3,4)),0,NX-1),j=clamp(cj+Math.floor(rr(-3,4)),0,NY-1);const x=IX(i),y=IX(j),d=Math.hypot(x-w.cam.x,y-w.cam.y);if(d<520||d>1300)continue;if(w.cars.some(c=>Math.hypot(c.x-x,c.y-y)<120))continue;
-  const o=pick(nbrs(i,j));const c=makeCar({col:pick(CIV_COLS),max:rr(120,160),acc:130,turn:2.4,grip:6,hp:40,L:rr(38,44),Wd:19},x,y,0,'civ');const dx=o[0]-i,dy=o[1]-j;c.a=Math.atan2(dy,dx);c.x-=dy*24;c.y+=dx*24;c.v=60;c.vx=Math.cos(c.a)*60;c.vy=Math.sin(c.a)*60;
+  const o=pick(nbrs(i,j));const CT=pick(CIV_TYPES),c=makeCar({col:pick(CIV_COLS),max:rr(120,160)*(CT.sp||1),acc:130*(CT.sp||1),turn:2.4,grip:6,hp:40*(CT.hp||1),L:rr(CT.L[0],CT.L[1]),Wd:CT.W},x,y,0,'civ');c.aiId=CT.id;const dx=o[0]-i,dy=o[1]-j;c.a=Math.atan2(dy,dx);c.x-=dy*24;c.y+=dx*24;c.v=60;c.vx=Math.cos(c.a)*60;c.vy=Math.sin(c.a)*60;
   c.path=[{i:o[0],j:o[1],pi:i,pj:j}].concat(civPath(o[0],o[1],i,j,6));c.pi=0;w.cars.push(c);return c}}
 
 /* ---- peds ---- */
@@ -809,7 +810,7 @@ const LINES={pub:['Na zdraví, vole!','Ještě jedno a jdem.','Kdo platí tuhle 
  group:['A pak mu řekla, že je to jeho dítě!','Kdo jde na jedno?','Viděli jste včera Slavii?','Šéf mě zase sjel…','Tady se nic nezmění, vole.','Prej zdražujou tramvaj.','Já bych odsud vypadnul.','Hele, támhle jede ta černá kára!','Pátek, pátek, pátek!','Kdo má cígo?','Ty vole, to není možný!','Haha, to je dobrý!','Kam dneska večer?','Na Střekově je párty.','Kamarád prodává káru, levně.'],
  shot:['Střílí!!','Lehni!','Pomoc!','Utíkej!','Do píče, kulky!','Policie, pomoc!'],greet:['Čau!','Nazdar, jak se máš?','Ahoj, co děláš?','Taky prší, co?','Viděls ten zápas?','Ty jo, dlouho jsme se neviděli!'],near:['Pěkná kára!','Hezký auto, vole.','Svezeš mě kousek?','Ty máš ale bourák!','Neblokuj chodník!','Co tu stojíš?'],walker:['Kolik je hodin?','Zase jsem nestih autobus.','Prší jak sviňa.','Kde je tu bankomat?','Tohle město mě jednou zabije.','Ještě že je pátek.','Ten nájem je šílenej.','Mám hlad jak vlk.','Máš cigo?','Ty vole, prší.','Máš drobný?','Kam jdeš?','Půjč mi kilo do pátku.','Vrátím ti to, fakt!']};
 const PEDCOL=['#3a6ea5','#a53a3a','#4a8a4a','#8a6a3a','#555','#7a3a8a','#c8c8c8','#2a2a2a','#b8862b'];
-function makePed(type,x,y){const p={type,x,y,a:pick([0,Math.PI/2,Math.PI,-Math.PI/2]),dx:0,dy:0,sp:type==='drunk'?16:rr(24,34),walk:R()*6,col:pick(PEDCOL),hair:pick(['#1a1410','#3a2a1a','#c9a04a','#6a3a1a','#111','#8a8a8a']),skin:pick(['#e8b896','#d79c74','#c08060','#f0c8a8']),down:0,flee:0,say:null,sayT:rr(2,10),wob:R()*6,mate:null,punch:0};
+function makePed(type,x,y){const p={type,x,y,a:pick([0,Math.PI/2,Math.PI,-Math.PI/2]),dx:0,dy:0,sp:type==='drunk'?10:rr(13,17),walk:R()*6,col:pick(PEDCOL),hair:pick(['#1a1410','#3a2a1a','#c9a04a','#6a3a1a','#111','#8a8a8a']),skin:pick(['#e8b896','#d79c74','#c08060','#f0c8a8']),down:0,flee:0,say:null,sayT:rr(2,10),wob:R()*6,mate:null,punch:0};
  if(type==='girl'){p.col=pick(['#ff2e88','#d4145a','#b46bff']);p.hair=pick(['#f2d27a','#c9a04a','#1a1410']);p.sp=0}
  if(type==='worker'){p.col='#ff7a1a';p.hair='#ffd02e'}
  if(type==='smoker'||type==='fight'||type==='party')p.sp=0;
@@ -935,21 +936,21 @@ function updateWorld(w,dt,pctl){
     for(const c of w.cars){const sp=Math.hypot(c.vx,c.vy);if(sp<50)continue;const dx=p.x-c.x,dy=p.y-c.y,d=Math.hypot(dx,dy);
       if(d<c.L*.5+5&&sp>70){p.down=2.2;p.a=Math.atan2(c.vy,c.vx);const k=Math.min(1,sp/500)*160;p.kvx=c.vx/sp*k;p.kvy=c.vy/sp*k;if(c===w.player){c.v*=.96}say(p,['Au!','Ty kreténe!','Kurva!'],1.4);if(p.mate){p.mate.mate=null;p.mate=null}break}
       if(d<100&&p.flee<=0){const vx=c.vx/sp,vy=c.vy/sp;if((dx*vx+dy*vy)/d>.55){const side=(-vy*dx+vx*dy)>0?1:-1;p.fdx=-vy*side;p.fdy=vx*side;p.flee=.6;if(R()<.4&&!p.say)say(p,LINES.hit,1.6)}}}
-    if(p.flee>0){p.flee-=dt;const fs=p.scared?78:64;if(!pmove(p,p.fdx*fs*dt,p.fdy*fs*dt)){const a=Math.atan2(p.fdy,p.fdx)+(R()<.5?1.4:-1.4);p.fdx=Math.cos(a);p.fdy=Math.sin(a)}p.a=Math.atan2(p.fdy,p.fdx);p.walk+=dt*16;if(p.flee<=0){p.scared=0;if(p.type==='girl'||p.type==='smoker'||p.type==='fight'||p.type==='crew'){p.type='walker';p.sp=30}}continue}
+    if(p.flee>0){p.flee-=dt;const fs=p.scared?78:64;if(!pmove(p,p.fdx*fs*dt,p.fdy*fs*dt)){const a=Math.atan2(p.fdy,p.fdx)+(R()<.5?1.4:-1.4);p.fdx=Math.cos(a);p.fdy=Math.sin(a)}p.a=Math.atan2(p.fdy,p.fdx);p.walk+=dt*16;if(p.flee<=0){p.scared=0;if(p.type==='girl'||p.type==='smoker'||p.type==='fight'||p.type==='crew'){p.type='walker';p.sp=15}}continue}
     // player car stopped next to them: turn and comment
     if(PL&&Math.abs(PL.v)<15){const dd=Math.hypot(p.x-PL.x,p.y-PL.y);if(dd<85){p.a=Math.atan2(PL.y-p.y,PL.x-p.x);if(!p.say&&p.sayT<0){p.sayT=rr(4,8);say(p,p.type==='girl'?LINES.girl:p.type==='drunk'?LINES.drunk:LINES.near,2.6)}p.stand=true;p.walk+=dt*1.2;continue}}
     // two walkers meet: stop and chat for a moment
     if(p.chat>0){p.chat-=dt;p.stand=true;p.walk+=dt*1.2;if(p.chatW)p.a=Math.atan2(p.chatW.y-p.y,p.chatW.x-p.x);continue}
     if(!(p.bumpT>0)&&p.sp>0){for(const o of w.peds){if(o===p||o.down>0||o.chat>0||o.type==='crew')continue;const dx=o.x-p.x,dy=o.y-p.y;if(dx*dx+dy*dy<100&&(p.dx*dx+p.dy*dy)>0){p.bumpT=o.bumpT=4;if(R()<.7)say(p,LINES.bump,1.8);if(o.sp>0&&R()<.5){o.reply=pick(LINES.bump);o.replyT=.9}const t=p.dx;p.dx=-p.dy;p.dy=t;break}}}
     if((p.type==='walker'||p.type==='worker')&&R()<dt*.6){for(const o of w.peds){if(o===p||o.chat>0||o.flee>0||o.down>0||(o.type!=='walker'&&o.type!=='worker'))continue;if(Math.abs(o.x-p.x)+Math.abs(o.y-p.y)<34){p.chat=o.chat=rr(4,7);p.chatW=o;o.chatW=p;const dg=pick(DIALOG);say(p,[dg[0]],2.2);o.reply=dg[1];o.replyT=1.6;break}}if(p.chat>0)continue}
-    if(p.type==='fight'){if(p.mate){p.a=Math.atan2(p.mate.y-p.y,p.mate.x-p.x);p.punch=(Math.sin(w.t*7+(p.x%7))>.6)?1:0;p.walk+=dt*3;if(p.sayT<0){p.sayT=rr(2.5,5);say(p,LINES.fight,1.8)}}else{p.type='walker';p.sp=34}continue}
+    if(p.type==='fight'){if(p.mate){p.a=Math.atan2(p.mate.y-p.y,p.mate.x-p.x);p.punch=(Math.sin(w.t*7+(p.x%7))>.6)?1:0;p.walk+=dt*3;if(p.sayT<0){p.sayT=rr(2.5,5);say(p,LINES.fight,1.8)}}else{p.type='walker';p.sp=15}continue}
     if(p.type==='crew'){p.stand=true;continue}
     if(p.type==='girl'||p.type==='smoker'||p.type==='party'){p.walk+=dt*1.2;if(p.type==='party'){p.wob+=dt;p.a+=Math.sin(p.wob*2)*dt*.6}if(p.sayT<0){p.sayT=w.chatty?rr(3,7):rr(5,10);if(R()<.7)say(p,p.type==='girl'?LINES.girl:p.type==='party'?LINES.pub:LINES.walker,2.4)}continue}
     let sp=p.sp;if(p.type==='drunk'){p.wob+=dt*2.2;sp*=.7+.3*Math.sin(p.wob*1.7)}
     const nx=p.x+p.dx*12,ny=p.y+p.dy*12;
     if(!isWalk(tileAt(Math.floor(nx/T),Math.floor(ny/T)))||R()<.002){const opts=[[1,0],[-1,0],[0,1],[0,-1]].filter(d=>isWalk(tileAt(Math.floor((p.x+d[0]*14)/T),Math.floor((p.y+d[1]*14)/T))));const nr=opts.filter(d=>!(d[0]===-p.dx&&d[1]===-p.dy));const q=pick(nr.length?nr:opts.length?opts:[[-p.dx,-p.dy]]);p.dx=q[0];p.dy=q[1]}
     const wob=p.type==='drunk'?Math.sin(p.wob*3)*.6:0;
-    if(!pmove(p,(p.dx*sp+(p.dy?wob*sp:0))*dt,(p.dy*sp+(p.dx?wob*sp:0))*dt)){p.dx=-p.dx;p.dy=-p.dy}p.a=Math.atan2(p.dy,p.dx)+wob*.5;p.walk+=dt*sp*.25;
+    if(!pmove(p,(p.dx*sp+(p.dy?wob*sp:0))*dt,(p.dy*sp+(p.dx?wob*sp:0))*dt)){p.dx=-p.dx;p.dy=-p.dy}p.a=Math.atan2(p.dy,p.dx)+wob*.5;p.walk+=dt*sp*.4;
     if(p.sayT<0){p.sayT=w.chatty?rr(2.5,6):rr(5,12);if(R()<(w.chatty?.8:.5))say(p,LINES[p.type]||LINES.walker,w.chatty?3:2.2)}}
   if(R()<.05)for(const sg of signs){if(!/HOSPODA|BAR|PIVO|HERNA|PIVNICE|KLUB/.test(sg.text))continue;const d=Math.hypot(sg.x-w.cam.x,sg.y-w.cam.y);if(d>900)continue;if(sg.popW===w&&w.t-sg.popT<25)continue;sg.popT=w.t;sg.popW=w;
     for(const yy of[sg.y+T*.5,sg.y+T*3.5]){if(!isWalk(tileAt(Math.floor(sg.x/T),Math.floor(yy/T))))continue;const n=2+Math.floor(R()*2);for(let k=0;k<n;k++){const q=makePed('party',sg.x+(k-n/2)*16+rr(-4,4),yy+rr(-5,5));q.a=k%2?Math.PI/2:-Math.PI/2;q.sayT=rr(.5,5);w.peds.push(q)}}}
@@ -1750,7 +1751,7 @@ import {KTX2Loader} from './vendor/jsm/loaders/KTX2Loader.js';
 import {MeshoptDecoder} from './vendor/jsm/libs/meshopt_decoder.module.js';
 import * as SkeletonUtils from './vendor/jsm/utils/SkeletonUtils.js';
 window.THREE=THREE;window.TADD={EffectComposer,RenderPass,UnrealBloomPass,OutputPass,GLTFLoader,RGBELoader,SkeletonUtils,DRACOLoader,KTX2Loader,MeshoptDecoder};
-const s=document.createElement('script');s.src='r3.js?v=76';document.body.appendChild(s);
+const s=document.createElement('script');s.src='r3.js?v=77';document.body.appendChild(s);
 </script>
 </body>
 </html>
