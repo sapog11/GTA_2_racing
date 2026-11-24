@@ -1319,7 +1319,7 @@ let PARTS=null;fetch('models/garage/parts.json').then(r=>r.json()).then(j=>{PART
 function partFits(key,id){if(!PARTS)return true;const P=PARTS.parts[key]||PARTS.parts[key.split(':')[0]];if(!P||P.fits==='all')return true;const cls=Object.keys(PARTS.classes).find(c=>PARTS.classes[c].includes(id));return!cls||P.fits.includes(cls)}
 function tunePrice(key){const[k,v]=key.split(':'),o=TOPT.find(x=>x.k===k);if(!o)return 0;if(v===undefined)return o.price||0;const r=o.vals.find(q=>String(q[0])===v);return r?r[2]:0}
 function g3d(){return typeof R3!=='undefined'&&R3.ok&&!!R3.concept}
-function garage3D(){const c=gList()[gIdx];if(g3d()){R3.garageSet(c,SAVE.tune[c.id]||null);G.g3=c.id+R3.tuneKey(c.id)}}
+function garage3D(){const c=gList()[gIdx];if(g3d()){if(R3.garageSet(c,SAVE.tune[c.id]||null))G.g3=c.id+R3.tuneKey(c.id)}}
 function renderGarage(){const el=$('scr-garage'),c=gList()[gIdx],own=SAVE.owned.includes(c.id),is3=typeof R3!=='undefined'&&R3.ok;el.classList.toggle('dim',!is3);el.classList.toggle('g3d',is3);
   const bar=(l,v)=>`<div class="stat"><span>${l}</span><div class="bar"><i style="width:${clamp(v,5,100)}%"></i></div></div>`;
   let btn=c.soon?`<button class="btn" disabled>🔒 BRZY</button>`:own?(SAVE.car===c.id?`<button class="btn" disabled>VYBRÁNO</button>`:`<button class="btn" data-pick="${c.id}">VYBRAT</button>`):`<button class="btn pink" data-buy="${c.id}" ${SAVE.cash<c.price?'disabled':''}>KOUPIT • ${c.price.toLocaleString('cs-CZ')} Kč</button>`;
@@ -1832,7 +1832,7 @@ import {KTX2Loader} from './vendor/jsm/loaders/KTX2Loader.js';
 import {MeshoptDecoder} from './vendor/jsm/libs/meshopt_decoder.module.js';
 import * as SkeletonUtils from './vendor/jsm/utils/SkeletonUtils.js';
 window.THREE=THREE;window.TADD={EffectComposer,RenderPass,UnrealBloomPass,OutputPass,GLTFLoader,RGBELoader,SkeletonUtils,DRACOLoader,KTX2Loader,MeshoptDecoder};
-const s=document.createElement('script');s.src='r3.js?v=90';document.body.appendChild(s);
+const s=document.createElement('script');s.src='r3.js?v=93';document.body.appendChild(s);
 </script>
 </body>
 </html>
