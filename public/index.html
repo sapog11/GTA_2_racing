@@ -537,6 +537,7 @@ const HOME=U0?homeSpot(50.6628,14.0352):{x:IX(3)+18,y:IX(27)-140,a:-Math.PI/2};
 /* ---------------- DATA ---------------- */
 const CARS=[
  {id:'civka',name:'Drago',desc:'Stará dobrá japonka. Černá jak noc, rychlá jak důchodce. Zatím.',col:'#141519',max:336,acc:190,drv:.27,turn:2.9,grip:6,hp:100,price:0,L:40,Wd:19},
+ {id:'krosik',name:'Krosík SUV',desc:'Městský crossover. Vysoko sedíš, nic tě nezastaví — ani obrubník na Klíši.',col:'#e8e8ea',max:360,acc:212,turn:2.8,grip:6.4,hp:140,price:60000,L:46,Wd:22},
  {id:'felda',name:'Škodovka Felda Turbo',desc:'Česká klasika s turbem z bazaru. Kouří, ale jede.',col:'#2d6b3a',max:347,acc:215,turn:2.85,grip:6.2,hp:105,price:40000,L:38,Wd:19},
  {id:'golfik',name:'Golfík IV GTI',desc:'Každej druhej na Klíši ho má. Ty budeš ten rychlejší.',col:'#c8ccd2',max:380,acc:232,turn:3.0,grip:6.5,hp:110,price:80000,L:39,Wd:20},
  {id:'bavorak',name:'Bavorák E46',desc:'Zadokolka. Bokem do každý zatáčky.',col:'#1d3f8a',max:420,acc:248,turn:2.9,grip:5.3,hp:120,price:150000,L:44,Wd:20},
@@ -1295,7 +1296,7 @@ function showHeroes(next){const el=$('scr-heroes');let h=topBar('POSTAVY')+`<p c
 let gIdx=0;
 function newCars(){return gList().filter(c=>!(SAVE.seenCars||[]).includes(c.id)).length}
 function garageBadge(){const b=$('mGarage');if(b)b.classList.toggle('new',newCars()>0)}
-const CORE=['civka','felda','golfik','bavorak','imprezka','koncept','supka'];
+const CORE=['civka','krosik','felda','golfik','bavorak','imprezka','koncept','supka'];
 function gList(){return CARS.filter(c=>CORE.includes(c.id)||SAVE.owned.includes(c.id))}
 function showGarage(){G.gIntro=performance.now();SAVE.seenCars=CARS.map(c=>c.id);save();const el=$('scr-garage');gIdx=Math.max(0,gList().findIndex(c=>c.id===SAVE.car));show('scr-garage');renderGarage()}
 const TOPT=[{k:'p1',ic:'🎨',l:'Lak',price:3000,type:'sw'},{k:'pat',ic:'🐆',l:'Vzor laku',type:'ch',vals:[['none','Bez vzoru',0],['army','Armáda',6000],['zebra','Zebra',7000],['panter','Panter',7000],['leopard','Leopard',7000],['croc','Krokodýl',8000]]},
