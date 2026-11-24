@@ -161,8 +161,8 @@ const R3={ok:false,off:/[?&]2d/.test(location.search),chunks:new Map(),CH:16,PX:
     if(band){const o=acc('shops'),su0=((ax*3+az)%991)/120,su1=su0+L/120;quad(o,[ax,0,az],[bx,0,bz],[bx,band,bz],[ax,band,az],n,[su0,0,su1,0,su1,1,su0,1]);for(let q=0;q<6;q++)o.col.push(1,1,1)}
     const o=acc(fk),v1=(H-band)/FH;quad(o,[ax,band,az],[bx,band,bz],[bx,H,bz],[ax,H,az],n,[u0,0,u1,0,u1,v1,u0,v1]);for(let q=0;q<6;q++)o.col.push(tc.r,tc.g,tc.b)};
    wall(X0,Z1,X1,Z1,[0,0,1]);wall(X1,Z1,X1,Z0,[1,0,0]);wall(X1,Z0,X0,Z0,[0,0,-1]);wall(X0,Z0,X0,Z1,[-1,0,0]);
-   const key=rk(b),o=RF[key]||(RF[key]={pos:[],nor:[],uv:[],col:[]}),sc=key==='plain'?1:1/192;
-   quad(o,[X0,H,Z1],[X1,H,Z1],[X1,H,Z0],[X0,H,Z0],[0,1,0],[X0*sc,Z1*sc,X1*sc,Z1*sc,X1*sc,Z0*sc,X0*sc,Z0*sc]);const rc=key==='roof_tiles'?C.clone().lerp(new T3.Color(0xffffff),.5):C.clone().lerp(new T3.Color(0xc8c4bc),.6);for(let q=0;q<6;q++)o.col.push(rc.r,rc.g,rc.b);
+   const key=rk(b),o=RF[key]||(RF[key]={pos:[],nor:[],uv:[],col:[]}),sc=key==='plain'?1:1/300;
+   quad(o,[X0,H,Z1],[X1,H,Z1],[X1,H,Z0],[X0,H,Z0],[0,1,0],[X0*sc,Z1*sc,X1*sc,Z1*sc,X1*sc,Z0*sc,X0*sc,Z0*sc]);const rc=C.clone().lerp(new T3.Color(0xffffff),.82);for(let q=0;q<6;q++)o.col.push(rc.r,rc.g,rc.b);
    if(key!=='roof_tiles'&&key!=='plain'&&b.w>T*1.5&&b.h>T*1.5){const ro=RF.plain||(RF.plain={pos:[],nor:[],uv:[],col:[]}),pr=4,ph=6,pc=wc;const box=(ax,az,bx,bz,h0,h1,cc)=>{const f=(a,b2,c,d,n)=>{quad(ro,a,b2,c,d,n,[0,0,1,0,1,1,0,1]);for(let q=0;q<6;q++)ro.col.push(cc.r,cc.g,cc.b)};f([ax,h1,bz],[bx,h1,bz],[bx,h1,az],[ax,h1,az],[0,1,0]);f([ax,h0,bz],[bx,h0,bz],[bx,h1,bz],[ax,h1,bz],[0,0,1]);f([bx,h0,bz],[bx,h0,az],[bx,h1,az],[bx,h1,bz],[1,0,0]);f([bx,h0,az],[ax,h0,az],[ax,h1,az],[bx,h1,az],[0,0,-1]);f([ax,h0,az],[ax,h0,bz],[ax,h1,bz],[ax,h1,az],[-1,0,0])};
     box(X0,Z0,X1,Z0+pr,H,H+ph,pc);box(X0,Z1-pr,X1,Z1,H,H+ph,pc);box(X0,Z0,X0+pr,Z1,H,H+ph,pc);box(X1-pr,Z0,X1,Z1,H,H+ph,pc);
     const n=1+(hsh%3),gc=new T3.Color(0x8a8a90);for(let k=0;k<n;k++){const u=((hsh*37+k*53)%70)/100+.12,v=((hsh*19+k*71)%70)/100+.12,sx=X0+(X1-X0)*u,sz=Z0+(Z1-Z0)*v,w=k===0?14:9;box(sx-w,sz-w*.7,sx+w,sz+w*.7,H,H+(k===0?12:8),gc)}}
