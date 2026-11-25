@@ -994,7 +994,7 @@ function pmove(p,dx,dy){const nx=p.x+dx,ny=p.y+dy,r=8;if(!p.down&&carAt(nx,ny,4)
 function say(p,arr,t){p.say=pick(arr);p.sayL=t||2.2}
 const QUIPS={shoot:['Ta-ta-ta, a je to!','Kulky zdarma, bereš?','Hele, mířím, nebo ne?','To je za tu předjížďku!','Pozdravuj pojišťovnu!','Mám ještě plnej zásobník!','Blinkr nepoužíváš, tak máš!','Ty vole, uhni!'],
  boom:['Ty vole, natočils to?','Bum! A je po káře.','To už nespravíš, kámo.','Šrotiště volá!','Pojišťovna brečí.','Grilovačka v Ústí!','Ještě že to nebyla moje.','Krásně to hoří, ne?','Tak to už STK neprojde.','Kdo to bude uklízet?'],
- boss:['A je po šéfovi!','Tak co, kdo je tu boss?','Obrněnej, ale blbej.','Tohle bude v novinách!']};
+ boss:['A je po šéfovi!','Tak co, kdo je tu boss?','Tohle bude v novinách!']};
 let quipCD=0;function quip(w,k){const p=w&&w.player;if(!p||quipCD>performance.now())return;quipCD=performance.now()+(k==='shoot'?7000:2600);p.say=pick(QUIPS[k]);p.sayL=2.4}
 
 /* ---- particles ---- */
@@ -1331,7 +1331,7 @@ function ambientWorld(){const w=newWorld({rain:true,dark:.74,civMax:10,pedMax:32
 
 /* ---------------- PROMO ---------------- */
 const ART=['keyart','street','heist','bridge','racestart','lucie','marek','kaja'];
-const artImg={};function preloadArt(){for(const k of ART){if(artImg[k])continue;const im=new Image();im.src='art/'+k+'.jpg';artImg[k]=im}}
+const artImg={};function preloadArt(){for(const k of ART){if(artImg[k])continue;const im=new Image();im.src='art/'+k+'.jpg?v=5';artImg[k]=im}}
 const PROMO=[
  {t:0,d:4.6,game:'street',txt:['ZORYX studio','uvádí']},
  {t:4.6,d:5.2,img:'keyart',kb:'in',txt:['Ústí nad Labem','Město andělů'],fx:'thunder'},
@@ -1353,7 +1353,7 @@ function cineCut(){const f=$('flash');f.classList.remove('go');void f.offsetWidt
 function setTxt(a,b){const el=$('promoTxt');el.innerHTML=a||b?`<div class="small">${a||''}</div><div>${b||''}</div>`:'';setTimeout(()=>el.children[0]&&el.children[0].classList.add('on'),250);setTimeout(()=>el.children[1]&&el.children[1].classList.add('on'),1000)}
 function promoShot(i){const w=promo.w,s=PROMO[i];cineCut();
   const A=$('ciA'),B=$('ciB'),card=$('card'),tc=$('titlecard');card.className='';card.innerHTML='';tc.classList.remove('on');
-  if(s.img){const cur=ciFlip?A:B,old=ciFlip?B:A;ciFlip^=1;cur.className='ci';cur.style.backgroundImage=`url(art/${s.img}.jpg)`;void cur.offsetWidth;cur.className='ci on kb-'+(s.kb||'in');old.classList.remove('on')}
+  if(s.img){const cur=ciFlip?A:B,old=ciFlip?B:A;ciFlip^=1;cur.className='ci';cur.style.backgroundImage=`url(art/${s.img}.jpg?v=5)`;void cur.offsetWidth;cur.className='ci on kb-'+(s.kb||'in');old.classList.remove('on')}
   else{A.classList.remove('on');B.classList.remove('on')}
   if(s.card){card.className='on '+s.side;card.innerHTML=`<div class="slab" style="background:${s.col}"></div><div class="pic" style="background-image:url(art/${s.card}.jpg)"></div><div class="nm"><b>${s.name}</b><i>${s.role}</i></div>`;setTxt('','');Snd.hit()}
   else if(s.title){A.className='ci on kb-in';A.style.backgroundImage='url(art/keyart.jpg)';B.classList.remove('on');tc.classList.add('on');setTxt('','')}
@@ -1485,7 +1485,7 @@ function comicScene(name){
   {const dy=(name==='plaza'||name==='plaza2'?21:19)*8*T;sc.y+=dy;for(const o of w.cars)o.y+=dy;for(const o of w.peds)o.y+=dy;for(const o of w.parts)o.y+=dy;for(const k of w.skids){k[1]+=dy;k[3]+=dy}}
   return{w,sc}}
 function renderPanel(){const el=$('scr-comic'),C=comic.C,P=C.panels[comic.i];
-  let h=`<div class="tag" style="margin-bottom:8px">${C.title}</div><div class="panel" id="panel">${P.art?`<div class="art" style="background-image:url(art/${P.art}.jpg?v=4)"></div>`:'<canvas id="pcv"></canvas>'}<div class="halftone"></div>`;
+  let h=`<div class="tag" style="margin-bottom:8px">${C.title}</div><div class="panel" id="panel">${P.art?`<div class="art" style="background-image:url(art/${P.art}.jpg?v=5)"></div>`:'<canvas id="pcv"></canvas>'}<div class="halftone"></div>`;
   if(P.who){if(P.who[0])h+=`<div class="inset l" style="background-image:url(art/${P.who[0]}.jpg)"></div>`;if(P.who[1])h+=`<div class="inset r" style="background-image:url(art/${P.who[1]}.jpg)"></div>`}
   if(P.cap)h+=`<div class="cap">${P.cap}</div>`;
   for(const b of P.bubs||[])h+=`<div class="bub ${b.shout?'shout':''}" style="left:${b.x}%;top:${b.y}%"><small>${WHO_NAME[b.w]}</small>${b.t}</div>`;
