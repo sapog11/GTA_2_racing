@@ -1338,10 +1338,10 @@ const PROMO=[
  {t:29.6,d:2.6,card:'marek',name:'MAREK „ŠROT“',role:'STŘELEC',col:'#2f6bff',side:'R'},
  {t:32.2,d:2.6,card:'kaja',name:'KÁJA',role:'KRÁL PŘEDLIC',col:'#9dff00',side:'L'},
  {t:34.8,d:4.6,img:'racestart',kb:'in',txt:['Respekt se tu nekupuje…','…vyjíždí se.'],fx:'rev'},
- {t:39.4,d:5.4,game:'race',txt:['Supka. Imprezka. Koncept Z.','Vyber si svou káru.'],fx:'rev'},
- {t:44.8,d:6,title:1,fx:'thunder'},
+ {t:39.4,d:9.9,game:'race',txt:['Koncept Z','Vyber si svou káru.'],fx:'rev'},
+ {t:49.3,d:6,title:1,fx:'thunder'},
 ];
-const PROMO_END=50.8;
+const PROMO_END=55.3;
 let promo=null,ciFlip=0;
 function startPromo(){DJ.stop();hideAll();Snd.setStyle('labe');preloadArt();G.mode='promo';const w=ambientWorld();G.world=w;promo={t:0,shot:-1,w,pan:{vx:0,vy:0}};document.body.classList.add('bars');$('skip').style.display='block';$('cine').style.display='block';Snd.startMusic(true,true);Snd.rain(true)}
 function cineCut(){const f=$('flash');f.classList.remove('go');void f.offsetWidth;f.classList.add('go')}
@@ -1357,15 +1357,15 @@ function promoShot(i){const w=promo.w,s=PROMO[i];cineCut();
   if(s.fx==='glass'){Snd.nz(.6,'highpass',3000,.5);Snd.alarm()}
   if(s.fx==='guns'){for(let k=0;k<7;k++)setTimeout(()=>Snd.shot(),120+k*95)}
   if(s.fx==='rev'){Snd.tone(60,220,1.1,'sawtooth',.25)}
-  if(s.game){w.peds.length=0;w.cars=w.cars.filter(c=>c.kind==='civ');promo.follow=null;promo.gun=0;w.bullets.length=0;
-    if(s.game==='race'){setRoute(w,U0?geoRoute([[50.6604,14.0230],[50.6611,14.0384],[50.6577,14.0472]]):[[1,20],[3,20],[3,22],[1,22],[1,25],[4,25]]);const ids=['supka','imprezka','koncept','golfik'],cols=['#ff7a1a','#1a5cff','#5a5e66','#d81e1e'];let lead=null;
-      ids.forEach((id,k)=>{const q0=routeAt(w,320-k*55),c=makeCar({col:cols[k],max:300+k*4,acc:260,turn:2.9,grip:6.2,hp:999,L:44,Wd:20},q0.x-Math.sin(q0.a)*(k%2?-12:12),q0.y+Math.cos(q0.a)*(k%2?-12:12),q0.a,'run');c.aiId=id;c.path=routePath(w,k%2?-12:12);c.v=230-k*6;c.vx=Math.cos(c.a)*c.v;c.vy=Math.sin(c.a)*c.v;w.cars.push(c);if(!lead)lead=c});
-      promo.follow=lead;promo.cam='side';w.cam.x=lead.x;w.cam.y=lead.y}
+  promo.seq=null;promo.seqI=-1;if(s.game){w.peds.length=0;w.cars=w.cars.filter(c=>c.kind==='civ');promo.follow=null;promo.gun=0;w.bullets.length=0;
+    if(s.game==='race'){setRoute(w,U0?geoRoute([[50.6604,14.0230],[50.6611,14.0384],[50.6577,14.0472]]):[[1,20],[3,20],[3,22],[1,22],[1,25],[4,25]]);const ids=['koncept','supka','imprezka','golfik'],cols=['#5a5e66','#ff7a1a','#1a5cff','#d81e1e'],NM={koncept:'Koncept Z',supka:'Supka',imprezka:'Imprezka'};let lead=null;promo.seq=[];
+      ids.forEach((id,k)=>{const q0=routeAt(w,320-k*55),c=makeCar({col:cols[k],max:300+k*4,acc:260,turn:2.9,grip:6.2,hp:999,L:44,Wd:20},q0.x-Math.sin(q0.a)*(k%2?-12:12),q0.y+Math.cos(q0.a)*(k%2?-12:12),q0.a,'run');c.aiId=id;if(NM[id])promo.seq.push({c,n:NM[id]});c.path=routePath(w,k%2?-12:12);c.v=230-k*6;c.vx=Math.cos(c.a)*c.v;c.vy=Math.sin(c.a)*c.v;w.cars.push(c);if(!lead)lead=c});
+      promo.follow=lead;promo.cam='front';w.cam.x=lead.x;w.cam.y=lead.y}
     if(s.game==='street'){const sb=U0?streetSpot():{x:IX(2)+T*1.5,y:IX(24)+T*1.4};w.cam.x=sb.x-40;w.cam.y=sb.y;promo.pan={vx:26,vy:0};const bx=sb.x-60,by=sb.y;
       const f1=makePed('fight',bx+60,by),f2=makePed('fight',bx+76,by);f1.mate=f2;f2.mate=f1;w.peds.push(f1,f2);
       w.peds.push(makePed('drunk',bx+140,by+2),makePed('girl',bx+210,by-4),makePed('girl',bx+230,by+4),makePed('smoker',bx+20,by-6),makePed('walker',bx+280,by));
       for(let k=0;k<12;k++)spawnPed(w,80,500)}
-    if(s.game==='chase'){setRoute(w,U0?geoRoute([[50.6611,14.0384],[50.6668,14.0590],[50.6700,14.0750]]):[[0,21],[3,21],[3,23],[8,23],[8,25]]);const sp={col:'#141519',max:235,acc:240,turn:2.9,grip:6,hp:999,L:40,Wd:19};const q0=routeAt(w,160),g=makeCar(sp,q0.x,q0.y,q0.a,'run');g.aiId='civka';g.path=routePath(w,12);g.v=200;g.vx=Math.cos(q0.a)*200;g.vy=Math.sin(q0.a)*200;w.cars.push(g);
+    if(s.game==='chase'){setRoute(w,U0?geoRoute([[50.6611,14.0384],[50.6668,14.0590],[50.6700,14.0750]]):[[0,21],[3,21],[3,23],[8,23],[8,25]]);const sp={col:'#1a5cff',max:235,acc:240,turn:2.9,grip:6,hp:999,L:40,Wd:19};const q0=routeAt(w,160),g=makeCar(sp,q0.x,q0.y,q0.a,'run');g.aiId='imprezka';g.path=routePath(w,12);g.v=200;g.vx=Math.cos(q0.a)*200;g.vy=Math.sin(q0.a)*200;w.cars.push(g);
       for(let k=0;k<2;k++){const q1=routeAt(w,40-k*60),p=makeCar(Object.assign({},POLICE,{max:228,hp:999}),q1.x,q1.y,q1.a,'run');p.path=routePath(w,k?-12:12);p.v=200;p.vx=Math.cos(q1.a)*200;p.vy=Math.sin(q1.a)*200;w.cars.push(p)}
       promo.follow=g;promo.cam='side';promo.gun=1;w.cam.x=g.x;w.cam.y=g.y;const PL=['Ty šlapko, pomalu!','Ty jo, honička!','Jeď, jeď, JEĎ!','Málem mě zajel, kretén!','To je ta černá kára!','Ty vole, točím to!','Zase honěj někoho…','Policie jede!'];
       for(let k=0;k<8;k++){const qq=routeAt(w,300+k*140),q=makePed(k%3?'walker':'drunk',qq.x-Math.sin(qq.a)*(k%2?50:-50),qq.y+Math.cos(qq.a)*(k%2?50:-50));q.sp=0;q.promoLine=PL[k%PL.length];w.peds.push(q)}}}
@@ -1373,6 +1373,7 @@ function promoShot(i){const w=promo.w,s=PROMO[i];cineCut();
 function updatePromo(dt){promo.t+=dt;const w=promo.w;let i=-1;for(let k=0;k<PROMO.length;k++)if(promo.t>=PROMO[k].t)i=k;
   if(promo.t>PROMO_END){endPromo();return}
   if(i!==promo.shot){promo.shot=i;promoShot(i)}
+  if(promo.seq&&promo.seq.length&&i>=0){const k=Math.min(promo.seq.length-1,Math.floor((promo.t-PROMO[i].t)/3.3));if(promo.seqI!==k){promo.seqI=k;promo.follow=promo.seq[k].c;w.cam.x=promo.follow.x;w.cam.y=promo.follow.y;if(typeof R3!=='undefined')R3.cq=null;if(k)cineCut();setTxt(promo.seq[k].n,'Vyber si svou káru.')}}
   updateWorld(w,dt,{});
   for(const q of w.peds)if(q.promoLine&&promo.follow&&!q.said&&Math.hypot(q.x-promo.follow.x,q.y-promo.follow.y)<170&&!w.peds.some(o=>o.say&&o!==q&&Math.abs(o.x-q.x)<260&&Math.abs(o.y-q.y)<120)){q.said=1;q.say=q.promoLine;q.sayL=2.2}
   if(promo.gun&&promo.follow){promo.gT=(promo.gT||0)-dt;if(promo.gT<=0&&Math.sin(promo.t*2.2)>-.2){promo.gT=.11;const f=promo.follow;let tg=null,bd=1e9;for(const c of w.cars){if(!c.st||!c.st.police)continue;const d=Math.hypot(c.x-f.x,c.y-f.y);if(d<bd&&d<500){bd=d;tg=c}}if(tg){const a=Math.atan2(tg.y-f.y,tg.x-f.x)+rr(-.06,.06);w.bullets.push({x:f.x,y:f.y,px:f.x,py:f.y,vx:Math.cos(a)*950+f.vx,vy:Math.sin(a)*950+f.vy,life:.45,dmg:0});Snd.shot()}}}
