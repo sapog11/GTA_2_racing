@@ -305,7 +305,8 @@ const R3={ok:false,off:/[?&]2d/.test(location.search),chunks:new Map(),CH:16,PX:
   const fl=new T3.Mesh(this.flG,this.flM);fl.position.set(-L/2-8,5,0);fl.visible=false;g.add(fl);
   g.userData={beam,paint,wheels:[],cw:wheels,ch,glow,fl,concept:true};this.scene.add(g);return g},
  // ---------- Z platform: our garage cars built on the detailed Koncept Z model ----------
- ZB:{krosik:{p1:'#e8e8ea',p2:'#1a1a1e',rim:'#c0c4cc',fin:'gloss',glow:'off',w:1,sx:1,sy:1.2,kit:[],hl:'slim',cls:'hatch',rt:0.2,rl:1.6,tl:'slim'},civka:{p1:'#16181c',p2:'#2a2c33',rim:'#9aa0a8',fin:'metal',glow:'off',w:.95,sx:.86,sy:1.17,kit:['lip','duck'],hl:'oval',cls:'hatch',rt:0.22,rl:1.6,tl:'round'},
+ ZB:{dzip:{p1:'#3d4a2e',p2:'#1a1a1e',rim:'#2a2a2a',fin:'matte',glow:'off',w:1,sx:1,sy:1.3,kit:[],hl:'round',cls:'hatch',rt:0.2,rl:1.6,tl:'slim'},
+krosik:{p1:'#e8e8ea',p2:'#1a1a1e',rim:'#c0c4cc',fin:'gloss',glow:'off',w:1,sx:1,sy:1.2,kit:[],hl:'slim',cls:'hatch',rt:0.2,rl:1.6,tl:'slim'},civka:{p1:'#16181c',p2:'#2a2c33',rim:'#9aa0a8',fin:'metal',glow:'off',w:.95,sx:.86,sy:1.17,kit:['lip','duck'],hl:'oval',cls:'hatch',rt:0.22,rl:1.6,tl:'round'},
   felda:{p1:'#3b5d3a',p2:'#cfcbc0',rim:'#cfcbc0',fin:'gloss',glow:'off',w:.95,sx:.85,sy:1.15,kit:['rally','flaps'],cls:'hatch',rt:0.2,rl:1.6,tl:'vertical'},
   golfik:{p1:'#b8bcc2',p2:'#7a1e2a',rim:'#2a2a2e',fin:'metal',glow:'off',w:.97,sx:.86,sy:1.14,kit:['lip','skirts'],hl:'blade',cls:'hatch',rt:0.2,rl:1.5,tl:'split'},
   bavorak:{p1:'#1f3a5f',p2:'#0e0f14',rim:'#c9ccd2',fin:'metal',glow:'off',w:1,sx:1,sy:1.07,kit:['duck','skirts'],hl:'angel',cls:'sedan',rt:0.12,rl:1.0,tl:'split'},
@@ -478,7 +479,7 @@ const T3=THREE,mods=['sedan','hatchback_sports','suv','sedan_sports','van'].filt
   for(const wn of U.cw){const c=new T3.Vector3();wn.getWorldPosition(c);const r=(new T3.Box3().setFromObject(wn).getSize(new T3.Vector3()).y)/2;let gap=1e9;for(let a=.3;a<2.9;a+=.2){const d=new T3.Vector3(Math.cos(a),Math.sin(a),0);rc.set(c,d);const h=rc.intersectObjects(body,false)[0];if(h)gap=Math.min(gap,h.distance-r)}out.push(+gap.toFixed(2))}return out},
  tuneKey(id){const t=typeof SAVE!=='undefined'&&SAVE.tune&&SAVE.tune[id];return(t?JSON.stringify(t):'')+'#'+(this.partsV||0)+(this.camMode==='cockpit'?'c':'')+(this.aiCars&&this.aiCars[id]?'a':'')},
  AIRIM:{},
- AICARS:['civka','krosik','felda','golfik','bavorak','imprezka','supka','koncept','traffic_kombi','traffic_taxi','traffic_police','traffic_jeep','traffic_truck','traffic_sedan','traffic_mini','traffic_mpv'],
+ AICARS:['civka','dzip','krosik','felda','golfik','bavorak','imprezka','supka','koncept','traffic_kombi','traffic_taxi','traffic_police','traffic_jeep','traffic_truck','traffic_sedan','traffic_mini','traffic_mpv'],
  aiCar(id){if(!this.AICARS.includes(id))return null;this.aiCars=this.aiCars||{};const S=this.aiCars[id];
   if(S===undefined){this.aiCars[id]=null;this.aiT0=this.aiT0||{};this.aiT0[id]=performance.now();new TADD.GLTFLoader().load('models/cars/ai/'+id+'.glb?v=23',g=>{g.scene.traverse(o=>{if(o.isMesh&&o.material){o.material.envMapIntensity=1.2;o.material.side=THREE.DoubleSide;if(o.name==='Body'&&!/^traffic/.test(id)){try{o.material=this.aiCoat(o.material)}catch(e){console.warn('coat',e)}}}});this.aiCars[id]=g.scene;this.partsV=(this.partsV||0)+1},undefined,()=>{this.aiCars[id]=false});return null}
   if(!S)return null;
