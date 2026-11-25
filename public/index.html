@@ -271,6 +271,7 @@ body.two.driving #twHint{display:flex}
 .res .lines b{color:var(--acc)}
 .note{color:var(--mut);font-size:13px;margin-top:10px;text-align:center;max-width:520px}
 .toggle{display:flex;gap:10px;align-items:center;justify-content:center;margin:8px 0;font-size:16px}
+.stopz{line-height:1.05}.stopz small{display:block;font-size:8.5px!important;letter-spacing:.5px;opacity:.85;margin-top:1px}
 </style>
 </head>
 <body>
@@ -336,17 +337,17 @@ body.two.driving #twHint{display:flex}
 <circle r="88" fill="none" stroke="#14151b" stroke-width="22"/><circle r="88" fill="none" stroke="url(#whg)" stroke-width="18"/><circle r="97" fill="none" stroke="rgba(255,46,136,.55)" stroke-width="2"/>
 <path d="M-6-97h12v18h-12z" fill="#ff2e88"/><path d="M-80 8 L-30 14 L-22 40 L22 40 L30 14 L80 8" fill="none" stroke="#1b1c23" stroke-width="16" stroke-linejoin="round"/><path d="M0 34 L0 80" stroke="#1b1c23" stroke-width="16"/>
 <circle r="30" fill="#17181f" stroke="#2c2f3a" stroke-width="3"/><text y="11" text-anchor="middle" font-family="Audiowide,Bangers,sans-serif" font-size="30" fill="#ffcc1a">Z</text></svg></div>
-<div id="twHint"><span>◀ LEVÝ PRST: ZATÁČENÍ ▶</span><span>PRAVÝ: ▲ PLYN / ▼ BRZDA</span></div>
+<div id="twHint"><span>◀ LEVÝ PRST: ZATÁČENÍ ▶</span><span>PRAVÝ: ▲ PLYN / ▼ STOP·ZPÁTEČKA</span></div>
 <div id="navm"></div>
 <div id="ctrl">
-  <div id="pedals"><button id="pB">BRZDA</button><button id="pG">PLYN</button></div>
-  <div id="apad"><button data-a="l">◀</button><button data-a="u">▲<small>PLYN</small></button><button data-a="r">▶</button><button data-a="d">▼<small>BRZDA</small></button></div>
+  <div id="pedals"><button id="pB" class="stopz">STOP<small>ZPÁTEČKA</small></button><button id="pG">PLYN</button></div>
+  <div id="apad"><button data-a="l">◀</button><button data-a="u">▲<small>PLYN</small></button><button data-a="r">▶</button><button data-a="d" class="stopz">▼<small>STOP</small><small>ZPÁTEČKA</small></button></div>
   <button id="kL" data-k="l">◀</button>
   <button id="kR" data-k="r">▶</button>
   <button id="kA" data-k="a"><span id="kAt">PAL</span></button>
   <button id="kF" data-k="f"><span>PAL</span></button>
   <button id="kU" data-k="u">PLYN</button>
-  <button id="kD" data-k="d">BRZDA</button>
+  <button id="kD" data-k="d" class="stopz">STOP<small>ZPÁTEČKA</small></button>
 </div>
 
 <script src="map/usti.js?v=4"></script>
@@ -1429,7 +1430,7 @@ function startRoam(at,target){AN.ev('roam_start');hideAll();G.engineOff=false;$(
   RS={roam:true,nitro:.6,nitroFill:SAVE.hero==='lucie'?.098:.07,target:target||SAVE.sel||null,enterCD:2.5};G.roamDist='';
   $('hud').classList.add('on');if(isTouch)$('ctrl').classList.add('on');$('kU').style.display=SAVE.autoGas?'none':'block';$('kAt').textContent=SAVE.hero==='marek'?'PAL':'NITRO';$('kA').classList.remove('hot');
   $('hMainL').textContent='ČTVRŤ';$('hMain').classList.add('small');$('bust').style.display='none';$('center').textContent='';$('obj').classList.add('on');
-  $('hint').textContent=isTouch?'':(SAVE.hero==='marek'?'←→ řízení • ↑ plyn • ↓ brzda • MEZERNÍK / F střelba • N nitro • SHIFT smyk • C kamera • R rádio • P pauza':'←→ řízení • ↑ plyn • ↓ brzda • MEZERNÍK nitro • F střelba • SHIFT smyk • C kamera • R rádio • P pauza');if(isTouch&&effSteer()==='wheel'&&!SAVE.wheelTip){SAVE.wheelTip=1;save();floatMsg('🛞 TOČ VOLANTEM PRSTEM',3);}
+  $('hint').textContent=isTouch?'':(SAVE.hero==='marek'?'←→ řízení • ↑ plyn • ↓ stop/zpátečka • MEZERNÍK / F střelba • N nitro • SHIFT smyk • C kamera • R rádio • P pauza':'←→ řízení • ↑ plyn • ↓ stop/zpátečka • MEZERNÍK nitro • F střelba • SHIFT smyk • C kamera • R rádio • P pauza');if(isTouch&&effSteer()==='wheel'&&!SAVE.wheelTip){SAVE.wheelTip=1;save();floatMsg('🛞 TOČ VOLANTEM PRSTEM',3);}
   Snd.setCar&&Snd.setCar(SAVE.car);Snd.startMusic(false);Snd.setStyle(SAVE.radio||'macht');Snd.rain(w.rain);drawMinimapBg();setTimeout(()=>{const a=$('area');if(G.mode==='roam'){a.textContent='📻 '+STY[Snd.style].name;a.classList.add('on');areaT=2.2}},2600)}
 let areaT=0;
 function nitroTick(p,dt,act){if(act&&!RS.aPrev){RS.nLatch=!RS.nLatch&&RS.nitro>.08}RS.aPrev=act;if(RS.nLatch&&RS.nitro>.02){if(!p.boost)Snd.nitro();p.boost=true;RS.nitro=Math.max(0,RS.nitro-.42*dt)}else{p.boost=false;RS.nLatch=false;RS.nitro=Math.min(1,RS.nitro+RS.nitroFill*dt)}}
@@ -1489,7 +1490,7 @@ function beginRace(L){hideAll();const w=newWorld({rain:L.rain,dark:L.dark,civMax
   $('hud').classList.add('on');if(isTouch)$('ctrl').classList.add('on');
   $('kU').style.display=SAVE.autoGas?'none':'block';
   $('kAt').textContent=L.type==='race'&&SAVE.hero!=='marek'?'NITRO':'PAL';
-  $('hint').textContent=isTouch?'':(L.type==='race'?(SAVE.hero==='marek'?'←→ řízení • ↑ plyn • ↓ brzda • MEZERNÍK / F střelba • SHIFT smyk • C kamera • R rádio • P pauza':'←→ řízení • ↑ plyn • ↓ brzda • MEZERNÍK nitro • F střelba • SHIFT smyk • C kamera • R rádio • P pauza'):'←→ řízení • ↑ plyn • ↓ brzda • MEZERNÍK střelba • P pauza');
+  $('hint').textContent=isTouch?'':(L.type==='race'?(SAVE.hero==='marek'?'←→ řízení • ↑ plyn • ↓ stop/zpátečka • MEZERNÍK / F střelba • SHIFT smyk • C kamera • R rádio • P pauza':'←→ řízení • ↑ plyn • ↓ stop/zpátečka • MEZERNÍK nitro • F střelba • SHIFT smyk • C kamera • R rádio • P pauza'):'←→ řízení • ↑ plyn • ↓ stop/zpátečka • MEZERNÍK střelba • P pauza');
   $('keyB').style.display='none';G.engineOff=false;
   $('hMainL').textContent=L.type==='race'?'POZICE':L.kills?'ZNIČENO':L.time?'ČAS':'DO CÍLE';$('hMain').classList.remove('small');$('obj').classList.remove('on');$('area').classList.remove('on');
   Snd.setCar&&Snd.setCar(SAVE.car);Snd.startMusic(false);Snd.setStyle(L.type==='chase'?'chase':'race');DJ.stop();DJ.t=L.type==='chase'?6:12;Snd.rain(L.rain);drawMinimapBg();
