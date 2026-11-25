@@ -1441,7 +1441,7 @@ function showHeroes(next){const el=$('scr-heroes');let h=topBar('POSTAVY')+`<p c
 let gIdx=0;
 function newCars(){return gList().filter(c=>!(SAVE.seenCars||[]).includes(c.id)).length}
 function garageBadge(){const b=$('mGarage');if(b)b.classList.toggle('new',newCars()>0)}
-const CORE=['civka','krosik','felda','golfik','bavorak','imprezka','koncept','supka'];
+const CORE=['civka','koncept','krosik','felda','golfik','bavorak','imprezka','supka'];
 function gList(){return CARS.filter(c=>CORE.includes(c.id)||SAVE.owned.includes(c.id))}
 function showGarage(){G.gIntro=performance.now();SAVE.seenCars=CARS.map(c=>c.id);save();const el=$('scr-garage');gIdx=Math.max(0,gList().findIndex(c=>c.id===SAVE.car));show('scr-garage');renderGarage()}
 const TOPT=[{k:'p1',ic:'🎨',l:'Lak',price:3000,type:'sw'},{k:'pat',ic:'🐆',l:'Vzor laku',type:'ch',vals:[['none','Bez vzoru',0],['army','Armáda',6000],['zebra','Zebra',7000],['panter','Panter',7000],['leopard','Leopard',7000],['croc','Krokodýl',8000]]},
