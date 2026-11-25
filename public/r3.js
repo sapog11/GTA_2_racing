@@ -138,7 +138,7 @@ const R3={ok:false,off:/[?&]2d/.test(location.search),chunks:new Map(),CH:16,PX:
  chunkKey(cx,cy){return cx+','+cy},
  makeChunk(cx,cy){const T3=THREE,CH=this.CH,PX=this.PX,S=CH*T,cv=document.createElement('canvas');cv.width=cv.height=CH*PX;const g=cv.getContext('2d'),k=PX/T;
   g.setTransform(k,0,0,k,-cx*S*k,-cy*S*k);const x0=cx*S,y0=cy*S,x1=x0+S-1,y1=y0+S-1;
-  drawGround(g,x0,y0,x1,y1,0,true);if(typeof drawRoadsOSM==='function')drawRoadsOSM(g,x0,y0,x1,y1);
+  drawGround(g,x0,y0,x1,y1,0,true);if(window.USTI){g.save();g.setTransform(1,0,0,1,0,0);const sm=this._smc||(this._smc=document.createElement('canvas'));sm.width=sm.height=Math.round(cv.width/5);const sx=sm.getContext('2d');sx.imageSmoothingEnabled=true;sx.drawImage(cv,0,0,sm.width,sm.height);g.imageSmoothingEnabled=true;g.drawImage(sm,0,0,cv.width,cv.height);g.restore()}if(typeof drawRoadsOSM==='function')drawRoadsOSM(g,x0,y0,x1,y1);
   for(const a of awn)if(a.x>x0-100&&a.x<x1&&a.y>y0-20&&a.y<y1){const n=Math.max(2,a.w/10|0);for(let q=0;q<n;q++){g.fillStyle=q%2?'#efe9dc':a.c;g.fillRect(a.x+q*a.w/n,a.y,a.w/n+.5,12)}}
   {const fx=(8*3+5)*T,fy=(8*24+5)*T;if(fx>x0-60&&fx<x1+60&&fy>y0-60&&fy<y1+60){g.fillStyle='#6d665e';g.beginPath();g.arc(fx,fy,34,0,7);g.fill();g.fillStyle='#1c4a60';g.beginPath();g.arc(fx,fy,27,0,7);g.fill()}}
   g.textAlign='center';g.textBaseline='middle';g.font='700 13px Oswald, sans-serif';g.fillStyle='rgba(240,240,230,.55)';
@@ -197,13 +197,13 @@ const R3={ok:false,off:/[?&]2d/.test(location.search),chunks:new Map(),CH:16,PX:
   for(const sg of signs){if(sg.x<x0||sg.x>x1||sg.y<y0||sg.y>y1+2)continue;const m=this.signMesh(sg);if(m)grp.add(m)}
   this.scene.add(grp);return{grp,tex,gm}},
  signCache:{},
- detail(){if(this.detTex)return this.detTex;const T3=THREE,cv=document.createElement('canvas');cv.width=cv.height=512;const x=cv.getContext('2d');x.fillStyle='#808080';x.fillRect(0,0,512,512);
-  const t=this.detTex=new T3.CanvasTexture(cv);t.wrapS=t.wrapT=T3.RepeatWrapping;t.anisotropy=Math.min(8,this.renderer.capabilities.getMaxAnisotropy());
-  const im=new Image();im.onload=()=>{x.drawImage(im,0,0,512,512);const d=x.getImageData(0,0,512,512),a=d.data;let sum=0;for(let i=0;i<a.length;i+=4)sum+=a[i]*.3+a[i+1]*.59+a[i+2]*.11;const mean=sum/(a.length/4);
-   for(let i=0;i<a.length;i+=4){const l=a[i]*.3+a[i+1]*.59+a[i+2]*.11,v=clamp(128+(l-mean)*1.6,0,255);a[i]=a[i+1]=a[i+2]=v}x.putImageData(d,0,0);t.needsUpdate=true};im.src='art/tex/asphalt.jpg?v=3';return t},
- groundMat(tex){const T3=THREE,m=new T3.MeshLambertMaterial({map:tex}),det=this.detail();
-  m.onBeforeCompile=sh=>{sh.uniforms.uDet={value:det};sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec2 vGW;').replace('#include <begin_vertex>','#include <begin_vertex>\nvGW=(modelMatrix*vec4(position,1.)).xz;');
-   sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uDet;varying vec2 vGW;').replace('#include <map_fragment>','#include <map_fragment>\n{float d1=texture2D(uDet,vGW/64.).r,d2=texture2D(uDet,vGW/23.+.37).r;diffuseColor.rgb*=clamp(.55+d1*.62+(d2-.5)*.45,.4,1.6);}')};
+ detail(nm){nm=nm||'asphalt';this.detT=this.detT||{};if(this.detT[nm])return this.detT[nm];const T3=THREE,N=1024,cv=document.createElement('canvas');cv.width=cv.height=N;const x=cv.getContext('2d');x.fillStyle='#808080';x.fillRect(0,0,N,N);
+  const t=this.detT[nm]=new T3.CanvasTexture(cv);t.wrapS=t.wrapT=T3.RepeatWrapping;t.anisotropy=Math.min(8,this.renderer.capabilities.getMaxAnisotropy());
+  const im=new Image();im.onload=()=>{x.drawImage(im,0,0,N,N);const d=x.getImageData(0,0,N,N),a=d.data;let sum=0;for(let i=0;i<a.length;i+=4)sum+=a[i]*.3+a[i+1]*.59+a[i+2]*.11;const mean=sum/(a.length/4),k=nm==='walk'?1.9:nm==='grass'?1.7:1.6;
+   for(let i=0;i<a.length;i+=4){const l=a[i]*.3+a[i+1]*.59+a[i+2]*.11,v=clamp(128+(l-mean)*k,0,255);a[i]=a[i+1]=a[i+2]=v}x.putImageData(d,0,0);t.needsUpdate=true};im.src='art/tex/'+nm+'.jpg?v=3';return t},
+ groundMat(tex){const T3=THREE,m=new T3.MeshLambertMaterial({map:tex}),det=this.detail(),dw=this.detail('walk'),dg=this.detail('grass');
+  m.onBeforeCompile=sh=>{sh.uniforms.uDet={value:det};sh.uniforms.uDW={value:dw};sh.uniforms.uDG={value:dg};sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec2 vGW;').replace('#include <begin_vertex>','#include <begin_vertex>\nvGW=(modelMatrix*vec4(position,1.)).xz;');
+   sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uDet,uDW,uDG;varying vec2 vGW;').replace('#include <map_fragment>','#include <map_fragment>\n{vec3 c=diffuseColor.rgb;float gr=clamp((c.g-max(c.r,c.b))*14.,0.,1.),l=dot(c,vec3(.3,.59,.11)),wk=(1.-gr)*smoothstep(.05,.11,l);float dA=texture2D(uDet,vGW/64.).r,dA2=texture2D(uDet,vGW/23.+.37).r,dW=texture2D(uDW,vGW/30.).r,dG=texture2D(uDG,vGW/38.).r;float d=mix(mix(dA,dW,wk),dG,gr),d2=mix(dA2,.5,max(wk,gr));diffuseColor.rgb*=clamp(.42+d*.88+(d2-.5)*.4,.35,1.7);}')};
   m.customProgramCacheKey=()=>'gdet';return m},
  signMesh(sg){const T3=THREE,key=sg.text+sg.col+(sg.big?1:0);let e=this.signCache[key];
   if(!e){const fs=sg.big?56:34,c=document.createElement('canvas'),g=c.getContext('2d');g.font=(sg.big?'':'700 ')+fs+'px '+(sg.big?'Bangers':'Oswald')+', sans-serif';const w=Math.ceil(g.measureText(sg.text).width)+24;c.width=w;c.height=fs+20;
