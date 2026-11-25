@@ -372,6 +372,7 @@ let SAVE={steer:'drag',resp:0,cash:0,hero:null,car:'civka',owned:['civka'],done:
 try{const s=JSON.parse(localStorage.getItem(SAVEKEY)||'null');if(s)SAVE=Object.assign(SAVE,s)}catch(e){}
 if(!SAVE.owned.includes('koncept'))SAVE.owned.push('koncept');if(!SAVE.kcMig){SAVE.kcMig=1;SAVE.cash=(SAVE.cash||0)+(SAVE.resp||0)*50}if(!SAVE.machtCk){SAVE.machtCk=1;SAVE.radio='macht'}if(!SAVE.camCk2){SAVE.camCk2=1;SAVE.camCk=1;SAVE.cam='chase'}if(!SAVE.tune)SAVE.tune={};if(!SAVE.tuned)SAVE.tuned=[];if(!SAVE.unl){SAVE.unl={};for(const id of SAVE.tuned)SAVE.unl[id]=['*']}
 if((('ontouchstart' in window)||matchMedia('(pointer:coarse)').matches)&&!SAVE.steer3){SAVE.steer2=SAVE.steer3=1;SAVE.steer='wheel'}if(SAVE.steer==='two')SAVE.steer='wheel';if(!SAVE.arrCk&&matchMedia('(pointer:coarse)').matches){SAVE.arrCk=1;SAVE.steer='arrows'}
+SAVE.steer='arrows';SAVE.autoGas=false;
 function save(){try{localStorage.setItem(SAVEKEY,JSON.stringify(SAVE))}catch(e){}}
 const isTouch=('ontouchstart' in window)||matchMedia('(pointer:coarse)').matches;
 if(SAVE.autoGas===null)SAVE.autoGas=isTouch;
@@ -1690,7 +1691,7 @@ const APAD={l:0,r:0,u:0,d:0,lat:0};
  const down=e=>{const b=e.target.closest('#apad button');if(!b)return;e.preventDefault();const a=b.dataset.a;pid.set(e.pointerId,a);APAD[a]=1;if(a==='u'){b._t0=performance.now();b._was=APAD.lat;APAD.lat=1}if(a==='d')APAD.lat=0;try{b.setPointerCapture(e.pointerId)}catch(_){}navigator.vibrate&&navigator.vibrate(8);sync()};
  const up=e=>{const a=pid.get(e.pointerId);if(!a)return;pid.delete(e.pointerId);APAD[a]=0;if(a==='u'){const b=document.querySelector('#apad [data-a=u]');if(b&&b._was&&performance.now()-b._t0<280)APAD.lat=0}sync()};
  document.addEventListener('pointerdown',down);document.addEventListener('pointerup',up);document.addEventListener('pointercancel',up)}
-function effSteer(){if(SAVE.steer==='arrows')return'arrows';if(SAVE.steer!=='wheel')return SAVE.steer;return((SAVE.cam||'chase')==='cockpit'&&typeof R3!=='undefined'&&R3.ok)?'wheel':'drag'}
+function effSteer(){return'arrows';if(SAVE.steer==='arrows')return'arrows';if(SAVE.steer!=='wheel')return SAVE.steer;return((SAVE.cam||'chase')==='cockpit'&&typeof R3!=='undefined'&&R3.ok)?'wheel':'drag'}
 function pedUI(){$('pG').classList.toggle('on',!!G.keys.u);$('pB').classList.toggle('on',!!G.keys.d)}
 function wheelOn(){return effSteer()==='wheel'&&isTouch&&(G.mode==='race'||G.mode==='roam')}
 function wheelCenter(){if(document.body.classList.contains('cock')&&typeof R3!=='undefined'&&R3.swScr)return R3.swScr;const r=$('wheel').getBoundingClientRect();return{x:r.left+r.width/2,y:r.top+r.height/2}}
@@ -1815,12 +1816,12 @@ for(const b of document.querySelectorAll('#ctrl button')){let k=b.dataset.k;
   b.addEventListener('pointerdown',on);b.addEventListener('pointerup',off);b.addEventListener('pointercancel',off);b.addEventListener('lostpointercapture',off);b.addEventListener('contextmenu',e=>e.preventDefault())}
 function pause(){if(!(G.mode==='race'||G.mode==='roam')||(RS&&RS.end))return;DJ.stop();G.prevMode=G.mode;G.mode='paused';Snd.engine(0,false);Snd.siren(0,0);const el=$('scr-pause');
   el.innerHTML=`<h2 class="logo"><span class="b" style="font-size:44px">PAUZA</span></h2><button class="btn" id="pRes">POKRAČOVAT</button>${G.prevMode==='race'?`<button class="btn dark" data-lvlgo="${RS.L.id}">ZNOVU</button><button class="btn dark" data-go="city">VZDÁT → MĚSTO</button>`:''}
-  <div class="toggle">Grafika: <button class="btn sm dark" id="pGfx">${typeof R3!=='undefined'&&R3.q==='high'?'VYSOKÁ':'NÍZKÁ'}</button></div><div class="toggle">Řízení: <button class="btn sm dark" id="pSteer">${{wheel:'VOLANT',arrows:'ŠIPKY',drag:'JOYSTICK',buttons:'TLAČÍTKA'}[SAVE.steer]||'TLAČÍTKA'}</button></div><div class="toggle">Auto-plyn (mobil): <button class="btn sm dark" id="pAuto">${SAVE.autoGas?'ZAP':'VYP'}</button></div><button class="btn sm dark" id="pTod">${TODN[SAVE.tod||'night']}</button><button class="btn sm dark" id="pRadio">📻 ${STY[Snd.style]?STY[Snd.style].name:'RÁDIO'}</button><button class="btn sm dark" id="pMute">${SAVE.mute?'🔇 Zvuk vyp':'🔊 Zvuk zap'}</button><button class="btn dark" id="pMap">🗺 MAPA MISÍ</button><button class="btn dark" id="pMis">📋 VŠECHNY MISE</button><button class="btn pink" data-go="menu">MENU</button>`;
+  <div class="toggle">Grafika: <button class="btn sm dark" id="pGfx">${typeof R3!=='undefined'&&R3.q==='high'?'VYSOKÁ':'NÍZKÁ'}</button></div><button class="btn sm dark" id="pTod">${TODN[SAVE.tod||'night']}</button><button class="btn sm dark" id="pRadio">📻 ${STY[Snd.style]?STY[Snd.style].name:'RÁDIO'}</button><button class="btn sm dark" id="pMute">${SAVE.mute?'🔇 Zvuk vyp':'🔊 Zvuk zap'}</button><button class="btn dark" id="pMap">🗺 MAPA MISÍ</button><button class="btn dark" id="pMis">📋 VŠECHNY MISE</button><button class="btn pink" data-go="menu">MENU</button>`;
   $('ctrl').classList.remove('on');el.classList.add('on');$('pMap').onclick=()=>openBigMap();$('pMis').onclick=()=>pauseMissions();
   $('pRes').onclick=()=>{el.classList.remove('on');if(isTouch)$('ctrl').classList.add('on');G.mode=G.prevMode;G.keys={}};
-  $('pAuto').onclick=()=>{SAVE.autoGas=!SAVE.autoGas;save();$('pAuto').textContent=SAVE.autoGas?'ZAP':'VYP';$('kU').style.display=SAVE.autoGas?'none':'block'};
+  
   $('pGfx').onclick=()=>{if(typeof R3==='undefined'||!R3.ok)return;R3.q=R3.q==='high'?'low':'high';SAVE.gfx=R3.q;save();R3.renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,R3.q==='high'?(isTouch?1.5:2):1));R3.renderer.setSize(VW,VH,false);R3.setupComposer();$('pGfx').textContent=R3.q==='high'?'VYSOKÁ':'NÍZKÁ'};
-  $('pSteer').onclick=()=>{const L=['arrows','wheel','drag','buttons'];SAVE.steer=L[(L.indexOf(SAVE.steer)+1)%4];save();applySteerMode();$('pSteer').textContent={wheel:'VOLANT',arrows:'ŠIPKY',drag:'JOYSTICK',buttons:'TLAČÍTKA'}[SAVE.steer]};
+  
   $('pRadio').onclick=()=>nextRadio();$('pTod').onclick=nextTod;
   $('pMute').onclick=()=>{Snd.setMute(!SAVE.mute);$('pMute').textContent=SAVE.mute?'🔇 Zvuk vyp':'🔊 Zvuk zap'}}
 $('pauseB').addEventListener('click',pause);
