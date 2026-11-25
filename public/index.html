@@ -931,8 +931,8 @@ const Snd={ctx:null,
 /* ---------------- CANVAS ---------------- */
 const cv=$('c'),ctx=cv.getContext('2d');
 const lc=document.createElement('canvas'),lctx=lc.getContext('2d');
-const TEXDEF={asphalt:.375,walk:.1875,grass:.375,water:.5,forest:.75,roof_tar:.25,roof_tiles:.18,roof_metal:.3},TEX={};
-const TEXIMG={};for(const k in TEXDEF){const im=new Image();im.onload=()=>{TEXIMG[k]=im;try{TEX[k]=ctx.createPattern(im,'repeat')}catch(e){}};im.src='art/tex/'+k+'.jpg?v=2'}
+const TEXDEF={asphalt:.1875,walk:.06,grass:.375,water:.5,forest:.75,roof_tar:.25,roof_tiles:.18,roof_metal:.3},TEX={};
+const TEXIMG={};for(const k in TEXDEF){const im=new Image();im.onload=()=>{TEXIMG[k]=im;try{TEX[k]=ctx.createPattern(im,'repeat')}catch(e){}};im.src='art/tex/'+k+'.jpg?v=3'}
 const DM=typeof DOMMatrix!=='undefined';
 function pat(k,ox,oy,mul){const p=TEX[k];if(!p)return null;if(DM&&p.setTransform){const s=TEXDEF[k]*(mul||1);p.setTransform(new DOMMatrix([s,0,0,s,ox||0,oy||0]))}return p}
 let VW=0,VH=0,DPR=1;
@@ -1995,7 +1995,7 @@ import {KTX2Loader} from './vendor/jsm/loaders/KTX2Loader.js';
 import {MeshoptDecoder} from './vendor/jsm/libs/meshopt_decoder.module.js';
 import * as SkeletonUtils from './vendor/jsm/utils/SkeletonUtils.js';
 window.THREE=THREE;window.TADD={EffectComposer,RenderPass,UnrealBloomPass,OutputPass,GLTFLoader,RGBELoader,SkeletonUtils,DRACOLoader,KTX2Loader,MeshoptDecoder};
-const s=document.createElement('script');s.src='r3.js?v=116';document.body.appendChild(s);
+const s=document.createElement('script');s.src='r3.js?v=117';document.body.appendChild(s);
 </script>
 </body>
 </html>

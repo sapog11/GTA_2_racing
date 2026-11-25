@@ -6,7 +6,7 @@
    ========================================================= */
 const R3={ok:false,off:/[?&]2d/.test(location.search),chunks:new Map(),CH:16,PX:28,HK:620,camMode:'top',
  cars:new Map(),peds:new Map(),markers:[],tmp:null,lastT:0,
- init(){
+ init(){this.PX=(matchMedia('(pointer:coarse)').matches)?36:48;
   if(this.off||!window.THREE)return;const T3=THREE;
   try{
    const cv=document.getElementById('c3');
@@ -188,7 +188,7 @@ const R3={ok:false,off:/[?&]2d/.test(location.search),chunks:new Map(),CH:16,PX:
    const isR=t=>t===ROAD||t===BRIDGE,tx0=Math.floor(x0/T),ty0=Math.floor(y0/T);
    for(let ty=ty0;ty<ty0+CH;ty++)for(let tx=tx0;tx<tx0+CH;tx++){if(window.USTI)break;const t0=tileAt(tx,ty);if(!isR(t0))continue;const o=t0===BRIDGE?NE.orange:NE.pink,X=tx*T,Y=ty*T,w=1.6,h1=2.6;
     if(!isR(tileAt(tx,ty-1)))box(o,X,Y,X+T,Y+w,.5,h1);if(!isR(tileAt(tx,ty+1)))box(o,X,Y+T-w,X+T,Y+T,.5,h1);if(!isR(tileAt(tx-1,ty)))box(o,X,Y,X+w,Y+T,.5,h1);if(!isR(tileAt(tx+1,ty)))box(o,X+T-w,Y,X+T,Y+T,.5,h1)}
-   if(!this.neonM){const mk=(tint)=>{const m=new T3.MeshLambertMaterial({color:tint,emissive:0x1a120c});const tx=this.curbTex||(this.curbTex=new T3.TextureLoader().load('art/tex/curb.jpg',t=>{t.colorSpace=T3.SRGBColorSpace}));tx.wrapS=tx.wrapT=T3.RepeatWrapping;m.map=tx;
+   if(!this.neonM){const mk=(tint)=>{const m=new T3.MeshLambertMaterial({color:tint,emissive:0x1a120c});const tx=this.curbTex||(this.curbTex=new T3.TextureLoader().load('art/tex/curb.jpg?v=3',t=>{t.colorSpace=T3.SRGBColorSpace}));tx.wrapS=tx.wrapT=T3.RepeatWrapping;m.map=tx;
      m.onBeforeCompile=sh=>{sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vCW;').replace('#include <begin_vertex>','#include <begin_vertex>\nvCW=(modelMatrix*vec4(position,1.)).xyz;');
       sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nvarying vec3 vCW;').replace('#include <map_fragment>','vec4 sampledDiffuseColor=texture2D(map,vec2((vCW.x+vCW.z)/72.,vCW.y/3.2+.05));diffuseColor*=sampledDiffuseColor;')};m.customProgramCacheKey=()=>'curb';return m};
     this.neonM={pink:mk(0xffffff),orange:mk(0xd8d2c8)}}
@@ -200,7 +200,7 @@ const R3={ok:false,off:/[?&]2d/.test(location.search),chunks:new Map(),CH:16,PX:
  detail(){if(this.detTex)return this.detTex;const T3=THREE,cv=document.createElement('canvas');cv.width=cv.height=512;const x=cv.getContext('2d');x.fillStyle='#808080';x.fillRect(0,0,512,512);
   const t=this.detTex=new T3.CanvasTexture(cv);t.wrapS=t.wrapT=T3.RepeatWrapping;t.anisotropy=Math.min(8,this.renderer.capabilities.getMaxAnisotropy());
   const im=new Image();im.onload=()=>{x.drawImage(im,0,0,512,512);const d=x.getImageData(0,0,512,512),a=d.data;let sum=0;for(let i=0;i<a.length;i+=4)sum+=a[i]*.3+a[i+1]*.59+a[i+2]*.11;const mean=sum/(a.length/4);
-   for(let i=0;i<a.length;i+=4){const l=a[i]*.3+a[i+1]*.59+a[i+2]*.11,v=clamp(128+(l-mean)*1.6,0,255);a[i]=a[i+1]=a[i+2]=v}x.putImageData(d,0,0);t.needsUpdate=true};im.src='art/tex/asphalt.jpg';return t},
+   for(let i=0;i<a.length;i+=4){const l=a[i]*.3+a[i+1]*.59+a[i+2]*.11,v=clamp(128+(l-mean)*1.6,0,255);a[i]=a[i+1]=a[i+2]=v}x.putImageData(d,0,0);t.needsUpdate=true};im.src='art/tex/asphalt.jpg?v=3';return t},
  groundMat(tex){const T3=THREE,m=new T3.MeshLambertMaterial({map:tex}),det=this.detail();
   m.onBeforeCompile=sh=>{sh.uniforms.uDet={value:det};sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec2 vGW;').replace('#include <begin_vertex>','#include <begin_vertex>\nvGW=(modelMatrix*vec4(position,1.)).xz;');
    sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uDet;varying vec2 vGW;').replace('#include <map_fragment>','#include <map_fragment>\n{float d1=texture2D(uDet,vGW/64.).r,d2=texture2D(uDet,vGW/23.+.37).r;diffuseColor.rgb*=clamp(.55+d1*.62+(d2-.5)*.45,.4,1.6);}')};
