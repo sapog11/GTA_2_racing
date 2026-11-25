@@ -5,7 +5,17 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="theme-color" content="#07080c">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<title>Ústí: Město andělů</title>
+<title>ÚSTÍ – Město andělů | Akční hra ve stylu GTA z Ústí nad Labem zdarma</title>
+<meta name="description" content="Zdarma online akční závodní hra ve stylu GTA ze skutečného Ústí nad Labem a Děčína. Honičky s policií, pouliční závody, gangy, tuning aut a 49 misí. Hraj v prohlížeči na mobilu i PC.">
+<meta name="keywords" content="hra Ústí nad Labem, GTA Ústí nad Labem, česká hra ve stylu GTA, závodní hra zdarma, online hra v prohlížeči, Děčín hra, honička s policií, pouliční závody, Ústí hra mobil">
+<meta name="robots" content="index,follow,max-image-preview:large">
+<link rel="canonical" href="https://gta-2-racing.web.app/">
+<meta property="og:type" content="website"><meta property="og:site_name" content="ÚSTÍ – Město andělů"><meta property="og:locale" content="cs_CZ">
+<meta property="og:title" content="ÚSTÍ – Město andělů: česká akční hra ve stylu GTA">
+<meta property="og:description" content="Zdarma online akční závodní hra ve stylu GTA ze skutečného Ústí nad Labem a Děčína. Honičky s policií, pouliční závody, gangy, tuning aut a 49 misí. Hraj v prohlížeči na mobilu i PC.">
+<meta property="og:url" content="https://gta-2-racing.web.app/"><meta property="og:image" content="https://gta-2-racing.web.app/promo/landscape.jpg"><meta property="og:image:width" content="854"><meta property="og:image:height" content="480">
+<meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="ÚSTÍ – Město andělů"><meta name="twitter:description" content="Zdarma online akční závodní hra ve stylu GTA ze skutečného Ústí nad Labem a Děčína. Honičky s policií, pouliční závody, gangy, tuning aut a 49 misí. Hraj v prohlížeči na mobilu i PC."><meta name="twitter:image" content="https://gta-2-racing.web.app/promo/landscape.jpg">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","name":"ÚSTÍ – Město andělů","url":"https://gta-2-racing.web.app/","description":"Zdarma online akční závodní hra ve stylu GTA ze skutečného Ústí nad Labem a Děčína. Honičky s policií, pouliční závody, gangy, tuning aut a 49 misí. Hraj v prohlížeči na mobilu i PC.","inLanguage":"cs","genre":["Akční","Závodní","Otevřený svět"],"gamePlatform":["Web browser","Android","iOS"],"applicationCategory":"Game","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"CZK"},"image":"https://gta-2-racing.web.app/promo/landscape.jpg","author":{"@type":"Organization","name":"ZORYX Team s.r.o.","address":"U Vlečky 3086, Ústí nad Labem"},"contentLocation":{"@type":"Place","name":"Ústí nad Labem"}}</script>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -276,7 +286,8 @@ body.two.driving #twHint{display:flex}
 #wpB{position:fixed;pointer-events:auto;z-index:9;display:none;width:48px;height:48px;border-radius:12px;border:2px solid #ffcc1a;background:rgba(10,12,20,.8);color:#fff;font-size:20px;line-height:1;flex-direction:column;align-items:center;justify-content:center;right:calc(max(10px,env(safe-area-inset-right)) + 80px);bottom:calc(max(14px,env(safe-area-inset-bottom)) + 96px)}#wpB small{font:700 10px Oswald;color:#ffcc1a}body.gun.driving #wpB{display:flex}
 </style>
 </head>
-<body>
+<body><h1 style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden">ÚSTÍ – Město andělů: akční závodní hra ve stylu GTA z Ústí nad Labem a Děčína</h1>
+<noscript><h2>ÚSTÍ – Město andělů</h2><p>Zdarma online akční závodní hra ve stylu GTA ze skutečného Ústí nad Labem a Děčína. Honičky s policií, pouliční závody, gangy, tuning aut a 49 misí. Hraj v prohlížeči na mobilu i PC.</p><p>Pro hraní zapni JavaScript.</p></noscript>
 <canvas id="c3"></canvas>
 <canvas id="c"></canvas>
 <div id="loadv" style="position:fixed;inset:0;z-index:1;pointer-events:none;background:radial-gradient(ellipse at 60% 40%,#2a1238,#07060c 70%);display:flex;align-items:flex-end;justify-content:flex-end;padding:0 24px calc(28px + env(safe-area-inset-bottom));transition:opacity .8s"><div style="font-family:Bangers,sans-serif;letter-spacing:2px;color:#ffcc1a;font-size:22px;text-shadow:2px 2px 0 #000">NAČÍTÁM MĚSTO…</div></div>
@@ -373,7 +384,7 @@ let SAVE={steer:'drag',resp:0,cash:0,hero:null,car:'civka',owned:['civka'],done:
 try{const s=JSON.parse(localStorage.getItem(SAVEKEY)||'null');if(s)SAVE=Object.assign(SAVE,s)}catch(e){}
 if(!SAVE.owned.includes('koncept'))SAVE.owned.push('koncept');if(!SAVE.kcMig){SAVE.kcMig=1;SAVE.cash=(SAVE.cash||0)+(SAVE.resp||0)*50}if(!SAVE.machtCk){SAVE.machtCk=1;SAVE.radio='macht'}if(!SAVE.camCk2){SAVE.camCk2=1;SAVE.camCk=1;SAVE.cam='chase'}if(!SAVE.tune)SAVE.tune={};if(!SAVE.tuned)SAVE.tuned=[];if(!SAVE.unl){SAVE.unl={};for(const id of SAVE.tuned)SAVE.unl[id]=['*']}
 if((('ontouchstart' in window)||matchMedia('(pointer:coarse)').matches)&&!SAVE.steer3){SAVE.steer2=SAVE.steer3=1;SAVE.steer='wheel'}if(SAVE.steer==='two')SAVE.steer='wheel';if(!SAVE.arrCk&&matchMedia('(pointer:coarse)').matches){SAVE.arrCk=1;SAVE.steer='arrows'}
-SAVE.steer='arrows';SAVE.autoGas=false;if(!SAVE.camCk3){SAVE.camCk3=1;SAVE.cam='cockpit'}
+SAVE.steer='arrows';SAVE.autoGas=false;if(SAVE.radio==='rap'||SAVE.radio==='trap')SAVE.radio='disco';if(!SAVE.camCk3){SAVE.camCk3=1;SAVE.cam='cockpit'}
 function save(){try{localStorage.setItem(SAVEKEY,JSON.stringify(SAVE))}catch(e){}}
 const isTouch=('ontouchstart' in window)||matchMedia('(pointer:coarse)').matches;
 if(SAVE.autoGas===null)SAVE.autoGas=isTouch;
@@ -828,9 +839,11 @@ const STY={
  rap:{name:'RAP PŘEDLICE',bpm:88,file:'music/rap_predlice.mp3',vol:.85,kick:[0,3,10],snare:[4,12],hat:2,bass:'sub',harm:1,keys:[0,7],vinyl:1,ch:[[57,60,64,67],[53,57,60,64],[50,53,57,60],[52,55,59,62]],vol:.4},
  trap:{name:'BASS ÚSTÍ',bpm:140,file:'music/bass_usti.mp3',vol:.85,kick:[0,7,10],kf:120,snare:[8],sf:1500,hat:'roll',bass:'808',harm:1,bell:[0,3,6,11],ch:[[52,55,59],[52,55,59],[48,52,55],[50,53,57]],vol:.42},
  oldschool:{name:'OLDSCHOOL HIP-HOP',bpm:96,file:'music/oldschool.mp3',vol:.85,kick:[0,6,8],snare:[4,12],hat:2,bass:'funk',harm:1,stab:[14],so:0,sw:'sawtooth',scratch:1,ch:[[55,58,62],[53,57,60],[51,55,58],[53,57,60]],vol:.38},
+ disco:{name:'DISCO ÚSTÍ',bpm:124,file:'music/disco_usti.mp3',vol:.85},
+ tramp:{name:'TRAMP COUNTRY',bpm:118,file:'music/tramp_fm.mp3',vol:.85},
  classic:{name:'KLASIKA FM',bpm:66,file:'music/klasika_fm.mp3',vol:.85,classic:1,vol:.5},
  off:{name:'VYPNUTO',bpm:92}};
-const RADIO=['macht','noc','chem174','labe','rap','trap','oldschool','synth','dnb','liquid','jungle','classic','polka','off'];
+const RADIO=['disco','macht','tramp','labe','oldschool','synth','chem174','noc','dnb','liquid','jungle','classic','polka','off'];
 const BACH=[[48,52,55,60,64],[48,50,57,62,65],[47,50,55,62,65],[48,52,55,60,64],[48,52,57,64,69],[48,50,54,57,62],[47,50,55,62,67],[47,48,52,55,60],[45,48,52,55,60],[38,45,50,54,60],[43,47,50,55,59],[43,46,52,55,61],[41,45,50,57,62],[41,44,50,53,59],[40,43,48,55,60],[40,41,45,48,53]];
 const Snd={ctx:null,
  init(oc){if(this.ctx){this.ctx.resume&&this.ctx.resume();return}
@@ -1519,10 +1532,11 @@ function renderPanel(){const el=$('scr-comic'),C=comic.C,P=C.panels[comic.i];
   $('cNext').onclick=()=>{Snd.click();if(comic.i<C.panels.length-1){comic.i++;renderPanel()}else finishComic()};
   $('cSkip').onclick=()=>{Snd.click();finishComic()};
   $('panel').onclick=e=>{if(e.target.closest('button'))return;$('cNext').click()}}
-function showCredits(done){const el=$('scr-comic');show('scr-comic');const T=[['ÚSTÍ — MĚSTO ANDĚLŮ','h'],['HRA DOKONČENA','b'],['',''],['ZORYX STUDIO','b'],['Evžen Zorič','' ],['Bělorusko, Minsk',''],['',''],['ZORYX Team s.r.o.',''],['U Vlečky 3086, Ústí nad Labem',''],['',''],['Postavy','s'],['Lucie • Marek • Kája • Sky',''],['',''],['Použité AI nástroje','s'],['Claude (Anthropic) — kód, příběh, dialogy',''],['Figma AI — komiksy, ilustrace, palubní desky',''],['Figma Weave + Hunyuan 3D — 3D modely aut',''],['Tripo AI — 3D modely aut',''],['Nano Banana Pro — textury a reference',''],['',''],['Technologie','s'],['three.js • Web Audio',''],['Mapa © přispěvatelé OpenStreetMap',''],['',''],['Díky, že jsi jezdil s náma.','b'],['Ústí a Děčín jsou tvoje.','']];
+function showCredits(done,TT){const el=$('scr-comic');show('scr-comic');const T=TT||[['ÚSTÍ — MĚSTO ANDĚLŮ','h'],['HRA DOKONČENA','b'],['',''],['ZORYX STUDIO','b'],['Evžen Zorič','' ],['yauhen.zorych@zoryx.app',''],['Bělorusko, Minsk',''],['',''],['ZORYX Team s.r.o.',''],['U Vlečky 3086, Ústí nad Labem',''],['',''],['Postavy','s'],['Lucie • Marek • Kája • Sky',''],['',''],['Použité AI nástroje','s'],['Claude (Anthropic) — kód, příběh, dialogy',''],['Figma AI — komiksy, ilustrace, palubní desky',''],['Figma Weave + Hunyuan 3D — 3D modely aut',''],['Tripo AI — 3D modely aut',''],['Nano Banana Pro — textury a reference',''],['',''],['Technologie','s'],['three.js • Web Audio',''],['Mapa © přispěvatelé OpenStreetMap',''],['',''],['Díky, že jsi jezdil s náma.','b'],['Ústí a Děčín jsou tvoje.','']];
   el.innerHTML=`<div id="credits" style="position:fixed;inset:0;background:#05060a url(art/credits.jpg) center/cover;overflow:hidden;z-index:50"><div id="crl" style="position:absolute;left:0;right:0;top:100%;text-align:center;padding:0 20px;font-family:Oswald,sans-serif;color:#dde;text-shadow:0 2px 8px #000">${T.map(([t,c])=>c==='h'?`<div style="font-family:Bangers;font-size:46px;letter-spacing:3px;color:#ffcc1a;margin:10px 0">${t}</div>`:c==='b'?`<div style="font-family:Bangers;font-size:30px;letter-spacing:2px;color:#ff2e63;margin:6px 0">${t}</div>`:c==='s'?`<div style="font-size:13px;letter-spacing:4px;color:#4dd8ff;text-transform:uppercase;margin-top:6px">${t}</div>`:`<div style="font-size:19px;margin:4px 0;min-height:14px">${t}</div>`).join('')}</div><button class="btn sm dark" id="crX" style="position:absolute;right:12px;bottom:calc(12px + env(safe-area-inset-bottom))">PŘESKOČIT ▸</button></div>`;
   const c=$('crl');let y=innerHeight,t0=performance.now(),fin=false;const end=()=>{if(fin)return;fin=true;el.innerHTML='';done&&done()};$('crX').onclick=()=>{Snd.click();end()};
   const step=()=>{if(fin)return;y-=1.1;c.style.top=y+'px';if(y<-c.offsetHeight-40){end();return}requestAnimationFrame(step)};requestAnimationFrame(step)}
+function introCredits(done){showCredits(done,[['ZORYX STUDIO','h'],['uvádí','b'],['',''],['Autor a vývoj','s'],['Evžen Zorič',''],['ZORYX Team s.r.o., Ústí nad Labem',''],['yauhen.zorych@zoryx.app',''],['',''],['Vytvořeno s AI','s'],['Claude (Anthropic) — kód, příběh, dialogy',''],['Figma AI — komiksy, fasády, panoramata',''],['Figma Weave + Hunyuan 3D, Tripo AI — 3D modely',''],['Mapa © přispěvatelé OpenStreetMap',''],['',''],['ÚSTÍ — MĚSTO ANDĚLŮ','h']])}
 function finishComic(){const d=comic.done;comic=null;if(d)d();else showComics()}
 
 /* ---------------- FREE ROAM ---------------- */
@@ -1584,7 +1598,7 @@ function enterMission(L){if(NAV.to&&NAV.to.id==='m:'+L.id)NAV.to=null;G.mode='en
 let RS=null;
 function startLevel(id){const L=LEVELS.find(l=>l.id===id);G.level=L;AN.ev('mission_start',{mission:id});
   const go=()=>beginRace(L);
-  if(!SAVE.seenIntro){SAVE.seenIntro=true;save();playComic('intro',()=>COMICS[L.comic]?playComic(L.comic,go):go());return}
+  if(!SAVE.seenIntro){SAVE.seenIntro=true;save();playComic('intro',()=>introCredits(()=>COMICS[L.comic]?playComic(L.comic,go):go()));return}
   if(!COMICS[L.comic]){go();return}playComic(L.comic,go)}
 function beginRace(L){hideAll();const w=newWorld({rain:L.rain,dark:L.dark,civMax:L.type==='race'?12:16,pedMax:42});setRoute(w,L.route);G.world=w;G.mode='race';
   const car=CARS.find(c=>c.id===SAVE.car)||CARS[0];const spec=Object.assign({},car);const lucie=SAVE.hero==='lucie';
@@ -1910,7 +1924,7 @@ document.addEventListener('click',e=>{const t=e.target.closest('button,[data-lvl
   const go=t.dataset.go||t.dataset.back;
   if(go){if(G.mode==='paused'||G.mode==='result'){if(go!=='city'||!G.lastPos)G.lastPos=go==='city'?G.lastPos:null;G.world=null;G.mode='ambient'}
     if(go==='menu')showMenu();else if(go==='play'||go==='city'){if(!SAVE.hero){ensureAmbient();showHeroes('roam')}else startRoam(go==='city'&&G.lastPos?G.lastPos:HOME)}else if(go==='missions'){ensureAmbient();showLevels()}else if(go==='heroes'){ensureAmbient();showHeroes()}else if(go==='garage'){ensureAmbient();showGarage()}else if(go==='comics'){ensureAmbient();showComics()}else if(go==='promo')startPromo();return}
-  if(t.dataset.hero){AN.ev('hero_select',{hero:t.dataset.hero});SAVE.hero=t.dataset.hero;save();const nx=$('scr-heroes').dataset.next;if(nx==='roam'){if(!SAVE.seenIntro){SAVE.seenIntro=true;save();playComic('intro',()=>startRoam(HOME))}else startRoam(HOME)}else showHeroes();return}
+  if(t.dataset.hero){AN.ev('hero_select',{hero:t.dataset.hero});SAVE.hero=t.dataset.hero;save();const nx=$('scr-heroes').dataset.next;if(nx==='roam'){if(!SAVE.seenIntro){SAVE.seenIntro=true;save();playComic('intro',()=>introCredits(()=>startRoam(HOME)))}else startRoam(HOME)}else showHeroes();return}
   if(t.dataset.replay){const L=LEVELS.find(l=>l.id===t.dataset.replay),pr=replayPrice(L);if(SAVE.cash<pr){floatMsg('Málo prachů',1.5);return}SAVE.cash-=pr;SAVE.replay=L.id;save();AN.ev('mission_replay',{mission:L.id});startLevel(L.id);return}
   if(t.dataset.lvl){SAVE.sel=t.dataset.lvl;save();startRoam(HOME,t.dataset.lvl);return}
   if(t.dataset.unsel!==undefined){SAVE.sel=null;if(RS)RS.target=null;if(NAV.to&&/^m:/.test(NAV.to.id))NAV.to=null;save();showLevels();return}
@@ -1983,12 +1997,12 @@ setInterval(()=>{if(document.hidden)return;if(G.mode==='roam'||G.mode==='race')A
 async function renderPromoAudio(sec){const SR=44100,oc=new OfflineAudioContext(2,Math.ceil(SR*sec),SR);const S=Object.create(Snd);S.ctx=null;S.timer=null;S.style='labe';S.init(oc);S.master.gain.value=.8;S.lead=true;S.spb=60/92/4;S.mus.gain.value=.5;
   let t=.05,st=0;while(t<sec-.3){S.play(st,t);t+=S.spb;st++}
   S.rainG.gain.setValueAtTime(.06,0);S.eng.g.gain.value=0;
-  const g=S.sir.g.gain,f=S.sir.o.frequency;for(const[a,b]of[[14.4,19.6],[23,27]]){g.setValueAtTime(0,a);g.linearRampToValueAtTime(.04,a+.3);for(let x=a;x<b;x+=.42)f.setValueAtTime(Math.round((x-a)/.42)%2?960:720,x);g.setValueAtTime(.04,b-.2);g.linearRampToValueAtTime(0,b)}
+  const g=S.sir.g.gain,f=S.sir.o.frequency;g.cancelScheduledValues(0);g.setValueAtTime(0,0);for(const[a,b]of[[14.4,19.6],[23,27]]){g.setValueAtTime(0,a);g.linearRampToValueAtTime(.04,a+.3);for(let x=a;x<b;x+=.42)f.setValueAtTime(Math.round((x-a)/.42)%2?960:720,x);g.setValueAtTime(.04,b-.2);g.linearRampToValueAtTime(0,b)}
   S.nz(2.2,'lowpass',160,.6,4.7);S.nz(2.2,'lowpass',160,.6,39.5);S.nz(.6,'highpass',3000,.5,19.6);
   for(let k=0;k<6;k++)S.tone(k%2?1400:1100,k%2?1400:1100,.22,'square',.05,null,19.7+k*.25);
   for(let k=0;k<7;k++){S.nz(.07,'highpass',1200,.22,23.12+k*.095);S.tone(180,60,.06,'square',.08,null,23.12+k*.095)}
   for(const x of[27,29.6,32.2]){S.tone(90,40,.5,'sine',.6,null,x);S.nz(.25,'lowpass',900,.35,x)}
-  S.tone(60,220,1.1,'sawtooth',.25,null,34.8);
+  S.tone(60,220,1.1,'sawtooth',.25,null,34.8);for(const x of[39.4,42.7,46]){S.tone(60,220,.9,'sawtooth',.22,null,x);S.nz(.6,'lowpass',600,.3,x)}S.tone(90,40,1.2,'sine',.7,null,49.3);S.nz(2,'lowpass',160,.6,49.3);
   const buf=await oc.startRendering();const n=buf.length,L=buf.getChannelData(0),R2=buf.getChannelData(1);const ab=new ArrayBuffer(44+n*4),v=new DataView(ab);
   const ws=(o,str)=>{for(let i=0;i<str.length;i++)v.setUint8(o+i,str.charCodeAt(i))};ws(0,'RIFF');v.setUint32(4,36+n*4,true);ws(8,'WAVE');ws(12,'fmt ');v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,2,true);v.setUint32(24,SR,true);v.setUint32(28,SR*4,true);v.setUint16(32,4,true);v.setUint16(34,16,true);ws(36,'data');v.setUint32(40,n*4,true);
   let o=44;for(let i=0;i<n;i++){v.setInt16(o,clamp(L[i],-1,1)*32767,true);v.setInt16(o+2,clamp(R2[i],-1,1)*32767,true);o+=4}
@@ -2030,7 +2044,7 @@ import {KTX2Loader} from './vendor/jsm/loaders/KTX2Loader.js';
 import {MeshoptDecoder} from './vendor/jsm/libs/meshopt_decoder.module.js';
 import * as SkeletonUtils from './vendor/jsm/utils/SkeletonUtils.js';
 window.THREE=THREE;window.TADD={EffectComposer,RenderPass,UnrealBloomPass,OutputPass,GLTFLoader,RGBELoader,SkeletonUtils,DRACOLoader,KTX2Loader,MeshoptDecoder};
-const s=document.createElement('script');s.src='r3.js?v=124';document.body.appendChild(s);
+const s=document.createElement('script');s.src='r3.js?v=125';document.body.appendChild(s);
 </script>
 </body>
 </html>
