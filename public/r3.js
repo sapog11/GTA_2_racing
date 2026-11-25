@@ -41,7 +41,7 @@ const R3={ok:false,off:/[?&]2d/.test(location.search),chunks:new Map(),CH:16,PX:
   this.mkTex();
   this.wallMat=new T3.MeshLambertMaterial({map:this.winTex,emissiveMap:this.winEm,emissive:0xffffff,emissiveIntensity:1.6,vertexColors:true});
   {const TL=new T3.TextureLoader(),ld=f=>{const t=TL.load('art/tex/'+f+'.jpg');t.wrapS=t.wrapT=T3.RepeatWrapping;t.colorSpace=T3.SRGBColorSpace;t.anisotropy=4;return t};this.facMats={};
-   this.facBase={value:.22};for(const k of['plaster','brick','panel','shops','modern','industrial','stone','baroque']){const m=this.facMats[k]=new T3.MeshLambertMaterial({map:ld('fac_'+k),emissiveMap:ld('fac_'+k+'_em'),emissive:0xffffff,emissiveIntensity:1.2,vertexColors:true});
+   this.facBase={value:.22};for(const k of['plaster','brick','panel','shops','modern','industrial','stone','baroque']){const pf=k==='shops'?'fac_':'kit_',m=this.facMats[k]=new T3.MeshLambertMaterial({map:ld(pf+k),emissiveMap:ld(pf+k+'_em'),emissive:0xffffff,emissiveIntensity:1.2,vertexColors:true});
     m.onBeforeCompile=sh=>{sh.uniforms.uBase=this.facBase;sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform float uBase;').replace('#include <emissivemap_fragment>','#include <emissivemap_fragment>\ntotalEmissiveRadiance+=diffuseColor.rgb*uBase;')};m.customProgramCacheKey=()=>'fac'}
    this.facMats.plain=new T3.MeshLambertMaterial({color:0xffffff,vertexColors:true})}
   this.roofMats={};for(const k of['roof_tar','roof_tiles','roof_metal','plain'])this.roofMats[k]=new T3.MeshLambertMaterial({vertexColors:true,map:this.imgTex(k)});
@@ -154,12 +154,14 @@ const R3={ok:false,off:/[?&]2d/.test(location.search),chunks:new Map(),CH:16,PX:
   for(const b of buildings){const mx=b.x+b.w/2,my=b.y+b.h/2;if(mx<x0||mx>x1||my<y0||my>y1)continue;
    const H=Math.min(b.ht*this.HK,b.pylon?560:900),X0=b.x,X1=b.x+b.w,Z0=b.y,Z1=b.y+b.h;C.set(b.col);const wc=C.clone().lerp(new T3.Color(0xbdb8ae),.35);
    const quad=(o,a,bq,c,d,n,uv)=>{o.pos.push(...a,...bq,...c,...a,...c,...d);for(let q=0;q<6;q++)o.nor.push(...n);o.uv.push(uv[0],uv[1],uv[2],uv[3],uv[4],uv[5],uv[0],uv[1],uv[4],uv[5],uv[6],uv[7])};
-   const hsh=((b.x*13+b.y*7)/T|0),fk=b.panel?'panel':b.factory?'industrial':b.chimney?'brick':b.pylon?'plain':(b.tower||b.hotel)?'modern':(b.castle||b.church)?'stone':['brick','plaster','baroque','plaster','brick','baroque'][hsh%6],FW=fk==='stone'?140:fk==='modern'?170:160,FH=fk==='panel'?150:fk==='modern'?150:fk==='stone'?110:120;
+   const hsh=((b.x*13+b.y*7)/T|0),fk=b.panel?'panel':b.factory?'industrial':b.chimney?'plain':b.pylon?'plain':(b.tower||b.hotel)?'modern':(b.castle||b.church)?'stone':['brick','plaster','baroque','plaster','brick','baroque'][hsh%6],FW=fk==='stone'?140:fk==='modern'?170:160,FH=fk==='panel'?150:fk==='modern'?150:fk==='stone'?110:120;
    const band=!b.panel&&!b.factory&&!b.chimney&&!b.pylon&&!b.tower&&!b.castle&&!b.church&&H>50&&(b.shop||b.bar||b.hotel||hsh%3!==0)?40:0;
    const acc=k=>WF[k]||(WF[k]={pos:[],nor:[],uv:[],col:[]}),tc=fk==='plain'?C.clone().lerp(new T3.Color(0xffffff),.7):new T3.Color(0xffffff).lerp(C,.22);
    const wall=(ax,az,bx,bz,n)=>{const L=Math.hypot(bx-ax,bz-az),u0=((ax+az)%997)/FW,u1=u0+L/FW;
     if(band){const o=acc('shops'),su0=((ax*3+az)%991)/120,su1=su0+L/120;quad(o,[ax,0,az],[bx,0,bz],[bx,band,bz],[ax,band,az],n,[su0,0,su1,0,su1,1,su0,1]);for(let q=0;q<6;q++)o.col.push(1,1,1)}
-    const o=acc(fk),v1=(H-band)/FH;quad(o,[ax,band,az],[bx,band,bz],[bx,H,bz],[ax,H,az],n,[u0,0,u1,0,u1,v1,u0,v1]);for(let q=0;q<6;q++)o.col.push(tc.r,tc.g,tc.b)};
+    const o=acc(fk);if(fk==='plain'){const v1=(H-band)/FH;quad(o,[ax,band,az],[bx,band,bz],[bx,H,bz],[ax,H,az],n,[u0,0,u1,0,u1,v1,u0,v1]);for(let q=0;q<6;q++)o.col.push(tc.r,tc.g,tc.b);return}
+     const hh=H-band,nf=Math.max(1,Math.round(hh/(fk==='modern'?44:fk==='industrial'?52:40))),fh=hh/nf,nb=Math.max(1,Math.round(L/(fh*.78))),U=nb/4;
+     for(let f=0;f<nf;f++){const y0=band+f*fh,y1=y0+fh,row=(f===nf-1&&nf>1)?2:(f===0&&!band)?0:(nf===1&&band?2:1),v0=row/3+.002,v1=(row+1)/3-.002;quad(o,[ax,y0,az],[bx,y0,bz],[bx,y1,bz],[ax,y1,az],n,[0,v0,U,v0,U,v1,0,v1]);for(let q=0;q<6;q++)o.col.push(tc.r,tc.g,tc.b)}};
    wall(X0,Z1,X1,Z1,[0,0,1]);wall(X1,Z1,X1,Z0,[1,0,0]);wall(X1,Z0,X0,Z0,[0,0,-1]);wall(X0,Z0,X0,Z1,[-1,0,0]);
    const key=rk(b),o=RF[key]||(RF[key]={pos:[],nor:[],uv:[],col:[]}),sc=key==='plain'?1:1/300;
    quad(o,[X0,H,Z1],[X1,H,Z1],[X1,H,Z0],[X0,H,Z0],[0,1,0],[X0*sc,Z1*sc,X1*sc,Z1*sc,X1*sc,Z0*sc,X0*sc,Z0*sc]);const rc=C.clone().lerp(new T3.Color(0xffffff),.82);for(let q=0;q<6;q++)o.col.push(rc.r,rc.g,rc.b);
