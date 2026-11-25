@@ -494,8 +494,8 @@ function buildDeco(){if(!U0||!RG)return;rgPrep();const hsh=(x,y)=>{let h=((x|0)*
     for(let t=0;t<L;t+=20){const s=acc+t,x=A.x+ux*t,y=A.y+uy*t;for(const sd of[-1,1]){const px=x+nx*sd*(hw+16),py=y+ny*sd*(hw+16),tt=tileAt(Math.floor(px/T),Math.floor(py/T));if(!isWalk(tt))continue;
       if(s-lastT>70&&hsh(px,py)<.5){trees.push({x:px+nx*sd*10,y:py+ny*sd*10,r:12+hsh(py,px)*6,c:'#2f5a2c'});lastT=s}
       else if(s-lastS>900&&hsh(px+1,py)<.25){DECO.stop.push({x:px,y:py,a:Math.atan2(uy,ux)+(sd>0?Math.PI:0)});DECO.bin.push({x:px+ux*30,y:py+uy*30});lastS=s}
-      else if(s-lastB>260&&hsh(px,py+3)<.12){DECO.bench.push({x:px+nx*sd*4,y:py+ny*sd*4,a:Math.atan2(uy,ux)+(sd>0?Math.PI:0)});lastB=s}}}acc+=L}}
-  for(let ty=0;ty<MAPH;ty+=2)for(let tx=0;tx<MAPW;tx+=2){if(tileAt(tx,ty)!==GRASS)continue;if(!(isWalk(tileAt(tx+1,ty))||isWalk(tileAt(tx-1,ty))||isWalk(tileAt(tx,ty+1))||isWalk(tileAt(tx,ty-1))))continue;if(hsh(tx,ty)>.06)continue;const a=isWalk(tileAt(tx+1,ty))?0:isWalk(tileAt(tx-1,ty))?Math.PI:isWalk(tileAt(tx,ty+1))?Math.PI/2:-Math.PI/2;DECO.bench.push({x:(tx+.5)*T+Math.cos(a)*T*.3,y:(ty+.5)*T+Math.sin(a)*T*.3,a:a+Math.PI/2,park:1})}
+      else if(s-lastB>160&&hsh(px,py+3)<.22){DECO.bench.push({x:px+nx*sd*4,y:py+ny*sd*4,a:Math.atan2(uy,ux)+(sd>0?Math.PI:0)});lastB=s}}}acc+=L}}
+  for(let ty=0;ty<MAPH;ty+=2)for(let tx=0;tx<MAPW;tx+=2){if(tileAt(tx,ty)!==GRASS)continue;if(!(isWalk(tileAt(tx+1,ty))||isWalk(tileAt(tx-1,ty))||isWalk(tileAt(tx,ty+1))||isWalk(tileAt(tx,ty-1))))continue;if(hsh(tx,ty)>.14)continue;const a=isWalk(tileAt(tx+1,ty))?0:isWalk(tileAt(tx-1,ty))?Math.PI:isWalk(tileAt(tx,ty+1))?Math.PI/2:-Math.PI/2;DECO.bench.push({x:(tx+.5)*T+Math.cos(a)*T*.3,y:(ty+.5)*T+Math.sin(a)*T*.3,a:a+Math.PI/2,park:1})}
   window.DECO=DECO}
 function lanePts(E,dir){const P=dir>0?E.pts:E.pts.slice().reverse(),off=E.ow?0:Math.max(11,E.w*T*.25),out=[];for(let i=0;i<P.length;i++){const A=P[Math.max(0,i-1)],B=P[Math.min(P.length-1,i+1)],L=Math.hypot(B.x-A.x,B.y-A.y)||1,nx=-(B.y-A.y)/L,ny=(B.x-A.x)/L;out.push({x:P[i].x+nx*off,y:P[i].y+ny*off})}return out}
 function rgNext(nd,fromE){const o=(RG.adj.get(nd)||[]).filter(q=>q.E!==fromE);const L=o.length?o:(RG.adj.get(nd)||[]);return L.length?pick(L):null}
@@ -961,7 +961,7 @@ const Snd={ctx:null,
 /* ---------------- CANVAS ---------------- */
 const cv=$('c'),ctx=cv.getContext('2d');
 const lc=document.createElement('canvas'),lctx=lc.getContext('2d');
-const TEXDEF={asphalt:.1875,walk:.06,grass:.1875,cobble:.05,water:.5,forest:.75,roof_tar:.25,roof_tiles:.18,roof_metal:.3},TEX={};
+const TEXDEF={asphalt:.1875,walk:.06,grass:.1875,grass2:.1875,grass3:.1875,cobble:.05,water:.5,forest:.75,roof_tar:.25,roof_tiles:.18,roof_metal:.3},TEX={};
 const TEXIMG={};for(const k in TEXDEF){const im=new Image();im.onload=()=>{TEXIMG[k]=im;try{TEX[k]=ctx.createPattern(im,'repeat')}catch(e){}};im.src='art/tex/'+k+'.jpg?v=3'}
 const DM=typeof DOMMatrix!=='undefined';
 function pat(k,ox,oy,mul){const p=TEX[k];if(!p)return null;if(DM&&p.setTransform){const s=TEXDEF[k]*(mul||1);p.setTransform(new DOMMatrix([s,0,0,s,ox||0,oy||0]))}return p}
@@ -1239,7 +1239,7 @@ function drawGround(c2,x0,y0,x1,y1,t,wet){
     case WALK:{const pw=pat('walk');c2.fillStyle=pw||'#57565c';c2.fillRect(X,Y,T+.5,T+.5);if(pw){c2.fillStyle='rgba(20,20,28,.35)';c2.fillRect(X,Y,T+.5,T+.5)}else{c2.fillStyle='#4a494f';c2.fillRect(X+T/2,Y,1,T);c2.fillRect(X,Y+T/2,T,1)}
       c2.fillStyle='#8c8a92';const rd=q=>q===ROAD||q===BRIDGE;if(rd(tileAt(tx,ty-1)))c2.fillRect(X,Y,T+.5,3);if(rd(tileAt(tx,ty+1)))c2.fillRect(X,Y+T-3,T+.5,3);if(rd(tileAt(tx-1,ty)))c2.fillRect(X,Y,3,T+.5);if(rd(tileAt(tx+1,ty)))c2.fillRect(X+T-3,Y,3,T+.5);
       if(h%11===0){c2.fillStyle='#3a3a40';c2.fillRect(X+(h%28)+6,Y+((h>>4)%28)+6,6,4)}break}
-    case GRASS:{const pg=pat('grass');c2.fillStyle=pg||'#22391f';c2.fillRect(X,Y,T+.5,T+.5);if(pg){c2.fillStyle='rgba(0,10,0,.25)';c2.fillRect(X,Y,T+.5,T+.5);break}c2.fillStyle='#2c4a27';for(let i=0;i<4;i++){const q=(h>>(i*5))&31;c2.fillRect(X+q*1.4,Y+((h>>(i*3+2))&31)*1.4,3,3)}break}
+    case GRASS:{const gv=(((tx>>3)*73856093)^((ty>>3)*19349663))>>>0,pg=pat(['grass','grass','grass2','grass3'][gv%4]);c2.fillStyle=pg||'#22391f';c2.fillRect(X,Y,T+.5,T+.5);if(pg){c2.fillStyle='rgba(0,10,0,.25)';c2.fillRect(X,Y,T+.5,T+.5);break}c2.fillStyle='#2c4a27';for(let i=0;i<4;i++){const q=(h>>(i*5))&31;c2.fillRect(X+q*1.4,Y+((h>>(i*3+2))&31)*1.4,3,3)}break}
     case WATER:{const pq=pat('water',0,(t*14)%384);c2.fillStyle=pq||'#0c2634';c2.fillRect(X,Y,T+.5,T+.5);if(pq){c2.fillStyle='rgba(5,30,45,.35)';c2.fillRect(X,Y,T+.5,T+.5);break}c2.strokeStyle='rgba(120,170,200,.18)';c2.lineWidth=1.5;c2.beginPath();const o=(t*12+h%40)%T;c2.moveTo(X+4,Y+o);c2.quadraticCurveTo(X+T/2,Y+o-4,X+T-4,Y+o);c2.stroke();break}
     case PLAZA:{const pp=pat('walk',0,0,1.6);if(pp){c2.fillStyle=pp;c2.fillRect(X,Y,T+.5,T+.5);c2.fillStyle='rgba(90,70,40,.25)';c2.fillRect(X,Y,T+.5,T+.5);break}c2.fillStyle='#5d544b';c2.fillRect(X,Y,T+.5,T+.5);c2.fillStyle='#4f473f';for(let i=0;i<4;i++){c2.fillRect(X,Y+i*12,T,1);c2.fillRect(X+((i%2)*6)+i*12,Y,1,T)}break}
     case LOT:{c2.fillStyle=pat('asphalt')||'#2f3035';c2.fillRect(X,Y,T+.5,T+.5);c2.fillStyle='rgba(230,230,220,.45)';c2.fillRect(X,Y,2,T*.45);c2.fillRect(X,Y+T*.55,2,T*.45);break}
@@ -2088,7 +2088,7 @@ import {KTX2Loader} from './vendor/jsm/loaders/KTX2Loader.js';
 import {MeshoptDecoder} from './vendor/jsm/libs/meshopt_decoder.module.js';
 import * as SkeletonUtils from './vendor/jsm/utils/SkeletonUtils.js';
 window.THREE=THREE;window.TADD={EffectComposer,RenderPass,UnrealBloomPass,OutputPass,GLTFLoader,RGBELoader,SkeletonUtils,DRACOLoader,KTX2Loader,MeshoptDecoder};
-const s=document.createElement('script');s.src='r3.js?v=126';document.body.appendChild(s);
+const s=document.createElement('script');s.src='r3.js?v=127';document.body.appendChild(s);
 </script>
 </body>
 </html>

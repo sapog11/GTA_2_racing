@@ -110,8 +110,8 @@ const R3={ok:false,off:/[?&]2d/.test(location.search),chunks:new Map(),CH:16,PX:
   else{const fe=M(0xc8102e,0x300000),wh=M(0xeeeeee,0x202020);for(const x of[-.5,.5])bx(.05,.9,.05,x,.45,0,fe);bx(1.05,.06,.05,0,.85,0,fe);bx(1.05,.06,.05,0,.45,0,wh)}
   g.updateMatrixWorld(true);return g},
  instProp(n){const T3=THREE,P=this.props[n];P.updateMatrixWorld(true);const parts=[];
-  P.traverse(o=>{if(!o.isMesh)return;const im=new T3.InstancedMesh(o.geometry,o.material,({lamp:60,tree:120,busstop:12,bins:20,bench:40,sign:30,rail:60})[n]||40);im.count=0;im.frustumCulled=false;this.scene.add(im);parts.push({im,local:o.matrixWorld.clone()})});
-  const LST={lamp:lamps,tree:trees,busstop:DECO.stop,bins:DECO.bin,bench:DECO.bench,sign:DECO.sign,rail:DECO.rail},MX={lamp:60,tree:120,busstop:12,bins:20,bench:40,sign:30,rail:60};(this.propSets=this.propSets||{})[n]={parts,list:LST[n]||[],max:MX[n]||40};
+  P.traverse(o=>{if(!o.isMesh)return;const im=new T3.InstancedMesh(o.geometry,o.material,({lamp:80,tree:140,busstop:14,bins:30,bench:70,sign:36,rail:70})[n]||40);im.count=0;im.frustumCulled=false;this.scene.add(im);parts.push({im,local:o.matrixWorld.clone()})});
+  const LST={lamp:lamps,tree:trees,busstop:DECO.stop,bins:DECO.bin,bench:DECO.bench,sign:DECO.sign,rail:DECO.rail},MX={lamp:80,tree:140,busstop:14,bins:30,bench:70,sign:36,rail:70};(this.propSets=this.propSets||{})[n]={parts,list:LST[n]||[],max:MX[n]||40};
   if(n==='lamp'&&this.oldLamp){this.oldLamp[0].visible=false;this.oldLamp[1].visible=false;this.oldLamp[2].visible=false;this.lbar.visible=false}if(n==='tree'&&this.oldTree)this.oldTree.visible=false},
  propCull(){if(!this.propSets||!this.focus)return;const now=performance.now();if(now-(this.ppT||0)<500)return;this.ppT=now;const T3=THREE,M=new T3.Matrix4(),Q=new T3.Quaternion(),V=new T3.Vector3(),SC=new T3.Vector3(),AX=new T3.Vector3(0,1,0);
   const fx=this.focus.x,fy=this.focus.y;for(const n in this.propSets){const S=this.propSets[n],R2=(n==='lamp'?900:1000)**2;const near=[];S.list.forEach((it,i)=>{const d=(it.x-fx)**2+(it.y-fy)**2;if(d<R2)near.push([d,it,i])});near.sort((a,b)=>a[0]-b[0]);const k=Math.min(near.length,S.max);
