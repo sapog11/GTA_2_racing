@@ -193,7 +193,8 @@ body.cock #nav{top:calc(max(10px,env(safe-area-inset-top)) + 120px)}
 .hbox .big{font-family:Bangers;font-size:26px;letter-spacing:1.5px;color:var(--acc);line-height:1}
 .hp{width:120px;height:9px;background:#2b0f15;border-radius:2px;overflow:hidden;margin-top:3px}
 .hp i{display:block;height:100%;background:linear-gradient(90deg,#ff2e63,#ffcc1a);width:100%}
-#mm{width:96px;height:96px;border:2px solid rgba(255,255,255,.25);border-radius:6px;background:#0b0d14;display:block;margin-top:6px}
+#bmap{position:fixed;inset:0;z-index:60;background:#0b0d14;display:none;touch-action:none}#bmap.on{display:block}#bmc{position:absolute;inset:0;width:100%;height:100%}#bmTop{position:absolute;left:0;right:0;top:0;padding:calc(8px + env(safe-area-inset-top)) 10px 8px;display:flex;align-items:center;gap:10px;background:linear-gradient(#000c,#0000);font-family:Oswald;color:#ddd;font-size:12px}#bmTop b{font-family:Bangers;font-size:24px;letter-spacing:2px;color:#ffcc1a}#bmTop span{flex:1}#bmTop i{display:inline-block;width:10px;height:10px;border-radius:50%;margin:0 3px 0 8px;vertical-align:-1px;border:1px solid #000}#bmZ{position:absolute;right:10px;top:40%;display:flex;flex-direction:column;gap:8px}#bmCard{position:absolute;left:10px;right:10px;bottom:calc(12px + env(safe-area-inset-bottom));background:rgba(12,14,22,.94);border:2px solid #4dd8ff;border-radius:12px;padding:10px 12px;color:#ddd;font-family:Oswald;display:none}#bmCard.on{display:block}#bmCard.main{border-color:#ffcc1a}#bmCard .mt{font-size:11px;letter-spacing:2px;color:#4dd8ff}#bmCard.main .mt{color:#ffcc1a}#bmCard b{font-family:Bangers;font-size:24px;letter-spacing:1px;color:#fff;display:block}#bmCard p{margin:4px 0 8px;font-size:13px;color:#bbc}#bmCard .row{display:flex;gap:8px;flex-wrap:wrap}.pml{max-height:62vh;overflow:auto;width:min(520px,92vw);display:flex;flex-direction:column;gap:6px;margin:6px 0}.pml h4{font-family:Bangers;letter-spacing:2px;margin:8px 0 2px;color:#ffcc1a}.pml h4.s{color:#4dd8ff}.pml button{display:flex;justify-content:space-between;align-items:center;text-align:left;width:100%;background:rgba(20,22,32,.9);border:1px solid #333a50;border-radius:8px;color:#eee;padding:8px 10px;font-family:Oswald;font-size:14px}.pml button small{color:#99a;font-size:11px;display:block}.pml button em{font-style:normal;color:#9dff00;font-size:12px;white-space:nowrap;margin-left:8px}
+#mm{pointer-events:auto;cursor:pointer;width:96px;height:96px;border:2px solid rgba(255,255,255,.25);border-radius:6px;background:#0b0d14;display:block;margin-top:6px}
 #camB{pointer-events:auto;font-size:16px;background:rgba(8,9,16,.8);color:#fff;border:1px solid rgba(255,255,255,.3);border-radius:5px;width:34px;height:34px;padding:0}body:not(.r3on) #camB{display:none}
 #keyB{pointer-events:auto;font-size:16px;background:rgba(8,9,16,.8);color:#fff;border:1px solid rgba(255,255,255,.3);border-radius:5px;width:34px;height:34px;padding:0}#keyB.off{background:rgba(200,30,40,.85)}
 #radioB.on{position:relative}#radioB.on:before,#radioB.on:after{content:'';position:absolute;left:50%;top:50%;width:30px;height:30px;margin:-15px 0 0 -15px;border:2px solid rgba(255,204,26,.8);border-radius:50%;animation:rw 1.4s ease-out infinite;pointer-events:none}#radioB.on:after{animation-delay:.7s}
@@ -315,7 +316,7 @@ body.two.driving #twHint{display:flex}
 <div id="scr-levels" class="scr dim"></div>
 <div id="scr-comics" class="scr dim"></div>
 <div id="scr-comic" class="scr"></div>
-<div id="scr-pause" class="scr dim" style="justify-content:center"></div>
+<div id="scr-pause" class="scr dim" style="justify-content:center"></div><div id="bmap"><canvas id="bmc"></canvas><div id="bmTop"><b>MAPA MISÍ</b><span><i style="background:#ffcc1a"></i>hlavní <i style="background:#4dd8ff"></i>vedlejší <i style="background:#777"></i>zamčená</span><button class="btn sm dark" id="bmX">✖</button></div><div id="bmZ"><button class="btn sm dark" data-bz="1.6">＋</button><button class="btn sm dark" data-bz=".625">－</button><button class="btn sm dark" id="bmMe">◎</button></div><div id="bmCard"></div></div>
 <div id="scr-result" class="scr dim"></div>
 
 <div id="cpit"><canvas id="cpc" width="768" height="1152" style="position:absolute;inset:0;width:100%;height:100%"></canvas></div><div id="hud">
@@ -562,7 +563,7 @@ const CARS=[
  {id:'supka',name:'Toyda Supka',desc:'Legenda nočních závodů. Kdo ji má, ten je někdo.',col:'#e8a21a',max:488,acc:292,turn:3.0,grip:6,hp:110,price:400000,L:44,Wd:21,spoiler:1},
 ];
 for(const c of CARS)if(c.soon&&SAVE.owned.includes(c.id)){SAVE.owned=SAVE.owned.filter(x=>x!==c.id);if(c.price)SAVE.cash+=c.price;if(SAVE.car===c.id)SAVE.car='civka'}
-const GANG={col:'#0c0c0e',max:296,acc:255,turn:2.9,grip:6.2,hp:70,L:46,Wd:22,gang:1};
+const GANG={col:'#0c0c0e',max:296,acc:255,turn:2.9,grip:6.2,hp:150,L:46,Wd:22,gang:1};
 const POLICE={col:'#e9ecef',max:300,acc:265,turn:2.85,grip:6.1,hp:75,L:44,Wd:20,police:1};
 const CIV_COLS=['#7a2222','#3a4a6a','#bdbdbd','#5a5a5a','#7a6a3a','#2f5f5a','#6a3a6a','#9a9a8a'];
 const RIVALS=[{n:'Kája',c:'#9dff00'},{n:'Pepa Turbo',c:'#ff2ec8'},{n:'Denis',c:'#ff7a00'},{n:'Žanetka',c:'#00e5ff'}];
@@ -573,22 +574,48 @@ const HEROES={
 function chaseSpec(B,p){const m=p&&p.st?p.st.max:0,a=p&&p.st?p.st.acc*(p.st.drv||1):0;return Object.assign({},B,{max:Math.max(B.max,m*.96),acc:Math.max(B.acc,a*1.08)})}
 const LEVELS=[
  {id:'utek',name:'Útěk po loupeži',sub:'Noc • liják • policie',type:'chase',route:[[4,25],[2,25],[2,22],[4,22],[4,23],[7,23],[7,21],[8,21],[8,19],[3,19],[3,17]],
-  pol:.5,blocks:[[2,.55],[5,.5],[7,.6],[8,.5]],reward:{resp:150,cash:50000},dark:.84,rain:true,from:'Mírové náměstí',to:'Úkryt v Neštěmicích',comic:'utek'},
+  pol:.5,blocks:[[2,.55],[5,.5],[7,.6],[8,.5]],reward:{resp:150,cash:50000},dark:.84,rain:true,from:'Mírové náměstí',to:'Úkryt v Neštěmicích',comic:'utek',main:1},
  {id:'zavod',name:'Závod s místníma',sub:'Předlice → Střekov • 5 aut',type:'race',route:[[1,20],[3,20],[3,22],[1,22],[1,25],[4,25],[4,23],[9,23],[9,25],[7,25],[7,28]],
-  reward:{resp:200,cash:25000},dark:.78,rain:false,from:'Předlice',to:'Střekov',comic:'zavod',req:'utek'},
+  reward:{resp:200,cash:25000},dark:.78,rain:false,from:'Předlice',to:'Střekov',comic:'zavod',req:'utek',main:1},
  {id:'kuryr',name:'Kurýr do Předlic',sub:'Náhradní díly na čas',type:'chase',cops:0,time:58,route:[[2,24],[2,27],[4,27],[4,29],[1,29]],reward:{resp:80,cash:30000},dark:.8,rain:true,comic:'kuryr'},
  {id:'pepa',name:'Ožralej Pepa',sub:'Odvez ho domů, než se pobleje',type:'chase',cops:0,time:84,gentle:1,route:[[3,25],[4,25],[9,25],[9,21],[10,21],[10,18]],reward:{resp:80,cash:35000},dark:.82,rain:false,comic:'pepa'},
  {id:'cetky',name:'Zlatý řetězy',sub:'Rozstřílej 8 aut gangu za 110 s',type:'chase',cops:0,gang:8,kills:8,time:110,route:[[1,13],[4,13],[4,16],[1,16],[1,13]],reward:{resp:150,cash:60000},dark:.84,rain:true,comic:'cetky'},
  {id:'fizl',name:'Gang na Klíši',sub:'Sejmi 7 aut gangu',type:'chase',pol:0,kills:7,time:140,route:[[1,18],[1,12],[3,12],[3,10],[0,10]],reward:{resp:150,cash:55000},dark:.84,rain:true,comic:'fizl'},
  {id:'chem',name:'Útěk z Chemičky',sub:'Přes most v Povrlech • gang v zádech',pol:.25,type:'chase',route:[[2,16],[2,14],[9,14],[9,11],[7,11]],blocks:[[1,.5],[2,.6]],reward:{resp:180,cash:70000},dark:.86,rain:true,comic:'chem'},
  {id:'mosty',name:'Závod přes mosty',sub:'Tři mosty • 5 aut',type:'race',route:[[4,14],[8,14],[8,19],[4,19],[4,23],[9,23],[9,26]],reward:{resp:200,cash:40000},dark:.78,rain:false,comic:'mosty'},
- {id:'l3',name:'Děčín',sub:'Zatím zavřeno',soon:true,at:[6,4]},
+ // ---- hlavní linka (pokračování) ----
+ {id:'dluh',main:1,req:'zavod',name:'Kájův dluh',sub:'Krásné Březno • sejmi 5 aut gangu',type:'chase',cops:0,gang:5,kills:5,time:130,reward:{resp:220,cash:80000},dark:.84,rain:false,story:'Kája chce zpátky prachy ze závodu. Pět černejch kár čeká v Krásným Březně. Ukaž mu, čí je to rajón.',win:'Kájovi došly káry. Dluh je smazanej.'},
+ {id:'labe',main:1,req:'dluh',name:'Útěk po Labi',sub:'Střekov → Kojetice • policie v patách',type:'chase',pol:.75,blocks:[[2,.5],[4,.6]],reward:{resp:240,cash:90000},dark:.86,rain:true,story:'Někdo nás prásknul. Policajti čekaj u Střekova. Jeď podél řeky až do Kojetic a ztrať se jim.',win:'Policajti zůstali u řeky. Jsi čistej.'},
+ {id:'konvoj',main:1,req:'labe',name:'Konvoj do Povrl',sub:'Veselí → Povrly → Roztoky • gang tě honí',type:'chase',pol:0,time:120,reward:{resp:260,cash:100000},dark:.82,rain:false,story:'Vezeš auto pro Šrota. Kájovi kluci to vědí a pověsí se ti na zadek. Dojeď do Roztok celej.',win:'Šrot má svoje auto. Gang zůstal v příkopu.'},
+ {id:'dobkovice',main:1,req:'konvoj',name:'Závod nad Labem',sub:'Těchlovice → Nebočady • 5 aut',type:'race',reward:{resp:280,cash:110000},dark:.78,rain:false,story:'Děčínský kluci tě vyzvali. Kdo první dojede do Nebočad, ten bere silnici i respekt.'},
+ {id:'boletice',main:1,req:'dobkovice',name:'Boletická past',sub:'Nebočady → Křešice • sejmi 6 aut gangu',type:'chase',cops:0,gang:6,kills:6,time:140,reward:{resp:300,cash:130000},dark:.86,rain:true,story:'Kája si zavolal posily z Děčína. Šest kár na silnici u Boletic. Je to past — tak ji otoč.',win:'Past sklapla. Jenže na ně.'},
+ {id:'decin',main:1,req:'boletice',name:'Poslední jízda',sub:'Děčín • Podmokly → Nové Město',type:'chase',pol:.5,blocks:[[2,.55],[4,.5],[6,.6]],reward:{resp:400,cash:200000},dark:.88,rain:true,story:'Finále. Kája utíká přes Děčín a za tebou jede půlka policie severu. Dojeď na Nový Město a ukonči to.',win:'Kája skončil. Sever ví, kdo tu jezdí nejlíp.'},
+ // ---- vedlejší mise po čtvrtích ----
+ {id:'taxi',name:'Noční taxík',sub:'Severní Terasa → Klíše • jemně',type:'chase',cops:0,time:95,gentle:1,reward:{resp:60,cash:25000},dark:.84,rain:true,story:'Paní z Terasy potřebuje k doktorovi na Klíši. Jeď opatrně — každá rána bolí.',win:'Paní dala dýško a bábovku.',lose:'Paní vystoupila a šla pěšky.'},
+ {id:'pizza',name:'Pizza na Bukov',sub:'Střed → Bukov • na čas',type:'chase',cops:0,time:100,reward:{resp:60,cash:22000},dark:.8,rain:false,story:'Pizzerie nestíhá. Dvanáct krabic na Bukov, dokud jsou teplý.',win:'Pizza dorazila teplá.'},
+ {id:'vanov',req:'zavod',name:'Sprint Střekov–Brná',sub:'Střekov-lázně → Brná • 5 aut',type:'race',reward:{resp:120,cash:40000},dark:.78,rain:false,story:'Podél řeky se jezdí na plný. Ze Střekova až do Brný, bez brzd.'},
+ {id:'trmice',req:'zavod',name:'Gang v Trmicích',sub:'Sejmi 6 aut gangu',type:'chase',pol:0,kills:6,time:130,reward:{resp:140,cash:50000},dark:.84,rain:true,story:'V Trmicích se usadila Kájova parta. Vyčisti ulice.',win:'Trmice jsou zase klidný.'},
+ {id:'dobetice',req:'dluh',name:'Sprint na Mlýniště',sub:'Nový Svět → Mlýniště • 5 aut',type:'race',reward:{resp:140,cash:50000},dark:.78,rain:false,story:'Z Novýho Světa nahoru do kopců. Zatáčky, kopec a cíl u starýho mlýna.'},
+ {id:'svadov',req:'dluh',name:'Balík do Olešnice',sub:'Olšinky → Svádov → Olešnice • na čas',type:'chase',cops:0,time:80,reward:{resp:100,cash:45000},dark:.8,rain:true,story:'Náhradní díly pro dílnu v Olešnici. Majitel čeká s otevřenou garáží.',win:'Díly jsou v dílně.'},
+ {id:'chuderov',req:'labe',name:'Kopec Chuderov',sub:'Severní Terasa → Žežice • 5 aut',type:'race',reward:{resp:150,cash:60000},dark:.78,rain:false,story:'Do kopce a z kopce. Na Chuderov se jezdí jen s dobrou spojkou.'},
+ {id:'valtirov',req:'labe',name:'Útěk z Valtířova',sub:'Valtířov → Velké Březno → Olešnice • policie',type:'chase',pol:.8,reward:{resp:150,cash:60000},dark:.86,rain:true,story:'Hlídka tě poznala u Valtířova. Ujeď jim přes Velký Březno až do Olešnice.',win:'Policajti ztratili stopu.'},
+ {id:'zezice',req:'konvoj',name:'Černý káry v Žežicích',sub:'Sejmi 6 aut gangu',type:'chase',pol:0,kills:6,time:130,reward:{resp:160,cash:65000},dark:.86,rain:false,story:'Gang si udělal sklad za Žežicema. Nech jim tam jen šrot.',win:'Sklad gangu je prázdnej.'},
+ {id:'techlovice',req:'konvoj',name:'Závod na Těchlovice',sub:'Malé Březno → Těchlovice • 5 aut',type:'race',reward:{resp:160,cash:65000},dark:.78,rain:false,story:'Úzká silnice nad Labem. Kdo zaváhá, ten je v řece.'},
+ {id:'hostice',req:'dobkovice',name:'Rychlá zásilka',sub:'Jakuby → Hoštice • na čas',type:'chase',cops:0,time:75,reward:{resp:120,cash:55000},dark:.8,rain:true,story:'Obálka pro notáře v Hošticích. Musí tam být dřív než on.',win:'Notář si ani nevšiml, že jsi spěchal.'},
+ {id:'podmokly',req:'boletice',name:'Gang z Podmokel',sub:'Děčín • sejmi 7 aut gangu',type:'chase',pol:0,kills:7,time:150,reward:{resp:200,cash:90000},dark:.86,rain:true,story:'Děčínská odnož Kájova gangu. Sedm aut kolem Podmokel.',win:'Podmokly jsou volný.'},
+ {id:'zamek',req:'boletice',name:'Okolo zámku',sub:'Děčín • zámek → Nad Slovankou • 5 aut',type:'race',reward:{resp:200,cash:90000},dark:.78,rain:false,story:'Noční závod pod zámkem. Dlažba klouže, diváci řvou.'},
+ {id:'babicka',req:'boletice',name:'Babička na Ploučnici',sub:'Děčín • jemně a včas',type:'chase',cops:0,time:110,gentle:1,reward:{resp:120,cash:60000},dark:.84,rain:true,story:'Babička jede na návštěvu a veze dort. Ani drobeček nesmí spadnout.',win:'Dort přežil. Babička taky.',lose:'Dort je na stropě. Babička je naštvaná.'},
 ];
 // real-map mission routes (lat,lon waypoints, routed along real streets)
 const GEOR={utek:[[50.6611,14.0384],[50.6668,14.0590],[50.6718,14.0860]],zavod:[[50.6605,13.9990],[50.6600,14.0250],[50.6577,14.0472],[50.6480,14.0560]],
  kuryr:[[50.6600,14.0410],[50.6600,14.0200],[50.6590,14.0010]],pepa:[[50.6590,14.0440],[50.6640,14.0560],[50.6690,14.0700]],cetky:[[50.6690,14.0190],[50.6780,14.0100],[50.6850,14.0060]],
- fizl:[[50.6700,14.0280],[50.6760,14.0330],[50.6830,14.0390]],chem:[[50.6580,14.0230],[50.6577,14.0472],[50.6470,14.0530],[50.6380,14.0520]],mosty:[[50.6604,14.0230],[50.6577,14.0472],[50.6470,14.0550],[50.6620,14.0420],[50.6690,14.0700]],l3:[[50.7790,14.2120]]};
-function prepLevels(){if(!U0)return;for(const L of LEVELS){const g=GEOR[L.id];if(!g)continue;const W=g.map(q=>roadNear(GEO(q[0],q[1]).x,GEO(q[0],q[1]).y));L.pos=W[0];if(L.soon||W.length<2){L.route=null;continue}
+ fizl:[[50.6700,14.0280],[50.6760,14.0330],[50.6830,14.0390]],chem:[[50.6580,14.0230],[50.6577,14.0472],[50.6470,14.0530],[50.6380,14.0520]],mosty:[[50.6604,14.0230],[50.6577,14.0472],[50.6470,14.0550],[50.6620,14.0420],[50.6690,14.0700]]};
+// newer missions: waypoints by OSM place names
+const GEOP={dluh:['Krásné Březno','Krásné Březno-Pod vyhlídkou','Neštěmice'],labe:['Střekov-Karla IV.','Nová Ves','Kojetice'],konvoj:['Veselí','Neštědice','Povrly','Roztoky'],dobkovice:['Těchlovice','Jakuby','Nebočady'],
+ boletice:['Nebočady','Boletice nad Labem','Křešice'],decin:['Podmokly','Staré Město','Nové Město'],taxi:['Severní Terasa','U polikliniky','Klíše'],pizza:['Ústí nad Labem-střed','Klíše','Bukov'],vanov:['Střekov-lázně','Brná'],
+ trmice:['Trmice','Na dolech','Předlice','Západní nádraží'],dobetice:['Krásné Březno-Nový Svět','Mlýniště (Leinisch)'],svadov:['Olšinky','Svádov','Olešnice'],chuderov:['Severní Terasa','Chuderov','Žežice'],
+ valtirov:['Valtířov','Velké Březno','Olešnice'],zezice:['Krásné Březno-Pod vyhlídkou','Žežice'],techlovice:['Malé Březno','Přerov','Těchlovice'],hostice:['Jakuby','Nebočady','Hoštice nad Labem'],podmokly:['Letná','Želenice','Rozbělesy'],zamek:['Zámek','U nemocnice','Nad Slovankou'],babicka:['Staré Město','U Ploučnice','U cihelny']};
+function prepLevels(){if(!U0)return;for(const L of LEVELS){const g=GEOR[L.id],gp=GEOP[L.id];if(!g&&!gp)continue;const W=g?g.map(q=>roadNear(GEO(q[0],q[1]).x,GEO(q[0],q[1]).y)):gp.map(n=>{const q=U0.places.find(z=>z[0]===n);return roadNear(q[2]*T,q[3]*T)});L.pos=W[0];if(L.soon||W.length<2){L.route=null;continue}
   let pts=[];for(let i=1;i<W.length;i++){const seg=navPath(W[i-1].x,W[i-1].y,W[i].x,W[i].y);if(!seg)continue;pts=pts.concat(pts.length?seg.slice(1):seg)}L.route=pts.length>1?pts:null;
   if(L.blocks)L.blocksF=L.blocks.map((b,i)=>[.25+i*.18,0]);if(L.id==='chem')L.sub='Přes Mariánský most • gang v zádech';if(L.id==='utek')L.to='Úkryt v Krásném Březně'}}
 function geoRoute(g){const W=g.map(q=>roadNear(GEO(q[0],q[1]).x,GEO(q[0],q[1]).y));let pts=[];for(let i=1;i<W.length;i++){const seg=navPath(W[i-1].x,W[i-1].y,W[i].x,W[i].y);if(seg)pts=pts.concat(pts.length?seg.slice(1):seg)}return pts.length>1?pts:[W[0],{x:W[0].x+200,y:W[0].y}]}
@@ -861,7 +888,7 @@ function spawnCivRG(w){const gx=(w.cam.x/(16*T))|0,gy=(w.cam.y/(16*T))|0;for(let
   c.path=pts.slice(k);c.pi=0;c.rgE=E;c.rgEnd=dir>0?E.b:E.a;w.cars.push(c);return c}}
 function civExtend(c){for(let n=0;n<2;n++){const q=rgNext(c.rgEnd,c.rgE);if(!q)return;const pts=lanePts(q.E,q.dir);c.path=c.path.concat(pts.slice(1));c.rgE=q.E;c.rgEnd=q.dir>0?q.E.b:q.E.a}if(c.pi>40){c.path=c.path.slice(c.pi-1);c.pi=1}}
 function civTarget(c){const P=c.path[c.pi];const dx=P.i-P.pi,dy=P.j-P.pj;return{x:IX(P.i)-dy*24,y:IX(P.j)+dx*24}}
-const CIV_TYPES=[{id:'traffic_kombi',L:[40,44],W:19},{id:'traffic_taxi',L:[40,44],W:19},{id:'traffic_sedan',L:[40,44],W:19},{id:'traffic_sedan',L:[40,44],W:19},{id:'traffic_mini',L:[32,35],W:17},{id:'traffic_mini',L:[32,35],W:17},{id:'traffic_mpv',L:[41,45],W:20},{id:'traffic_jeep',L:[42,46],W:21,hp:1.6},{id:'traffic_truck',L:[60,66],W:24,sp:.8,hp:3}];
+const CIV_TYPES=[{id:'traffic_kombi',L:[40,44],W:19},{id:'traffic_taxi',L:[40,44],W:19},{id:'traffic_sedan',L:[40,44],W:19},{id:'traffic_sedan',L:[40,44],W:19},{id:'traffic_mini',L:[32,35],W:17},{id:'traffic_mini',L:[32,35],W:17},{id:'traffic_mpv',L:[41,45],W:20},{id:'traffic_jeep',L:[42,46],W:21,hp:2.4},{id:'traffic_truck',L:[60,66],W:24,sp:.8,hp:3}];
 function spawnCiv(w){if(RG)return spawnCivRG(w);for(let tries=0;tries<12;tries++){const ci=Math.round((w.cam.x/T-1)/8),cj=Math.round((w.cam.y/T-1)/8),i=clamp(ci+Math.floor(rr(-3,4)),0,NX-1),j=clamp(cj+Math.floor(rr(-3,4)),0,NY-1);const x=IX(i),y=IX(j),d=Math.hypot(x-w.cam.x,y-w.cam.y);if(d<520||d>1300)continue;if(w.cars.some(c=>Math.hypot(c.x-x,c.y-y)<120))continue;
   const o=pick(nbrs(i,j));const CT=pick(CIV_TYPES),c=makeCar({col:pick(CIV_COLS),max:rr(120,160)*(CT.sp||1),acc:130*(CT.sp||1),turn:2.4,grip:6,hp:40*(CT.hp||1),L:rr(CT.L[0],CT.L[1]),Wd:CT.W},x,y,0,'civ');c.aiId=CT.id;const dx=o[0]-i,dy=o[1]-j;c.a=Math.atan2(dy,dx);c.x-=dy*24;c.y+=dx*24;c.v=60;c.vx=Math.cos(c.a)*60;c.vy=Math.sin(c.a)*60;
   c.path=[{i:o[0],j:o[1],pi:i,pj:j}].concat(civPath(o[0],o[1],i,j,6));c.pi=0;w.cars.push(c);return c}}
@@ -891,7 +918,7 @@ function say(p,arr,t){p.say=pick(arr);p.sayL=t||2.2}
 /* ---- particles ---- */
 function part(w,o){if(w.parts.length>420)return;w.parts.push(Object.assign({x:0,y:0,vx:0,vy:0,life:1,max:1,type:'spark',size:3,z:0,col:'#ffd27a'},o))}
 function sparks(w,x,y,n,col){for(let i=0;i<n;i++){const a=R()*6.28,s=rr(60,260);part(w,{x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,life:rr(.15,.4),max:.4,type:'spark',col:col||'#ffd27a'})}}
-function explode(w,x,y){Snd.boom();for(let i=0;i<26;i++){const a=R()*6.28,s=rr(30,200);part(w,{x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,life:rr(.4,1),max:1,type:'fire',size:rr(6,14)})}for(let i=0;i<14;i++)part(w,{x:x+rr(-10,10),y:y+rr(-10,10),vx:rr(-20,20),vy:rr(-20,20),life:rr(1.5,3),max:3,type:'smoke',size:rr(10,20),z:.02});w.flashL={x,y,t:.5}}
+function explode(w,x,y){Snd.boom();(w.booms||(w.booms=[])).push({x,y,t:0});if(w.booms.length>8)w.booms.shift();sparks(w,x,y,28,'#ffb347');if(w.player&&Math.hypot(x-w.player.x,y-w.player.y)<700)shakeA=Math.max(shakeA,7);for(let i=0;i<48;i++){const a=R()*6.28,s=rr(30,200);part(w,{x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,life:rr(.4,1),max:1,type:'fire',size:rr(6,14)})}for(let i=0;i<14;i++)part(w,{x:x+rr(-10,10),y:y+rr(-10,10),vx:rr(-20,20),vy:rr(-20,20),life:rr(1.5,3),max:3,type:'smoke',size:rr(10,20),z:.02});w.flashL={x,y,t:.5}}
 
 /* ---------------- PHYSICS ---------------- */
 function carPhysics(w,c,ctl,dt){
@@ -1342,7 +1369,7 @@ function renderGarage(){const el=$('scr-garage'),c=gList()[gIdx],own=SAVE.owned.
 function tuneSet(id,k,v){if(k==='reset'){delete SAVE.tune[id]}else{const t=SAVE.tune[id]||(SAVE.tune[id]={});t[k]=(k==='wing'||k==='low'||k==='tint'||k==='armor')?Number(v):(k==='dice'||k==='amb'||k==='roof'||k==='hood'||k==='mir')&&v==='off'?0:v}save();const sc=$('scr-garage').scrollTop;renderGarage();$('scr-garage').scrollTop=sc}
 const replayPrice=L=>Math.round((L.reward?L.reward.cash:20000)*.3/1000)*1000;
 function showLevels(){const el=$('scr-levels');let h=topBar('MISE')+`<div class="cards">`;const open=LEVELS.filter(L=>!SAVE.done[L.id]),done=LEVELS.filter(L=>SAVE.done[L.id]);const SL=SAVE.sel&&LEVELS.find(L=>L.id===SAVE.sel);h+=SL?`<div class="card" style="border-color:#ffcc1a"><div class="role">Vybraná mise</div><h3>${SL.name}</h3><p style="color:#aab">Navigace vede jen k této misi.</p><button class="btn sm dark" data-unsel="1">✖ NEBRAT ŽÁDNOU MISI</button></div>`:`<div class="card"><div class="role">Volná jízda</div><p style="color:#aab">Žádná mise není vybraná — ve městě nic nebliká. Klepni na misi, kterou chceš vzít.</p></div>`;
-  for(const L of open){const locked=!!L.soon;const d=SAVE.done[L.id];
+  for(const L of open){const locked=!!L.soon||!!(L.req&&!SAVE.done[L.req]);const d=SAVE.done[L.id];
     h+=`<div class="card lvl" ${locked?'':`data-lvl="${L.id}"`}><div class="role">${L.type==='chase'?'Útěk před policií':L.type==='race'?'Pouliční závod':'Příběh'}</div><h3>${L.name}</h3><div class="meta">${L.sub}</div>
     ${!locked?(SAVE.sel===L.id?'<p style="color:#9dff00">✔ VYBRÁNO — jeď podle žluté čáry</p>':'<p style="color:#9dff00">▶ VZÍT MISI</p>'):''}${L.reward?`<p>Odměna: <b style="color:#ffcc1a">${L.reward.cash.toLocaleString('cs-CZ')} Kč</b>${L.type==='race'?' (jen za 1. místo)':''}</p>`:''}${d?'<p style="color:#3ddc84">✔ Splněno</p>':''}
     ${locked?`<div class="lock">🔒<br>${L.soon?'ZAVŘENO':'Nejdřív dokonči: '+LEVELS.find(x=>x.id===L.req).name}</div>`:''}</div>`}
@@ -1391,9 +1418,9 @@ function renderPanel(){const el=$('scr-comic'),C=comic.C,P=C.panels[comic.i];
 function finishComic(){const d=comic.done;comic=null;if(d)d();else showComics()}
 
 /* ---------------- FREE ROAM ---------------- */
-function mainMission(){return LEVELS.find(L=>!L.soon&&L.comic&&['utek','zavod'].includes(L.id)&&!SAVE.done[L.id]&&(!L.req||SAVE.done[L.req]))||null}
+function mainMission(){return LEVELS.find(L=>L.main&&!SAVE.done[L.id]&&(!L.req||SAVE.done[L.req]))||null}
 function MARKERS(){const mm=mainMission(),sel=(typeof RS!=='undefined'&&RS&&RS.target)||SAVE.sel;return LEVELS.filter(L=>!L.soon&&(!SAVE.done[L.id]||SAVE.replay===L.id)&&(!L.req||SAVE.done[L.req])).map(L=>{const r=LPOS(L);return{L,x:r.x,y:r.y,open:!L.soon,main:L===mm,sel:L.id===sel}})}
-function mStory(L){const C=COMICS[L.comic];if(!C)return L.sub||'';for(const P of C.panels){if(P.cap)return P.cap;if(P.bubs&&P.bubs[0])return '„'+P.bubs[0].t+'“'}return L.sub||''}
+function mStory(L){const C=COMICS[L.comic];if(!C)return L.story||L.sub||'';for(const P of C.panels){if(P.cap)return P.cap;if(P.bubs&&P.bubs[0])return '„'+P.bubs[0].t+'“'}return L.sub||''}
 let mPopId=null;function mPop(m){const el=$('mpop');if(!m){if(mPopId){el.classList.remove('on');mPopId=null}return}if(mPopId===m.L.id)return;mPopId=m.L.id;const L=m.L;
   el.innerHTML=`<div class="mt">${m.main?'★ HLAVNÍ MISE':'VEDLEJŠÍ MISE'}${SAVE.done[L.id]?' • ZNOVU':''}</div><b>${L.name}</b><p>${mStory(L)}</p><div class="mr">${L.reward?'Odměna '+L.reward.cash.toLocaleString('cs-CZ')+' Kč':''}<button class="btn sm" id="mGo">VZÍT MISI ▶</button></div>`;el.className='on'+(m.main?' main':'');$('mGo').onclick=e=>{e.stopPropagation();Snd.click();mPop(null);if(SAVE.sel!==L.id){SAVE.sel=null;save()}enterMission(L)};Snd.click()}
 function startRoam(at,target){AN.ev('roam_start');hideAll();G.engineOff=false;$('keyB').classList.remove('off');$('keyB').style.display='';at=at||HOME;const w=newWorld({rain:R()<.45,dark:.8,civMax:20,pedMax:60});G.world=w;G.mode='roam';G.level=null;
@@ -1439,8 +1466,8 @@ function enterMission(L){if(NAV.to&&NAV.to.id==='m:'+L.id)NAV.to=null;G.mode='en
 let RS=null;
 function startLevel(id){const L=LEVELS.find(l=>l.id===id);G.level=L;AN.ev('mission_start',{mission:id});
   const go=()=>beginRace(L);
-  if(!SAVE.seenIntro){SAVE.seenIntro=true;save();playComic('intro',()=>playComic(L.comic,go));return}
-  playComic(L.comic,go)}
+  if(!SAVE.seenIntro){SAVE.seenIntro=true;save();playComic('intro',()=>COMICS[L.comic]?playComic(L.comic,go):go());return}
+  if(!COMICS[L.comic]){go();return}playComic(L.comic,go)}
 function beginRace(L){hideAll();const w=newWorld({rain:L.rain,dark:L.dark,civMax:L.type==='race'?12:16,pedMax:42});setRoute(w,L.route);G.world=w;G.mode='race';
   const car=CARS.find(c=>c.id===SAVE.car)||CARS[0];const spec=Object.assign({},car);const lucie=SAVE.hero==='lucie';
   const r0=w.route[0],r1=w.route[1],a=Math.atan2(r1.y-r0.y,r1.x-r0.x),ca=Math.cos(a),sa=Math.sin(a),nx=-sa,ny=ca;
@@ -1642,11 +1669,11 @@ function updateRace(dt){const w=G.world,p=w.player,L=RS.L;RS.t+=dt;
   if(L.type==='race')for(const c of w.cars){if(c.kind!=='rival')continue;const gap=c.s-p.s;c.speedMul=gap>900?.97:gap<-350?1.12:1.02;if(!c.finished&&(c.atFinish||c.seg>=w.route.length-2&&c.segT>=.97)){c.finished=RS.t;RS.finishOrder.push(c.name)}if(c.finished){c.path=null}}
   // end checks
   if(!RS.end&&RS.count<=0&&L.time&&RS.t>L.time){endRace(false,'ČAS VYPRŠEL',L.kills?'Nestihl jsi to. Gang se ti směje.':'Pozdě. Kšeft je fuč.')}
-  if(!RS.end&&L.kills&&RS.kills>=L.kills){endRace(true,'HOTOVO!',L.gang?'Zlatý řetězy jsou tvoje. Gang je na šrotu.':'Sedm aut gangu na šrotu. Klíše je zase klidná.')}
-  if(!RS.end&&L.gentle&&p.hp<p.maxhp*.55){endRace(false,'POBLIL SE!','Pepa ti to pozvracel celý. Smrdí to až do Děčína.')}
+  if(!RS.end&&L.kills&&RS.kills>=L.kills){endRace(true,'HOTOVO!',L.win||(L.gang?'Zlatý řetězy jsou tvoje. Gang je na šrotu.':'Sedm aut gangu na šrotu. Klíše je zase klidná.'))}
+  if(!RS.end&&L.gentle&&p.hp<p.maxhp*.55){endRace(false,L.lose?'KONEC JÍZDY':'POBLIL SE!',L.lose||'Pepa ti to pozvracel celý. Smrdí to až do Děčína.')}
   if(!RS.end){if(p.hp<=0){p.hp=0;explode(w,p.x,p.y);endRace(false,'AUTO NA ŠROT','Tvoje kára to nedala. Zkus to znova.')}
     else if(!L.kills&&(p.atFinish||(p.seg>=w.route.length-2&&p.segT>=.97))){p.finished=RS.t;
-      if(L.type==='chase')endRace(true,L.gentle?'PEPA JE DOMA!':L.cops===0?'DORUČENO!':'KŠEFT JE TVŮJ!',L.gentle?'Pepa ti dal pusu a usnul na schodech.':L.cops===0?'Balík je tam. Nikdo se neptal.':'Ujel jsi policajtům.');
+      if(L.type==='chase')endRace(true,L.win?(L.cops===0||L.pol===0?'DORUČENO!':'UJEL JSI!'):L.gentle?'PEPA JE DOMA!':L.cops===0?'DORUČENO!':'KŠEFT JE TVŮJ!',L.win?L.win:L.gentle?'Pepa ti dal pusu a usnul na schodech.':L.cops===0?'Balík je tam. Nikdo se neptal.':'Ujel jsi policajtům.');
       else{const place=RS.finishOrder.length+1;if(place===1)endRace(true,'PRVNÍ!','Předlice ti tleskaj. Prachy a respekt jsou tvoje.');else endRace(false,place+'. MÍSTO','Bere jen první. Místní se ti smějou.')}}
     else if(L.type==='race'&&RS.finishOrder.length>=4)endRace(false,'POSLEDNÍ','Všichni už sou v cíli, vole.')}
   if(RS.end){RS.end-=dt;if(RS.end<=0){if(RS.win&&COMICS['end_'+RS.L.id]){G.mode='entering';DJ.stop();Snd.engine(0,false);Snd.siren(0,0);$('hud').classList.remove('on');$('ctrl').classList.remove('on');playComic('end_'+RS.L.id,showResult)}else showResult()}}
@@ -1675,7 +1702,7 @@ function drawMinimapBg(){if(mmBuilt)return;mmBuilt=true;const g=mmBg.getContext(
 function drawMinimap(){const g=$('mm').getContext('2d'),w=G.world,p=w.player||w.cam,k=2.2,W=192;g.setTransform(1,0,0,1,0,0);g.fillStyle='#10200f';g.fillRect(0,0,W,W);
   const sx=p.x*MS-W/2/k,sy=p.y*MS-W/2/k;g.save();g.scale(k,k);g.translate(-sx,-sy);g.drawImage(mmBg,0,0);if(NAV.path&&NAV.path.length>1){g.strokeStyle='#ffcc1a';g.lineWidth=2.6;g.lineJoin='round';g.lineCap='round';g.beginPath();NAV.path.forEach((q,i)=>i?g.lineTo(q.x*MS,q.y*MS):g.moveTo(q.x*MS,q.y*MS));g.stroke()}
   if(w.route){g.strokeStyle='#ffcc1a';g.lineWidth=3/k*2;g.beginPath();w.route.forEach((q,i)=>i?g.lineTo(q.x*MS,q.y*MS):g.moveTo(q.x*MS,q.y*MS));g.stroke();const f=w.route[w.route.length-1];g.fillStyle='#fff';g.fillRect(f.x*MS-4/k*2,f.y*MS-4/k*2,8/k*2,8/k*2)}
-  if(G.mode==='roam')for(const m of MARKERS()){g.fillStyle=m.open?'#ffcc1a':'#888';g.beginPath();g.arc(m.x*MS,m.y*MS,7/k*2,0,7);g.fill()}
+  if(G.mode==='roam')for(const m of MARKERS()){g.fillStyle=m.main||m.sel?'#ffcc1a':'#4dd8ff';g.strokeStyle='#000';g.lineWidth=1.2;g.beginPath();g.arc(m.x*MS,m.y*MS,(m.main?8:6.5)/k*2,0,7);g.fill();g.stroke()}
   for(const c of w.cars){if(c.kind==='civ'||c===w.player)continue;g.fillStyle=c.kind==='police'?(Math.floor(w.t*6)%2?'#ff2a3a':'#3a7dff'):c.col;g.beginPath();g.arc(c.x*MS,c.y*MS,4/k*2,0,7);g.fill()}
   g.restore();
   if(G.mode==='roam'&&RS&&RS.arrowTo){const m=RS.arrowTo,dx=(m.x-p.x)*MS*k,dy=(m.y-p.y)*MS*k;if(Math.abs(dx)>W/2-8||Math.abs(dy)>W/2-8){const sc=(W/2-10)/Math.max(Math.abs(dx),Math.abs(dy));g.fillStyle='#ffcc1a';g.beginPath();g.arc(W/2+dx*sc,W/2+dy*sc,7,0,7);g.fill()}}
@@ -1692,8 +1719,8 @@ for(const b of document.querySelectorAll('#ctrl button')){let k=b.dataset.k;
   b.addEventListener('pointerdown',on);b.addEventListener('pointerup',off);b.addEventListener('pointercancel',off);b.addEventListener('lostpointercapture',off);b.addEventListener('contextmenu',e=>e.preventDefault())}
 function pause(){if(!(G.mode==='race'||G.mode==='roam')||(RS&&RS.end))return;DJ.stop();G.prevMode=G.mode;G.mode='paused';Snd.engine(0,false);Snd.siren(0,0);const el=$('scr-pause');
   el.innerHTML=`<h2 class="logo"><span class="b" style="font-size:44px">PAUZA</span></h2><button class="btn" id="pRes">POKRAČOVAT</button>${G.prevMode==='race'?`<button class="btn dark" data-lvlgo="${RS.L.id}">ZNOVU</button><button class="btn dark" data-go="city">VZDÁT → MĚSTO</button>`:''}
-  <div class="toggle">Grafika: <button class="btn sm dark" id="pGfx">${typeof R3!=='undefined'&&R3.q==='high'?'VYSOKÁ':'NÍZKÁ'}</button></div><div class="toggle">Řízení: <button class="btn sm dark" id="pSteer">${{wheel:'VOLANT',arrows:'ŠIPKY',drag:'JOYSTICK',buttons:'TLAČÍTKA'}[SAVE.steer]||'TLAČÍTKA'}</button></div><div class="toggle">Auto-plyn (mobil): <button class="btn sm dark" id="pAuto">${SAVE.autoGas?'ZAP':'VYP'}</button></div><button class="btn sm dark" id="pTod">${TODN[SAVE.tod||'night']}</button><button class="btn sm dark" id="pRadio">📻 ${STY[Snd.style]?STY[Snd.style].name:'RÁDIO'}</button><button class="btn sm dark" id="pMute">${SAVE.mute?'🔇 Zvuk vyp':'🔊 Zvuk zap'}</button><button class="btn pink" data-go="menu">MENU</button>`;
-  $('ctrl').classList.remove('on');el.classList.add('on');
+  <div class="toggle">Grafika: <button class="btn sm dark" id="pGfx">${typeof R3!=='undefined'&&R3.q==='high'?'VYSOKÁ':'NÍZKÁ'}</button></div><div class="toggle">Řízení: <button class="btn sm dark" id="pSteer">${{wheel:'VOLANT',arrows:'ŠIPKY',drag:'JOYSTICK',buttons:'TLAČÍTKA'}[SAVE.steer]||'TLAČÍTKA'}</button></div><div class="toggle">Auto-plyn (mobil): <button class="btn sm dark" id="pAuto">${SAVE.autoGas?'ZAP':'VYP'}</button></div><button class="btn sm dark" id="pTod">${TODN[SAVE.tod||'night']}</button><button class="btn sm dark" id="pRadio">📻 ${STY[Snd.style]?STY[Snd.style].name:'RÁDIO'}</button><button class="btn sm dark" id="pMute">${SAVE.mute?'🔇 Zvuk vyp':'🔊 Zvuk zap'}</button><button class="btn dark" id="pMap">🗺 MAPA MISÍ</button><button class="btn dark" id="pMis">📋 VŠECHNY MISE</button><button class="btn pink" data-go="menu">MENU</button>`;
+  $('ctrl').classList.remove('on');el.classList.add('on');$('pMap').onclick=()=>openBigMap();$('pMis').onclick=()=>pauseMissions();
   $('pRes').onclick=()=>{el.classList.remove('on');if(isTouch)$('ctrl').classList.add('on');G.mode=G.prevMode;G.keys={}};
   $('pAuto').onclick=()=>{SAVE.autoGas=!SAVE.autoGas;save();$('pAuto').textContent=SAVE.autoGas?'ZAP':'VYP';$('kU').style.display=SAVE.autoGas?'none':'block'};
   $('pGfx').onclick=()=>{if(typeof R3==='undefined'||!R3.ok)return;R3.q=R3.q==='high'?'low':'high';SAVE.gfx=R3.q;save();R3.renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,R3.q==='high'?(isTouch?1.5:2):1));R3.renderer.setSize(VW,VH,false);R3.setupComposer();$('pGfx').textContent=R3.q==='high'?'VYSOKÁ':'NÍZKÁ'};
@@ -1701,6 +1728,33 @@ function pause(){if(!(G.mode==='race'||G.mode==='roam')||(RS&&RS.end))return;DJ.
   $('pRadio').onclick=()=>nextRadio();$('pTod').onclick=nextTod;
   $('pMute').onclick=()=>{Snd.setMute(!SAVE.mute);$('pMute').textContent=SAVE.mute?'🔇 Zvuk vyp':'🔊 Zvuk zap'}}
 $('pauseB').addEventListener('click',pause);
+function misLabel(L){return L.type==='race'?'🏁 závod':L.kills?'💥 gang':L.gentle?'🫶 jemně':L.cops===0?'📦 kurýr':'🚨 útěk'}
+function takeMission(L){$('scr-pause').classList.remove('on');$('bmap').classList.remove('on');if(SAVE.done[L.id])SAVE.replay=L.id;if(SAVE.sel!==L.id){SAVE.sel=null;save()}if(isTouch)$('ctrl').classList.add('on');G.keys={};mPop(null);G.mode=G.prevMode||G.mode;enterMission(L)}
+function pauseMissions(){const el=$('scr-pause');const row=L=>{const lk=L.req&&!SAVE.done[L.req];return`<button data-pm="${L.id}"><span>${L.name}<small>${misLabel(L)} • ${L.sub}${lk?' • 🔒 odemčeno z pauzy':''}</small></span><em>${SAVE.done[L.id]?'✔ ZNOVU':'▶ HRÁT'}</em></button>`};
+  el.innerHTML=`<h2 class="logo"><span class="b" style="font-size:36px">MISE</span></h2><div class="pml"><h4>★ HLAVNÍ PŘÍBĚH</h4>${LEVELS.filter(L=>L.main).map(row).join('')}<h4 class="s">VEDLEJŠÍ MISE</h4>${LEVELS.filter(L=>!L.main&&!L.soon).map(row).join('')}</div><button class="btn" id="pmBack">◀ ZPĚT</button>`;
+  $('pmBack').onclick=()=>{el.classList.remove('on');G.mode=G.prevMode;pause()};
+  el.querySelectorAll('[data-pm]').forEach(b=>b.onclick=()=>{Snd.click();takeMission(LEVELS.find(L=>L.id===b.dataset.pm))})}
+const BM={z:.35,cx:0,cy:0,sel:null};
+function bmMarks(){return LEVELS.filter(L=>!L.soon&&L.pos).map(L=>({L,x:L.pos.x,y:L.pos.y,main:!!L.main,lock:!!(L.req&&!SAVE.done[L.req]),done:!!SAVE.done[L.id]}))}
+function openBigMap(){if(!G.world)return;drawMinimapBg();const p=G.world.player||G.world.cam;BM.cx=p.x*MS;BM.cy=p.y*MS;BM.sel=null;$('bmCard').classList.remove('on');$('bmap').classList.add('on');if(G.mode==='roam'||G.mode==='race'){G.prevMode=G.mode;G.mode='paused';Snd.engine(0,false);$('ctrl').classList.remove('on')}drawBigMap()}
+function closeBigMap(){$('bmap').classList.remove('on');if(!$('scr-pause').classList.contains('on')&&G.mode==='paused'){G.mode=G.prevMode;G.keys={};if(isTouch)$('ctrl').classList.add('on')}}
+function drawBigMap(){const cv=$('bmc'),dpr=Math.min(2,devicePixelRatio||1),W=cv.clientWidth,H=cv.clientHeight;if(cv.width!==W*dpr){cv.width=W*dpr;cv.height=H*dpr}const g=cv.getContext('2d');g.setTransform(dpr,0,0,dpr,0,0);g.fillStyle='#10200f';g.fillRect(0,0,W,H);
+  g.save();g.translate(W/2,H/2);g.scale(BM.z,BM.z);g.translate(-BM.cx,-BM.cy);g.imageSmoothingEnabled=BM.z<1;g.drawImage(mmBg,0,0);g.restore();const S=(x,y)=>[W/2+(x*MS-BM.cx)*BM.z,H/2+(y*MS-BM.cy)*BM.z];
+  g.font='700 12px Oswald, sans-serif';g.textAlign='center';
+  for(const m of bmMarks()){const[x,y]=S(m.x,m.y);if(x<-40||y<-40||x>W+40||y>H+40)continue;const r=m.main?11:8.5;g.globalAlpha=m.done?.55:1;g.fillStyle=m.lock?'#777':m.main?'#ffcc1a':'#4dd8ff';g.strokeStyle=BM.sel===m.L?'#fff':'#000';g.lineWidth=BM.sel===m.L?3:2;g.beginPath();g.arc(x,y,r,0,7);g.fill();g.stroke();g.fillStyle='#111';g.fillText(m.lock?'🔒':m.done?'✔':m.main?'★':'',x,y+4);
+   if(BM.z>.25||m.main){g.lineWidth=3;g.strokeStyle='rgba(0,0,0,.85)';g.fillStyle='#fff';g.strokeText(m.L.name,x,y-r-5);g.fillText(m.L.name,x,y-r-5)}g.globalAlpha=1}
+  const p=G.world&&(G.world.player||G.world.cam);if(p){const[x,y]=S(p.x,p.y);g.save();g.translate(x,y);g.rotate(p.a||0);g.fillStyle='#fff';g.strokeStyle='#000';g.lineWidth=2;g.beginPath();g.moveTo(11,0);g.lineTo(-8,-8);g.lineTo(-4,0);g.lineTo(-8,8);g.closePath();g.fill();g.stroke();g.restore()}}
+function bmCard(L){BM.sel=L;const c=$('bmCard'),lk=L.req&&!SAVE.done[L.req];c.className='on'+(L.main?' main':'');c.innerHTML=`<div class="mt">${L.main?'★ HLAVNÍ MISE':'VEDLEJŠÍ MISE'} • ${misLabel(L)}${SAVE.done[L.id]?' • ✔ SPLNĚNO':''}</div><b>${L.name}</b><p>${mStory(L)}${lk?`<br><span style="color:#ff9">🔒 Normálně se odemkne po misi „${LEVELS.find(x=>x.id===L.req).name}“.</span>`:''}</p><div class="row"><button class="btn sm" id="bmGo">▶ HRÁT HNED</button>${G.prevMode==='roam'&&!lk?'<button class="btn sm dark" id="bmNav">🧭 NAVIGOVAT</button>':''}<span style="margin-left:auto;align-self:center;color:#ffcc1a">${L.reward.cash.toLocaleString('cs-CZ')} Kč</span></div>`;
+  $('bmGo').onclick=()=>{Snd.click();takeMission(L)};if($('bmNav'))$('bmNav').onclick=()=>{Snd.click();SAVE.sel=L.id;save();if(RS)RS.target=L.id;NAV.to={id:'m:'+L.id,x:L.pos.x,y:L.pos.y,name:L.name};NAV.key='';$('scr-pause').classList.remove('on');closeBigMap()};drawBigMap()}
+{const cv=$('bmc');let pts=new Map(),moved=0,pd=0;
+ cv.addEventListener('pointerdown',e=>{pts.set(e.pointerId,{x:e.clientX,y:e.clientY});moved=0;if(pts.size===2){const[a,b]=[...pts.values()];pd=Math.hypot(a.x-b.x,a.y-b.y)}try{cv.setPointerCapture(e.pointerId)}catch(_){}});
+ cv.addEventListener('pointermove',e=>{const o=pts.get(e.pointerId);if(!o)return;if(pts.size===1){BM.cx-=(e.clientX-o.x)/BM.z;BM.cy-=(e.clientY-o.y)/BM.z;moved+=Math.abs(e.clientX-o.x)+Math.abs(e.clientY-o.y)}o.x=e.clientX;o.y=e.clientY;if(pts.size===2){const[a,b]=[...pts.values()],d=Math.hypot(a.x-b.x,a.y-b.y);if(pd)BM.z=clamp(BM.z*d/pd,.08,3);pd=d;moved=99}drawBigMap()});
+ const up=e=>{if(pts.size===1&&moved<8){const r=cv.getBoundingClientRect(),X=e.clientX-r.left,Y=e.clientY-r.top;let best=null,bd=26;for(const m of bmMarks()){const x=r.width/2+(m.x*MS-BM.cx)*BM.z,y=r.height/2+(m.y*MS-BM.cy)*BM.z,d=Math.hypot(x-X,y-Y);if(d<bd){bd=d;best=m}}if(best)bmCard(best.L);else{BM.sel=null;$('bmCard').classList.remove('on');drawBigMap()}}pts.delete(e.pointerId)};
+ cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',e=>pts.delete(e.pointerId));
+ cv.addEventListener('wheel',e=>{e.preventDefault();BM.z=clamp(BM.z*(e.deltaY<0?1.2:.83),.08,3);drawBigMap()},{passive:false});
+ document.querySelectorAll('[data-bz]').forEach(b=>b.onclick=()=>{BM.z=clamp(BM.z*Number(b.dataset.bz),.08,3);drawBigMap()});
+ $('bmMe').onclick=()=>{const p=G.world&&(G.world.player||G.world.cam);if(p){BM.cx=p.x*MS;BM.cy=p.y*MS;drawBigMap()}};$('bmX').onclick=()=>{Snd.click();closeBigMap()};
+ $('mm').addEventListener('click',()=>{if(G.mode==='roam'||G.mode==='race'){Snd.click();openBigMap()}});addEventListener('keydown',e=>{if(e.code==='KeyM'&&(G.mode==='roam'||G.mode==='race'))openBigMap()})}
 function radioList(){const md=G.mode==='paused'?G.prevMode:G.mode;const L=md==='race'&&G.level?[G.level.type==='chase'?'chase':'race']:[];return L.concat(RADIO)}
 function nextRadio(){const L=radioList();let i=L.indexOf(Snd.style);const n=L[(i+1)%L.length];Snd.setStyle(n);AN.ev('radio_change',{station:n});if(n==='off')DJ.stop();else DJ.stationId(n);{const md=G.mode==='paused'?G.prevMode:G.mode;if(n==='labe')Snd.lead=md!=='race'&&md!=='roam';if(md!=='race'){SAVE.radio=n;save()}}if($('mRadio'))$('mRadio').textContent='📻 '+STY[n].name;if($('pRadio'))$('pRadio').textContent='📻 '+STY[n].name;const a=$('area');a.textContent='📻 '+STY[n].name;a.classList.add('on');areaT=2.5}
 $('radioB').addEventListener('click',nextRadio);$('mRadio').addEventListener('click',()=>{Snd.unlock();nextRadio()});$('mTod').addEventListener('click',nextTod);
@@ -1839,7 +1893,7 @@ import {KTX2Loader} from './vendor/jsm/loaders/KTX2Loader.js';
 import {MeshoptDecoder} from './vendor/jsm/libs/meshopt_decoder.module.js';
 import * as SkeletonUtils from './vendor/jsm/utils/SkeletonUtils.js';
 window.THREE=THREE;window.TADD={EffectComposer,RenderPass,UnrealBloomPass,OutputPass,GLTFLoader,RGBELoader,SkeletonUtils,DRACOLoader,KTX2Loader,MeshoptDecoder};
-const s=document.createElement('script');s.src='r3.js?v=103';document.body.appendChild(s);
+const s=document.createElement('script');s.src='r3.js?v=105';document.body.appendChild(s);
 </script>
 </body>
 </html>
