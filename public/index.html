@@ -192,7 +192,7 @@ body.cock #nav{top:calc(max(10px,env(safe-area-inset-top)) + 120px)}
 .hbox{background:rgba(8,9,16,.72);border:1px solid rgba(255,255,255,.12);border-radius:5px;padding:6px 9px;font-size:13px;font-weight:600;letter-spacing:1px}
 .hbox .big{font-family:Bangers;font-size:26px;letter-spacing:1.5px;color:var(--acc);line-height:1}
 .hp{width:120px;height:9px;background:#2b0f15;border-radius:2px;overflow:hidden;margin-top:3px}
-.hp i{display:block;height:100%;background:linear-gradient(90deg,#ff2e63,#ffcc1a);width:100%}
+.hp i{display:block;height:100%;background:linear-gradient(90deg,#ff2e63,#ffcc1a);width:100%}#hArmW{display:none;height:6px;background:#0c1a2b}#hArmW.on{display:block}#hArmW i{background:linear-gradient(90deg,#2a7dff,#7fe3ff)}.stat.arm .bar i{background:linear-gradient(90deg,#2a7dff,#7fe3ff)!important}
 #bmap{position:fixed;inset:0;z-index:60;background:#0b0d14;display:none;touch-action:none}#bmap.on{display:block}#bmc{position:absolute;inset:0;width:100%;height:100%}#bmTop{position:absolute;left:0;right:0;top:0;padding:calc(8px + env(safe-area-inset-top)) 10px 8px;display:flex;align-items:center;gap:10px;background:linear-gradient(#000c,#0000);font-family:Oswald;color:#ddd;font-size:12px}#bmTop b{font-family:Bangers;font-size:24px;letter-spacing:2px;color:#ffcc1a}#bmTop span{flex:1}#bmTop i{display:inline-block;width:10px;height:10px;border-radius:50%;margin:0 3px 0 8px;vertical-align:-1px;border:1px solid #000}#bmZ{position:absolute;right:10px;top:40%;display:flex;flex-direction:column;gap:8px}#bmCard{position:absolute;left:10px;right:10px;bottom:calc(12px + env(safe-area-inset-bottom));background:rgba(12,14,22,.94);border:2px solid #4dd8ff;border-radius:12px;padding:10px 12px;color:#ddd;font-family:Oswald;display:none}#bmCard.on{display:block}#bmCard.main{border-color:#ffcc1a}#bmCard .mt{font-size:11px;letter-spacing:2px;color:#4dd8ff}#bmCard.main .mt{color:#ffcc1a}#bmCard b{font-family:Bangers;font-size:24px;letter-spacing:1px;color:#fff;display:block}#bmCard p{margin:4px 0 8px;font-size:13px;color:#bbc}#bmCard .row{display:flex;gap:8px;flex-wrap:wrap}.pml{max-height:62vh;overflow:auto;width:min(520px,92vw);display:flex;flex-direction:column;gap:6px;margin:6px 0}.pml h4{font-family:Bangers;letter-spacing:2px;margin:8px 0 2px;color:#ffcc1a}.pml h4.s{color:#4dd8ff}.pml button{display:flex;justify-content:space-between;align-items:center;text-align:left;width:100%;background:rgba(20,22,32,.9);border:1px solid #333a50;border-radius:8px;color:#eee;padding:8px 10px;font-family:Oswald;font-size:14px}.pml button small{color:#99a;font-size:11px;display:block}.pml button em{font-style:normal;color:#9dff00;font-size:12px;white-space:nowrap;margin-left:8px}
 #mm{pointer-events:auto;cursor:pointer;width:96px;height:96px;border:2px solid rgba(255,255,255,.25);border-radius:6px;background:#0b0d14;display:block;margin-top:6px}
 #camB{pointer-events:auto;font-size:16px;background:rgba(8,9,16,.8);color:#fff;border:1px solid rgba(255,255,255,.3);border-radius:5px;width:34px;height:34px;padding:0}body:not(.r3on) #camB{display:none}
@@ -322,7 +322,7 @@ body.two.driving #twHint{display:flex}
 
 <div id="cpit"><canvas id="cpc" width="768" height="1152" style="position:absolute;inset:0;width:100%;height:100%"></canvas></div><div id="hud">
   <div class="hrow">
-    <div class="hbox"><div id="hLabel">AUTO</div><div class="hp"><i id="hHp"></i></div><div style="margin-top:4px"><span id="hResp" style="color:var(--acc)">0</span> Kč</div></div>
+    <div class="hbox"><div id="hLabel">AUTO</div><div class="hp"><i id="hHp"></i></div><div class="hp arm" id="hArmW"><i id="hArm"></i></div><div style="margin-top:4px"><span id="hResp" style="color:var(--acc)">0</span> Kč</div></div>
     <div class="hbox" style="text-align:center"><div id="hMainL">POZICE</div><div class="big" id="hMain">1/5</div></div>
     <div style="display:flex;flex-direction:column;align-items:flex-end"><div style="display:flex;gap:4px"><button id="camB" title="Kamera (C)">🎥</button><button id="keyB" title="Motor (E)">🔑</button><button id="radioB" title="Rádio (R)">📻</button><button id="pauseB">II</button></div><canvas id="mm" width="192" height="192"></canvas></div>
   </div>
@@ -564,6 +564,7 @@ const CARS=[
  {id:'supka',name:'Toyda Supka',desc:'Legenda nočních závodů. Kdo ji má, ten je někdo.',col:'#e8a21a',max:488,acc:292,turn:3.0,grip:6,hp:110,price:400000,L:44,Wd:21,spoiler:1},
 ];
 for(const c of CARS)if(c.soon&&SAVE.owned.includes(c.id)){SAVE.owned=SAVE.owned.filter(x=>x!==c.id);if(c.price)SAVE.cash+=c.price;if(SAVE.car===c.id)SAVE.car='civka'}
+const BOSS={col:'#1a1208',max:300,acc:250,turn:2.6,grip:6.6,hp:420,L:58,Wd:27,gang:1,boss:1};
 const GANG={col:'#0c0c0e',max:296,acc:255,turn:2.9,grip:6.2,hp:150,L:46,Wd:22,gang:1};
 const POLICE={col:'#e9ecef',max:300,acc:265,turn:2.85,grip:6.1,hp:75,L:44,Wd:20,police:1};
 const CIV_COLS=['#7a2222','#3a4a6a','#bdbdbd','#5a5a5a','#7a6a3a','#2f5f5a','#6a3a6a','#9a9a8a'];
@@ -585,11 +586,11 @@ const LEVELS=[
  {id:'chem',name:'Útěk z Chemičky',sub:'Přes most v Povrlech • gang v zádech',pol:.25,type:'chase',route:[[2,16],[2,14],[9,14],[9,11],[7,11]],blocks:[[1,.5],[2,.6]],reward:{resp:180,cash:70000},dark:.86,rain:true,comic:'chem'},
  {id:'mosty',name:'Závod přes mosty',sub:'Tři mosty • 5 aut',type:'race',route:[[4,14],[8,14],[8,19],[4,19],[4,23],[9,23],[9,26]],reward:{resp:200,cash:40000},dark:.78,rain:false,comic:'mosty'},
  // ---- hlavní linka (pokračování) ----
- {id:'dluh',main:1,req:'zavod',name:'Kájův dluh',sub:'Krásné Březno • sejmi 5 aut gangu',type:'chase',cops:0,gang:5,kills:5,time:130,reward:{resp:220,cash:80000},dark:.84,rain:false,story:'Kája chce zpátky prachy ze závodu. Pět černejch kár čeká v Krásným Březně. Ukaž mu, čí je to rajón.',win:'Kájovi došly káry. Dluh je smazanej.'},
+ {id:'dluh',main:1,req:'zavod',boss:'Kájův obrněnec',bossArm:220,name:'Kájův dluh',sub:'Krásné Březno • 5 aut gangu + obrněný boss',type:'chase',cops:0,gang:5,kills:5,time:130,reward:{resp:220,cash:80000},dark:.84,rain:false,story:'Kája chce zpátky prachy ze závodu. Pět černejch kár čeká v Krásným Březně. Ukaž mu, čí je to rajón.',win:'Kájovi došly káry. Dluh je smazanej.'},
  {id:'labe',main:1,req:'dluh',name:'Útěk po Labi',sub:'Střekov → Kojetice • policie v patách',type:'chase',pol:.75,blocks:[[2,.5],[4,.6]],reward:{resp:240,cash:90000},dark:.86,rain:true,story:'Někdo nás prásknul. Policajti čekaj u Střekova. Jeď podél řeky až do Kojetic a ztrať se jim.',win:'Policajti zůstali u řeky. Jsi čistej.'},
  {id:'konvoj',main:1,req:'labe',name:'Konvoj do Povrl',sub:'Veselí → Povrly → Roztoky • gang tě honí',type:'chase',pol:0,time:120,reward:{resp:260,cash:100000},dark:.82,rain:false,story:'Vezeš auto pro Šrota. Kájovi kluci to vědí a pověsí se ti na zadek. Dojeď do Roztok celej.',win:'Šrot má svoje auto. Gang zůstal v příkopu.'},
  {id:'dobkovice',main:1,req:'konvoj',name:'Závod nad Labem',sub:'Těchlovice → Nebočady • 5 aut',type:'race',reward:{resp:280,cash:110000},dark:.78,rain:false,story:'Děčínský kluci tě vyzvali. Kdo první dojede do Nebočad, ten bere silnici i respekt.'},
- {id:'boletice',main:1,req:'dobkovice',name:'Boletická past',sub:'Nebočady → Křešice • sejmi 6 aut gangu',type:'chase',cops:0,gang:6,kills:6,time:140,reward:{resp:300,cash:130000},dark:.86,rain:true,story:'Kája si zavolal posily z Děčína. Šest kár na silnici u Boletic. Je to past — tak ji otoč.',win:'Past sklapla. Jenže na ně.'},
+ {id:'boletice',main:1,req:'dobkovice',boss:'Děčínský tank',bossArm:320,name:'Boletická past',sub:'Nebočady → Křešice • 6 aut gangu + boss',type:'chase',cops:0,gang:6,kills:6,time:140,reward:{resp:300,cash:130000},dark:.86,rain:true,story:'Kája si zavolal posily z Děčína. Šest kár na silnici u Boletic. Je to past — tak ji otoč.',win:'Past sklapla. Jenže na ně.'},
  {id:'decin',main:1,req:'boletice',name:'Poslední jízda',sub:'Děčín • Podmokly → Nové Město',type:'chase',pol:.5,blocks:[[2,.55],[4,.5],[6,.6]],reward:{resp:400,cash:200000},dark:.88,rain:true,story:'Finále. Kája utíká přes Děčín a za tebou jede půlka policie severu. Dojeď na Nový Město a ukonči to.',win:'Kája skončil. Sever ví, kdo tu jezdí nejlíp.'},
  // ---- vedlejší mise po čtvrtích ----
  {id:'taxi',name:'Noční taxík',sub:'Severní Terasa → Klíše • jemně',type:'chase',cops:0,time:95,gentle:1,reward:{resp:60,cash:25000},dark:.84,rain:true,story:'Paní z Terasy potřebuje k doktorovi na Klíši. Jeď opatrně — každá rána bolí.',win:'Paní dala dýško a bábovku.',lose:'Paní vystoupila a šla pěšky.'},
@@ -600,10 +601,10 @@ const LEVELS=[
  {id:'svadov',req:'dluh',name:'Balík do Olešnice',sub:'Olšinky → Svádov → Olešnice • na čas',type:'chase',cops:0,time:80,reward:{resp:100,cash:45000},dark:.8,rain:true,story:'Náhradní díly pro dílnu v Olešnici. Majitel čeká s otevřenou garáží.',win:'Díly jsou v dílně.'},
  {id:'chuderov',req:'labe',name:'Kopec Chuderov',sub:'Severní Terasa → Žežice • 5 aut',type:'race',reward:{resp:150,cash:60000},dark:.78,rain:false,story:'Do kopce a z kopce. Na Chuderov se jezdí jen s dobrou spojkou.'},
  {id:'valtirov',req:'labe',name:'Útěk z Valtířova',sub:'Valtířov → Velké Březno → Olešnice • policie',type:'chase',pol:.8,reward:{resp:150,cash:60000},dark:.86,rain:true,story:'Hlídka tě poznala u Valtířova. Ujeď jim přes Velký Březno až do Olešnice.',win:'Policajti ztratili stopu.'},
- {id:'zezice',req:'konvoj',name:'Černý káry v Žežicích',sub:'Sejmi 6 aut gangu',type:'chase',pol:0,kills:6,time:130,reward:{resp:160,cash:65000},dark:.86,rain:false,story:'Gang si udělal sklad za Žežicema. Nech jim tam jen šrot.',win:'Sklad gangu je prázdnej.'},
+ {id:'zezice',req:'konvoj',boss:'Skladník',bossArm:180,name:'Černý káry v Žežicích',sub:'Sejmi 6 aut gangu',type:'chase',pol:0,kills:6,time:130,reward:{resp:160,cash:65000},dark:.86,rain:false,story:'Gang si udělal sklad za Žežicema. Nech jim tam jen šrot.',win:'Sklad gangu je prázdnej.'},
  {id:'techlovice',req:'konvoj',name:'Závod na Těchlovice',sub:'Malé Březno → Těchlovice • 5 aut',type:'race',reward:{resp:160,cash:65000},dark:.78,rain:false,story:'Úzká silnice nad Labem. Kdo zaváhá, ten je v řece.'},
  {id:'hostice',req:'dobkovice',name:'Rychlá zásilka',sub:'Jakuby → Hoštice • na čas',type:'chase',cops:0,time:75,reward:{resp:120,cash:55000},dark:.8,rain:true,story:'Obálka pro notáře v Hošticích. Musí tam být dřív než on.',win:'Notář si ani nevšiml, že jsi spěchal.'},
- {id:'podmokly',req:'boletice',name:'Gang z Podmokel',sub:'Děčín • sejmi 7 aut gangu',type:'chase',pol:0,kills:7,time:150,reward:{resp:200,cash:90000},dark:.86,rain:true,story:'Děčínská odnož Kájova gangu. Sedm aut kolem Podmokel.',win:'Podmokly jsou volný.'},
+ {id:'podmokly',req:'boletice',boss:'Šéf z Podmokel',bossArm:280,name:'Gang z Podmokel',sub:'Děčín • 7 aut gangu + boss',type:'chase',pol:0,kills:7,time:150,reward:{resp:200,cash:90000},dark:.86,rain:true,story:'Děčínská odnož Kájova gangu. Sedm aut kolem Podmokel.',win:'Podmokly jsou volný.'},
  {id:'zamek',req:'boletice',name:'Okolo zámku',sub:'Děčín • zámek → Nad Slovankou • 5 aut',type:'race',reward:{resp:200,cash:90000},dark:.78,rain:false,story:'Noční závod pod zámkem. Dlažba klouže, diváci řvou.'},
  {id:'babicka',req:'boletice',name:'Babička na Ploučnici',sub:'Děčín • jemně a včas',type:'chase',cops:0,time:110,gentle:1,reward:{resp:120,cash:60000},dark:.84,rain:true,story:'Babička jede na návštěvu a veze dort. Ani drobeček nesmí spadnout.',win:'Dort přežil. Babička taky.',lose:'Dort je na stropě. Babička je naštvaná.'},
 ];
@@ -870,6 +871,11 @@ addEventListener('resize',resize);resize();
 
 /* ---------------- WORLD ---------------- */
 function newWorld(o){return Object.assign({cars:[],peds:[],parts:[],bullets:[],skids:[],glowQ:[],route:null,cum:null,total:0,night:true,rain:false,dark:.8,t:0,flash:0,player:null,civMax:6,pedMax:26,cam:{x:U0?HOME.x:IX(2),y:U0?HOME.y:IX(6)},zoom:1,follow:null,ambient:true,spawnT:0,thunderT:6},o||{})}
+const ARMOR={1:{hp:1.5,arm:.5,ram:1.4},2:{hp:2,arm:1,ram:1.8}};
+function armLvl(id){const t=SAVE.tune&&SAVE.tune[id];return t&&t.armor?Number(t.armor):0}
+function applyArmor(p,id){const A=ARMOR[armLvl(id)];if(!A)return;const b=p.st.hp;p.hp=p.maxhp=Math.round(b*A.hp);p.arm=p.maxArm=Math.round(b*A.arm);p.ramMul=A.ram}
+function hurt(c,d){if(c.arm>0){const a=Math.min(c.arm,d*.5);c.arm-=a;d=Math.max(0,d-a*2);if(c.arm<=0&&c===G.world?.player&&typeof floatMsg==='function')floatMsg('🛡 ŠTÍT ZNIČEN',1.2)}c.hp-=d}
+function garArmor(c){const A=ARMOR[armLvl(c.id)],hp=Math.round(c.hp*(A?A.hp:1)),ar=A?Math.round(c.hp*A.arm):0;return (A?`<div class="stat arm"><span>Pancíř</span><div class="bar"><i style="width:${clamp(ar/2,8,100)}%"></i></div></div>`:'')+`<div style="font:600 12px Oswald;color:#aab;margin:2px 0 6px">❤ Zdraví <b style="color:#ff6b8b">${hp}</b> • 🛡 Štít <b style="color:#6fd0ff">${ar||'—'}</b>${A?` • 💥 Náraz ×${A.ram}`:' • pancíř si kup v tuningu'}</div>`}
 function makeCar(spec,x,y,a,kind){return{x,y,a,v:0,vx:0,vy:0,kind,st:spec,col:spec.col,L:spec.L||42,Wd:spec.Wd||20,hp:spec.hp,maxhp:spec.hp,path:null,pi:0,seg:0,s:0,stuck:0,rev:0,brake:false,steer:0,alive:true,wreck:0,lane:0,boost:false,name:'',finished:0,parked:false,smokeT:0,hitT:0}}
 function setRoute(w,pts){w.route=pts.map(p=>p.x!==undefined?{x:p.x,y:p.y}:{x:IX(p[0]),y:IX(p[1]),i:p[0],j:p[1]});w.cum=[0];for(let i=1;i<w.route.length;i++)w.cum[i]=w.cum[i-1]+Math.hypot(w.route[i].x-w.route[i-1].x,w.route[i].y-w.route[i-1].y);w.total=w.cum[w.cum.length-1]}
 function routeAt(w,s){s=clamp(s,0,w.total);let i=0;while(i<w.route.length-2&&w.cum[i+1]<s)i++;const A=w.route[i],B=w.route[i+1],L=w.cum[i+1]-w.cum[i],t=L?(s-w.cum[i])/L:0;return{x:lerp(A.x,B.x,t),y:lerp(A.y,B.y,t),a:Math.atan2(B.y-A.y,B.x-A.x),i}}
@@ -959,13 +965,13 @@ function walls(w,c){const ca=Math.cos(c.a),sa=Math.sin(c.a),off=c.L*.28;let hit=
       if(d<.001){const e=[px-rx,rx+T-px,py-ry,ry+T-py],m=Math.min(...e),ix=e.indexOf(m);nx=ix===0?-1:ix===1?1:0;ny=ix===2?-1:ix===3?1:0;pen=r+m}else{nx=dx/d;ny=dy/d;pen=r-d}
       c.x+=nx*pen;c.y+=ny*pen;px+=nx*pen;py+=ny*pen;const vn=c.vx*nx+c.vy*ny;if(vn<0){c.vx-=vn*nx*1.08;c.vy-=vn*ny*1.08;if(-vn>hit){hit=-vn;hx=px-nx*r;hy=py-ny*r}}}}
   if(hit>8&&c===w.player&&Math.abs(c.v)>30){const ta=Math.atan2(c.vy,c.vx),d=wrapA(ta-c.a);if(Math.abs(d)<1.2&&c.v>0)c.a=wrapA(c.a+d*.35);c.v=Math.sign(c.v)*Math.min(Math.abs(c.v),Math.hypot(c.vx,c.vy)*1.02)}
-  if(hit>45){if(c===w.player)c.crashT=w.t;c.v*=hit>150?.45:.7;const dmg=(hit-45)*.045*(c.kind==='police'?1.3:c.kind==='player'?.45:1);c.hp-=dmg;sparks(w,hx,hy,Math.min(14,hit/15|0));if(c===w.player&&hit>70){Snd.crash(hit/600);shake(hit/60)}}}
+  if(hit>45){if(c===w.player)c.crashT=w.t;c.v*=hit>150?.45:.7;const dmg=(hit-45)*.045*(c.kind==='police'?1.3:c.kind==='player'?.45:1);hurt(c,dmg);sparks(w,hx,hy,Math.min(14,hit/15|0));if(c===w.player&&hit>70){Snd.crash(hit/600);shake(hit/60)}}}
 function carCollide(w){const C=w.cars;for(let i=0;i<C.length;i++)for(let j=i+1;j<C.length;j++){const a=C[i],b=C[j];if(Math.abs(a.x-b.x)>70||Math.abs(a.y-b.y)>70)continue;
   for(const ka of[-1,1])for(const kb of[-1,1]){const ax=a.x+Math.cos(a.a)*a.L*.25*ka,ay=a.y+Math.sin(a.a)*a.L*.25*ka,bx=b.x+Math.cos(b.a)*b.L*.25*kb,by=b.y+Math.sin(b.a)*b.L*.25*kb;
     const ra=a.Wd*.55,rb=b.Wd*.55;let dx=bx-ax,dy=by-ay,d=Math.hypot(dx,dy);if(d>=ra+rb||d<.01)continue;const nx=dx/d,ny=dy/d,pen=ra+rb-d;
     const ma=(a.parked||a.wreck)?6:1,mb=(b.parked||b.wreck)?6:1,sm=ma+mb;a.x-=nx*pen*mb/sm;a.y-=ny*pen*mb/sm;b.x+=nx*pen*ma/sm;b.y+=ny*pen*ma/sm;
     const vn=(b.vx-a.vx)*nx+(b.vy-a.vy)*ny;if(vn<0){const J=-(1.12)*vn/(1/ma+1/mb);a.vx-=J/ma*nx;a.vy-=J/ma*ny;b.vx+=J/mb*nx;b.vy+=J/mb*ny;
-      if(-vn>60){const dmg=-vn*.05;a.hp-=dmg*(a===w.player?.35:1);b.hp-=dmg*(b===w.player?.35:1);a.v*=.85;b.v*=.85;sparks(w,(ax+bx)/2,(ay+by)/2,6);if(a===w.player||b===w.player){Snd.crash(-vn/500);shake(-vn/70);const o=a===w.player?b:a;if(!o.say&&!o.wreck){o.say=pick(LINES[o.kind==='police'?'police':o.kind==='rival'?'rival':'car']);o.sayL=2;if(o.kind==='civ')Snd.honk()}}}}}}}
+      if(-vn>60){const dmg=-vn*.05;hurt(a,dmg*(a===w.player?.35:1)*(b.ramMul||1));hurt(b,dmg*(b===w.player?.35:1)*(a.ramMul||1));a.v*=.85;b.v*=.85;sparks(w,(ax+bx)/2,(ay+by)/2,6);if(a===w.player||b===w.player){Snd.crash(-vn/500);shake(-vn/70);const o=a===w.player?b:a;if(!o.say&&!o.wreck){o.say=pick(LINES[o.kind==='police'?'police':o.kind==='rival'?'rival':'car']);o.sayL=2;if(o.kind==='civ')Snd.honk()}}}}}}}
 
 /* ---------------- AI ---------------- */
 function ai(w,c,dt){
@@ -1010,7 +1016,7 @@ function updateWorld(w,dt,pctl){
   for(let i=w.bullets.length-1;i>=0;i--){const b=w.bullets[i];b.life-=dt;b.px=b.x;b.py=b.y;b.x+=b.vx*dt;b.y+=b.vy*dt;let dead=b.life<=0;
     if(isSolid(tileAt(Math.floor(b.x/T),Math.floor(b.y/T)))){if(R()<.35){for(let k=0;k<7;k++){const an=R()*6.28,sp=rr(30,110);part(w,{x:b.px,y:b.py,vx:Math.cos(an)*sp,vy:Math.sin(an)*sp,life:rr(.2,.45),max:.45,type:'fire',size:rr(3,6)})}w.flashL={x:b.px,y:b.py,t:.12};Snd.tone(160,40,.18,'sawtooth',.12)}const hx=isSolid(tileAt(Math.floor(b.x/T),Math.floor(b.py/T))),hy=isSolid(tileAt(Math.floor(b.px/T),Math.floor(b.y/T)));sparks(w,b.px,b.py,8,'#ffd27a');if(w.parts.length<400)for(let k=0;k<3;k++)part(w,{x:b.px,y:b.py,vx:rr(-30,30),vy:rr(-30,30),life:rr(.4,.8),max:.8,type:'smoke',size:rr(4,7),z:0,col:1});
       if(!b.rico&&R()<.3){b.rico=1;if(hx)b.vx=-b.vx*.6;if(hy||!hx)b.vy=-b.vy*.6;b.vx+=rr(-120,120);b.vy+=rr(-120,120);b.x=b.px;b.y=b.py;b.life=Math.min(b.life,.18);b.dmg*=.5;if(Math.random()<.5)Snd.tone(2400,900,.12,'square',.05)}else dead=true}
-    if(!dead)for(const c of w.cars){if(c===w.player||c.wreck)continue;if(Math.hypot(c.x-b.x,c.y-b.y)<c.L*.5){if(c.st&&c.st.police&&!c.st.gang){sparks(w,b.x,b.y,5,'#bcd4ff');dead=true;break}c.hp-=b.dmg;sparks(w,b.x,b.y,12,'#fff3b0');c.hitT=.12;w.flash=Math.max(w.flash||0,.08);dead=true;break}}
+    if(!dead)for(const c of w.cars){if(c===w.player||c.wreck)continue;if(Math.hypot(c.x-b.x,c.y-b.y)<c.L*.5){if(c.st&&c.st.police&&!c.st.gang){sparks(w,b.x,b.y,5,'#bcd4ff');dead=true;break}hurt(c,b.dmg);sparks(w,b.x,b.y,12,'#fff3b0');c.hitT=.12;w.flash=Math.max(w.flash||0,.08);dead=true;break}}
     if(dead)w.bullets.splice(i,1)}
   // peds
   if(w.peds.length<w.pedMax&&R()<.5)spawnPed(w,G.mode==='ambient'||G.mode==='promo'?760:1050,G.mode==='ambient'||G.mode==='promo'?1050:1450);
@@ -1335,7 +1341,7 @@ const TOPT=[{k:'p1',ic:'🎨',l:'Lak',price:3000,type:'sw'},{k:'pat',ic:'🐆',l
  {k:'rims',ic:'⚙️',l:'Styl disků',type:'ch',vals:[['stock','Originál',0],['five','5 paprsků',4000],['multi','10 paprsků',4500],['mesh','Síťové',6000],['deep','Hluboké',8000],['turbine','Turbína',7000]]},
  {k:'cal',ic:'🛑',l:'Brzdové třmeny',price:2500,type:'sw'},{k:'hl',ic:'🔦',l:'Přední světla',type:'ch',vals:[['stock','Originál',0],['slim','Štíhlé s očima',3500],['eye','Mandlové oči',4000],['oval','Oválky s očima',3000],['led','LED pásky',3500],['blade','Čepel',4500],['rings','Tři kroužky',4500],['angel','Angel eyes',5000],['popup','Výklopný',6500]]},
  {k:'grill',ic:'🛡️',l:'Mříže',type:'ch',vals:[['none','Bez',0],['front','Přední rám',4000],['both','Přední + zadní',6500]]},
- {k:'armor',ic:'🪖',l:'Pancíř',type:'ch',vals:[[0,'Bez',0],[1,'Pancéřování',15000]]},
+ {k:'armor',ic:'🪖',l:'Pancíř',type:'ch',vals:[[0,'Bez',0],[1,'Pancéřování (+50 % zdraví, štít)',15000],[2,'Těžký pancíř (2× zdraví, velký štít)',45000]]},
  {k:'spz',ic:'🔤',l:'SPZ',type:'ch',vals:[['def','Původní',0],['NEJLEPŠÍ ŠLAPKA','Nejlepší šlapka',800],['KOČKA','Kočka',800],['VOLE','Vole',800],['PIVO ZDARMA','Pivo zdarma',800],['TCHÝNĚ VEZE','Tchýně veze',800],['ŠNEK Z PŘEDLIC','Šnek z Předlic',800],['KRÁL ÚSTÍ','Král Ústí',800],['MÁŠ CIGO?','Máš cigo?',800],['DO PÁTKU VRÁTÍM','Do pátku vrátím',800],['LIDL 4X4','Lidl 4x4',800],['BRÁCHO','Brácho',800],['DÍTĚ NA PALUBĚ','Dítě na palubě',800]]},
  {k:'tl',ic:'🚨',l:'Zadní světla',type:'ch',vals:[['stock','Standard',0],['bar','LED pás',3000]]},
  {k:'roof',ic:'🏠',l:'Střecha (jiná barva)',price:2500,type:'sw'},{k:'hood',ic:'🔺',l:'Kapota (jiná barva)',price:2500,type:'sw'},{k:'mir',ic:'🪞',l:'Zrcátka',price:1200,type:'sw'},
@@ -1353,7 +1359,7 @@ function renderGarage(){const el=$('scr-garage'),c=gList()[gIdx],own=SAVE.owned.
   let btn=c.soon?`<button class="btn" disabled>🔒 BRZY</button>`:own?(SAVE.car===c.id?`<button class="btn" disabled>VYBRÁNO</button>`:`<button class="btn" data-pick="${c.id}">VYBRAT</button>`):`<button class="btn pink" data-buy="${c.id}" ${SAVE.cash<c.price?'disabled':''}>KOUPIT • ${c.price.toLocaleString('cs-CZ')} Kč</button>`;
   const Z=(typeof R3!=='undefined'&&R3.ZB&&R3.ZB[c.id])||{},T=Object.assign({},Z,SAVE.tune[c.id]||{}),hasW=(T.wing===1)||(T.wing!==0&&(Z.kit||[]).includes('wing'));
   let tn='';if(c.soon)tn=`<p class="note">Tohle vozidlo zatím nejde koupit. Brzy ve hře.</p>`;else if(!own)tn=`<p class="note">Tuning až po odemčení auta.</p>`;
-  else{const U=SAVE.unl[c.id]||[],all=U.includes('*'),has=k=>all||U.includes(k),pr=n=>n.toLocaleString('cs-CZ')+' Kč',cur={...T,wing:hasW?1:0,low:T.low?1:0,tint:T.tint?1:0,sw:T.sw||'sport',pat:T.pat||'none',grill:T.grill||'none',armor:T.armor?1:0,spz:T.spz||'def',roof:T.roof||'off',hood:T.hood||'off',mir:T.mir||'off',trim:T.trim||'body',rims:T.rims||'stock',hl:T.hl||'stock',tl:T.tl||'stock',cal:T.cal||'#2a2a2e',dice:T.dice||'off',amb:T.amb||'off',seat:T.seat||'#1a1a1e'};
+  else{const U=SAVE.unl[c.id]||[],all=U.includes('*'),has=k=>all||U.includes(k),pr=n=>n.toLocaleString('cs-CZ')+' Kč',cur={...T,wing:hasW?1:0,low:T.low?1:0,tint:T.tint?1:0,sw:T.sw||'sport',pat:T.pat||'none',grill:T.grill||'none',armor:T.armor||0,spz:T.spz||'def',roof:T.roof||'off',hood:T.hood||'off',mir:T.mir||'off',trim:T.trim||'body',rims:T.rims||'stock',hl:T.hl||'stock',tl:T.tl||'stock',cal:T.cal||'#2a2a2e',dice:T.dice||'off',amb:T.amb||'off',seat:T.seat||'#1a1a1e'};
    tn='<div class="tn"><p class="note" style="margin:4px 0 0">Kupuješ jednou pro tohle auto, pak měníš zdarma.</p>';
    for(const o of TOPT){const v0=cur[o.k];if(o.type==='sw'){const ok=!o.price||has(o.k);
      tn+=`<div class="tl">${o.ic} ${o.l} ${ok?'':`<button class="tbuy" data-tbuy="${o.k}" ${SAVE.cash<o.price?'disabled':''}>🔓 ${pr(o.price)}</button>`}</div><div class="sw ${ok?'':'lk'}">${o.vals.map(v=>`<button data-tune="${o.k}:${v}" class="${String(v0).toLowerCase()===v.toLowerCase()?'on':''}" style="background:${v==='off'?'repeating-linear-gradient(45deg,#222 0 4px,#444 4px 8px)':v}"></button>`).join('')}</div>`}
@@ -1363,7 +1369,7 @@ function renderGarage(){const el=$('scr-garage'),c=gList()[gIdx],own=SAVE.owned.
   const view=is3?`<div id="gstage">${own?'':'<span class="lk">🔒 ZAMČENO</span>'}${G.gIntro&&performance.now()-G.gIntro<500?`<div class="gcard" style="background-image:url(art/car_${c.id}.jpg?v=3)"><b>${c.name}</b><i>${c.desc}</i></div>`:''}</div>`:'';
   el.innerHTML=topBar('GARÁŽ')+view+`<div class="${is3?'gsheet':'card'}" style="width:100%;max-width:560px">${is3?'':`<div class="carview ${own?'':'locked'}" style="background-image:url(art/car_${c.id}.jpg?v=3)"></div>`}
   <div class="gnav"><button class="btn sm dark" data-gnav="-1">‹</button><div style="text-align:center"><h3>${c.name}</h3><div class="tag">${gIdx+1} / ${gList().length} ${own?'':'• ZAMČENO'}${is3?' • otoč prstem':''}</div></div><button class="btn sm dark" data-gnav="1">›</button></div>
-  <p>${c.desc}</p>${bar('Rychlost',(c.max-200)/1.6)}${bar('Zrychlení',(c.acc-150)/1.3)}${bar('Ovládání',(c.turn*c.grip-14)*2.6)}${bar('Odolnost',(c.hp-80)*2)}
+  <p>${c.desc}</p>${bar('Rychlost',(c.max-200)/1.6)}${bar('Zrychlení',(c.acc-150)/1.3)}${bar('Ovládání',(c.turn*c.grip-14)*2.6)}${bar('Odolnost',(c.hp-80)*2)}${garArmor(c)}
   <div style="text-align:center">${btn}</div>${tn}</div>`;
   if(is3){garage3D();const st=$('gstage');let lx=null;st.onpointerdown=e=>{lx=e.clientX;R3.gDrag=true;st.setPointerCapture(e.pointerId)};st.onpointermove=e=>{if(lx===null)return;const d=(e.clientX-lx)/120;R3.gYaw+=d;R3.gVel=d*30;lx=e.clientX};st.onpointerup=st.onpointercancel=()=>{lx=null;R3.gDrag=false}}
   else for(const k of CARS){const im=new Image();im.src='art/car_'+k.id+'.jpg'}}
@@ -1425,7 +1431,7 @@ function mStory(L){const C=COMICS[L.comic];if(!C)return L.story||L.sub||'';for(c
 let mPopId=null;function mPop(m){const el=$('mpop');if(!m){if(mPopId){el.classList.remove('on');mPopId=null}return}if(mPopId===m.L.id)return;mPopId=m.L.id;const L=m.L;
   el.innerHTML=`<div class="mt">${m.main?'★ HLAVNÍ MISE':'VEDLEJŠÍ MISE'}${SAVE.done[L.id]?' • ZNOVU':''}</div><b>${L.name}</b><p>${mStory(L)}</p><div class="mr">${L.reward?'Odměna '+L.reward.cash.toLocaleString('cs-CZ')+' Kč':''}<button class="btn sm" id="mGo">VZÍT MISI ▶</button></div>`;el.className='on'+(m.main?' main':'');$('mGo').onclick=e=>{e.stopPropagation();Snd.click();mPop(null);if(SAVE.sel!==L.id){SAVE.sel=null;save()}enterMission(L)};Snd.click()}
 function startRoam(at,target){AN.ev('roam_start');hideAll();G.engineOff=false;$('keyB').classList.remove('off');$('keyB').style.display='';at=at||HOME;const w=newWorld({rain:R()<.45,dark:.8,civMax:20,pedMax:60});G.world=w;G.mode='roam';G.level=null;
-  const car=CARS.find(c=>c.id===SAVE.car)||CARS[0];const p=makeCar(Object.assign({},car),at.x,at.y,at.a,'player');p.handMul=SAVE.hero==='lucie'?1.15:1;w.player=p;w.cars.push(p);
+  const car=CARS.find(c=>c.id===SAVE.car)||CARS[0];const p=makeCar(Object.assign({},car),at.x,at.y,at.a,'player');applyArmor(p,car.id);p.handMul=SAVE.hero==='lucie'?1.15:1;w.player=p;w.cars.push(p);
   w.cam={x:p.x,y:p.y};w.zoom=baseZoom();for(let i=0;i<18;i++)spawnCiv(w);for(let i=0;i<48;i++)spawnPed(w,40,520);
   RS={roam:true,nitro:.6,nitroFill:SAVE.hero==='lucie'?.098:.07,target:target||SAVE.sel||null,enterCD:2.5};G.roamDist='';
   $('hud').classList.add('on');if(isTouch)$('ctrl').classList.add('on');$('kU').style.display=SAVE.autoGas?'none':'block';$('kAt').textContent=SAVE.hero==='marek'?'PAL':'NITRO';$('kA').classList.remove('hot');
@@ -1459,7 +1465,7 @@ function updateRoam(dt){const w=G.world,p=w.player;
   RS.arrowTo=best;mPop(inM);
   $('obj').textContent=NAV.to?`🧭 ${NAV.to.name}`:best?`⭐ ${best.L.name} — jeď podle žluté navigace`:'Volná jízda • mise jsou kruhy ve městě';
   if(msgT>0){msgT-=dt;if(msgT<=0)$('center').textContent=''}
-  $('hHp').style.width=clamp(p.hp/p.maxhp*100,0,100)+'%';$('hResp').textContent=SAVE.cash.toLocaleString('cs-CZ');spdSet(Math.round(sp*.42));streetHud(p);
+  $('hHp').style.width=clamp(p.hp/p.maxhp*100,0,100)+'%';$('hArmW').classList.remove('on');$('hResp').textContent=SAVE.cash.toLocaleString('cs-CZ');spdSet(Math.round(sp*.42));streetHud(p);
   navUpdate(dt);drawMinimap()}
 function enterMission(L){if(NAV.to&&NAV.to.id==='m:'+L.id)NAV.to=null;G.mode='entering';Snd.engine(0,false);$('obj').classList.remove('on');$('area').classList.remove('on');$('hMain').classList.remove('small');startLevel(L.id)}
 
@@ -1474,16 +1480,16 @@ function beginRace(L){hideAll();const w=newWorld({rain:L.rain,dark:L.dark,civMax
   const r0=w.route[0],r1=w.route[1],a=Math.atan2(r1.y-r0.y,r1.x-r0.x),ca=Math.cos(a),sa=Math.sin(a),nx=-sa,ny=ca;
   RS={L,t:0,count:L.type==='race'?3.4:1.6,heat:0,over:false,nitro:.5,fireCD:0,kills:0,bust:0,end:0,finishOrder:[],spawnT:6,lucie,dmgMul:lucie?1:1.6,fireRate:lucie?.13:.085,heatPer:lucie?.075:.05,nitroFill:lucie?.098:.07};
   const startOff=40;
-  const p=makeCar(spec,r0.x+ca*startOff+nx*20,r0.y+sa*startOff+ny*20,a,'player');p.handMul=lucie?1.15:1;w.player=p;w.cars.push(p);p.name='TY';
+  const p=makeCar(spec,r0.x+ca*startOff+nx*20,r0.y+sa*startOff+ny*20,a,'player');applyArmor(p,SAVE.car);p.handMul=lucie?1.15:1;w.player=p;w.cars.push(p);p.name='TY';
   if(L.type==='race'){const slots=[[270,20],[270,-20],[200,20],[200,-20],[130,0]];let si=0;
     RIVALS.forEach((R0,i)=>{if(si===3)si++;const sl=slots[si++];
       const c=makeCar({col:R0.c,max:Math.max(262,spec.max*rr(1,1.06)),acc:Math.max(205,spec.acc*rr(1.25,1.4)),turn:2.9,grip:6.2,hp:100,L:42,Wd:20},r0.x+ca*sl[0]+nx*sl[1],r0.y+sa*sl[0]+ny*sl[1],a,'rival');c.name=R0.n;c.stripe='#111';c.aiId=['imprezka','supka','golfik','bavorak'][i%4];c.lane=sl[1]*.6;c.path=routePath(w,c.lane);c.pi=0;w.cars.push(c)});
     p.x=r0.x+ca*200-nx*20;p.y=r0.y+sa*200-ny*20;
   }else{
-    if(L.gang){for(let k=0;k<L.gang;k++){const q=routeAt(w,w.total*(k+.6)/(L.gang+.5));const c=makeCar(chaseSpec(GANG,p),q.x,q.y,q.a+Math.PI*(k%2),'police');c.v=80;c.gang=1;c.seg=q.i;c.s=w.total*(k+.6)/(L.gang+.5);w.cars.push(c)}}
+    if(L.gang){for(let k=0;k<L.gang;k++){const q=routeAt(w,w.total*(k+.6)/(L.gang+.5));const c=makeCar(chaseSpec(GANG,p),q.x,q.y,q.a+Math.PI*(k%2),'police');c.v=80;c.gang=1;c.seg=q.i;c.s=w.total*(k+.6)/(L.gang+.5);w.cars.push(c)}}if(L.boss){const q=routeAt(w,w.total*.55);const c=makeCar(chaseSpec(BOSS,p),q.x,q.y,q.a+Math.PI,'police');c.gang=1;c.boss=1;c.name=L.boss;c.arm=c.maxArm=L.bossArm||200;c.ramMul=1.6;c.v=60;c.seg=q.i;c.s=w.total*.55;w.cars.push(c)}
     if(L.cops!==0)for(let k=0;k<2;k++){const isPol=k<Math.round(2*(L.pol??.35));const c=makeCar(chaseSpec(isPol?POLICE:GANG,p),r0.x-ca*(260+k*80)+nx*(k?-18:18),r0.y-sa*(260+k*80)+ny*(k?-18:18),a,'police');if(!isPol)c.gang=1;c.v=120;w.cars.push(c)}
     for(const b of(L.blocksF||L.blocks||[])){const s=L.blocksF?w.total*b[0]:w.cum[b[0]]+(w.cum[b[0]+1]-w.cum[b[0]])*b[1];const q=routeAt(w,s);for(const side of[-1,1]){const c=makeCar(chaseSpec(POLICE,p),q.x-Math.sin(q.a)*side*24,q.y+Math.cos(q.a)*side*24,q.a+Math.PI/2+side*.4,'police');c.parked=true;c.seg=q.i;c.s=s;w.cars.push(c)}}
-    w.onKill=c=>{RS.kills++;floatMsg(L.kills?`${Math.min(RS.kills,L.kills)} / ${L.kills}`:'+2 000 Kč')};
+    w.onKill=c=>{RS.kills++;if(c.boss){RS.bossDead=1;floatMsg('💀 BOSS ZNIČEN!',2);for(let i=1;i<4;i++)setTimeout(()=>explode(w,c.x+rr(-30,30),c.y+rr(-30,30)),i*220);return}floatMsg(L.kills?`${Math.min(RS.kills,L.kills+(L.boss?1:0))} / ${L.kills+(L.boss?1:0)}`:'+2 000 Kč')};
   }
   for(let i=0;i<4;i++)spawnCiv(w);for(let i=0;i<34;i++)spawnPed(w,80,800);
   w.cam={x:p.x,y:p.y};for(const c of w.cars)c.frozen=true;
@@ -1662,15 +1668,15 @@ function updateRace(dt){const w=G.world,p=w.player,L=RS.L;RS.t+=dt;
   }
   Snd.siren(nearP<700?clamp(1-nearP/700,0,1):0,w.t);
   // HUD
-  $('hHp').style.width=clamp(p.hp/p.maxhp*100,0,100)+'%';$('hResp').textContent=SAVE.cash.toLocaleString('cs-CZ');spdSet(Math.round(sp*.42));streetHud(p);navUpdate(dt);
-  if(L.type==='chase'){const tl=L.time?Math.max(0,L.time-RS.t):0;$('hMainL').textContent=L.kills?'ZNIČENO':L.time?'ČAS':'DO CÍLE';$('hMain').textContent=L.kills?`${RS.kills}/${L.kills} • ${Math.ceil(tl)}s`:L.time?`${Math.ceil(tl)} s • ${((w.total-p.s)*DU/1000).toFixed(1)} km`:((w.total-p.s)*DU/1000).toFixed(1)+' km'}
+  $('hHp').style.width=clamp(p.hp/p.maxhp*100,0,100)+'%';{const on=RS.L&&RS.L.type==='chase'&&p.maxArm>0;$('hArmW').classList.toggle('on',!!on);if(on)$('hArm').style.width=clamp(p.arm/p.maxArm*100,0,100)+'%'}$('hResp').textContent=SAVE.cash.toLocaleString('cs-CZ');spdSet(Math.round(sp*.42));streetHud(p);navUpdate(dt);
+  if(L.type==='chase'){const tl=L.time?Math.max(0,L.time-RS.t):0;$('hMainL').textContent=L.kills?'ZNIČENO':L.time?'ČAS':'DO CÍLE';$('hMain').textContent=L.kills?`${RS.kills}/${L.kills+(L.boss?1:0)} • ${Math.ceil(tl)}s`:L.time?`${Math.ceil(tl)} s • ${((w.total-p.s)*DU/1000).toFixed(1)} km`:((w.total-p.s)*DU/1000).toFixed(1)+' km'}
   else{let rank=1;for(const c of w.cars)if(c.kind==='rival'&&(c.finished||(c.s>p.s&&!p.finished)))rank++;RS.rank=rank;$('hMain').textContent=rank+'/5'}
   drawMinimap();
   // rivals: rubber band + finish
   if(L.type==='race')for(const c of w.cars){if(c.kind!=='rival')continue;const gap=c.s-p.s;c.speedMul=gap>900?.97:gap<-350?1.12:1.02;if(!c.finished&&(c.atFinish||c.seg>=w.route.length-2&&c.segT>=.97)){c.finished=RS.t;RS.finishOrder.push(c.name)}if(c.finished){c.path=null}}
   // end checks
   if(!RS.end&&RS.count<=0&&L.time&&RS.t>L.time){endRace(false,'ČAS VYPRŠEL',L.kills?'Nestihl jsi to. Gang se ti směje.':'Pozdě. Kšeft je fuč.')}
-  if(!RS.end&&L.kills&&RS.kills>=L.kills){endRace(true,'HOTOVO!',L.win||(L.gang?'Zlatý řetězy jsou tvoje. Gang je na šrotu.':'Sedm aut gangu na šrotu. Klíše je zase klidná.'))}
+  if(!RS.end&&L.kills&&RS.kills>=L.kills+(L.boss?1:0)&&(!L.boss||RS.bossDead)){endRace(true,'HOTOVO!',L.win||(L.gang?'Zlatý řetězy jsou tvoje. Gang je na šrotu.':'Sedm aut gangu na šrotu. Klíše je zase klidná.'))}
   if(!RS.end&&L.gentle&&p.hp<p.maxhp*.55){endRace(false,L.lose?'KONEC JÍZDY':'POBLIL SE!',L.lose||'Pepa ti to pozvracel celý. Smrdí to až do Děčína.')}
   if(!RS.end){if(p.hp<=0){p.hp=0;explode(w,p.x,p.y);endRace(false,'AUTO NA ŠROT','Tvoje kára to nedala. Zkus to znova.')}
     else if(!L.kills&&(p.atFinish||(p.seg>=w.route.length-2&&p.segT>=.97))){p.finished=RS.t;
@@ -1894,7 +1900,7 @@ import {KTX2Loader} from './vendor/jsm/loaders/KTX2Loader.js';
 import {MeshoptDecoder} from './vendor/jsm/libs/meshopt_decoder.module.js';
 import * as SkeletonUtils from './vendor/jsm/utils/SkeletonUtils.js';
 window.THREE=THREE;window.TADD={EffectComposer,RenderPass,UnrealBloomPass,OutputPass,GLTFLoader,RGBELoader,SkeletonUtils,DRACOLoader,KTX2Loader,MeshoptDecoder};
-const s=document.createElement('script');s.src='r3.js?v=105';document.body.appendChild(s);
+const s=document.createElement('script');s.src='r3.js?v=106';document.body.appendChild(s);
 </script>
 </body>
 </html>
