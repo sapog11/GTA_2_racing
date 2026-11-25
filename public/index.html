@@ -1793,6 +1793,7 @@ function drawMinimap(){const g=$('mm').getContext('2d'),w=G.world,p=w.player||w.
   if(G.mode==='roam')for(const m of MARKERS()){g.fillStyle=m.main||m.sel?'#ffcc1a':'#4dd8ff';g.strokeStyle='#000';g.lineWidth=1.2;g.beginPath();g.arc(m.x*MS,m.y*MS,(m.main?8:6.5)/k*2,0,7);g.fill();g.stroke()}
   for(const c of w.cars){if(c.kind==='civ'||c===w.player)continue;g.fillStyle=c.kind==='police'?(Math.floor(w.t*6)%2?'#ff2a3a':'#3a7dff'):c.col;g.beginPath();g.arc(c.x*MS,c.y*MS,4/k*2,0,7);g.fill()}
   g.restore();
+  if(G.mode==='roam'){const L=MARKERS().map(m=>({m,d:Math.hypot(m.x-p.x,m.y-p.y)})).sort((a,b)=>a.d-b.d).filter((o,i)=>o.m.main||i<4);for(const{m}of L){if(RS&&RS.arrowTo===m)continue;const dx=(m.x-p.x)*MS*k,dy=(m.y-p.y)*MS*k;if(Math.abs(dx)>W/2-8||Math.abs(dy)>W/2-8){const sc=(W/2-9)/Math.max(Math.abs(dx),Math.abs(dy));g.fillStyle=m.main?'#ffcc1a':'#4dd8ff';g.strokeStyle='#000';g.lineWidth=1.5;g.beginPath();g.arc(W/2+dx*sc,W/2+dy*sc,m.main?6:5,0,7);g.fill();g.stroke()}}}
   if(G.mode==='roam'&&RS&&RS.arrowTo){const m=RS.arrowTo,dx=(m.x-p.x)*MS*k,dy=(m.y-p.y)*MS*k;if(Math.abs(dx)>W/2-8||Math.abs(dy)>W/2-8){const sc=(W/2-10)/Math.max(Math.abs(dx),Math.abs(dy));g.fillStyle='#ffcc1a';g.beginPath();g.arc(W/2+dx*sc,W/2+dy*sc,7,0,7);g.fill()}}
   if(w.player){g.save();g.translate(W/2,W/2);g.rotate(w.player.a);g.fillStyle='#fff';g.strokeStyle='#000';g.lineWidth=2;g.beginPath();g.moveTo(10,0);g.lineTo(-7,-7);g.lineTo(-4,0);g.lineTo(-7,7);g.closePath();g.fill();g.stroke();g.restore()}}
 
@@ -1981,7 +1982,7 @@ import {KTX2Loader} from './vendor/jsm/loaders/KTX2Loader.js';
 import {MeshoptDecoder} from './vendor/jsm/libs/meshopt_decoder.module.js';
 import * as SkeletonUtils from './vendor/jsm/utils/SkeletonUtils.js';
 window.THREE=THREE;window.TADD={EffectComposer,RenderPass,UnrealBloomPass,OutputPass,GLTFLoader,RGBELoader,SkeletonUtils,DRACOLoader,KTX2Loader,MeshoptDecoder};
-const s=document.createElement('script');s.src='r3.js?v=109';document.body.appendChild(s);
+const s=document.createElement('script');s.src='r3.js?v=110';document.body.appendChild(s);
 </script>
 </body>
 </html>
