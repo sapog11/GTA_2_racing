@@ -992,6 +992,10 @@ function carAt(x,y,pad){const w=G.world;if(w)for(const c of w.cars){const dx=x-c
   for(const c of parked){const dx=x-c.x,dy=y-c.y;if(dx*dx+dy*dy>1600)continue;const ca=Math.cos(c.a),sa=Math.sin(c.a),lx=dx*ca+dy*sa,ly=-dx*sa+dy*ca;if(Math.abs(lx)<19+pad&&Math.abs(ly)<10+pad)return c}return null}
 function pmove(p,dx,dy){const nx=p.x+dx,ny=p.y+dy,r=8;if(!p.down&&carAt(nx,ny,4)&&!carAt(p.x,p.y,4))return false;for(const[ox,oy]of[[r,0],[-r,0],[0,r],[0,-r]])if(isSolid(tileAt(Math.floor((nx+ox)/T),Math.floor((ny+oy)/T))))return false;p.x=nx;p.y=ny;return true}
 function say(p,arr,t){p.say=pick(arr);p.sayL=t||2.2}
+const QUIPS={shoot:['Ta-ta-ta, a je to!','Kulky zdarma, bereš?','Hele, mířím, nebo ne?','To je za tu předjížďku!','Pozdravuj pojišťovnu!','Mám ještě plnej zásobník!','Blinkr nepoužíváš, tak máš!','Ty vole, uhni!'],
+ boom:['Ty vole, natočils to?','Bum! A je po káře.','To už nespravíš, kámo.','Šrotiště volá!','Pojišťovna brečí.','Grilovačka v Ústí!','Ještě že to nebyla moje.','Krásně to hoří, ne?','Tak to už STK neprojde.','Kdo to bude uklízet?'],
+ boss:['A je po šéfovi!','Tak co, kdo je tu boss?','Obrněnej, ale blbej.','Tohle bude v novinách!']};
+let quipCD=0;function quip(w,k){const p=w&&w.player;if(!p||quipCD>performance.now())return;quipCD=performance.now()+(k==='shoot'?7000:2600);p.say=pick(QUIPS[k]);p.sayL=2.4}
 
 /* ---- particles ---- */
 function part(w,o){if(w.parts.length>420)return;w.parts.push(Object.assign({x:0,y:0,vx:0,vy:0,life:1,max:1,type:'spark',size:3,z:0,col:'#ffd27a'},o))}
@@ -1076,7 +1080,7 @@ function updateWorld(w,dt,pctl){
   w.t+=dt;
   for(const c of w.cars){const ctl=c===w.player?pctl:ai(w,c,dt);if(c.frozen){c.vx=c.vy=0;c.v=0;continue}
     if(!c.wreck)carPhysics(w,c,ctl,dt);else{c.vx*=1-2*dt;c.vy*=1-2*dt;c.x+=c.vx*dt;c.y+=c.vy*dt}
-    if(c.hp<=0&&!c.wreck&&c!==w.player){c.wreck=1;c.hp=0;explode(w,c.x,c.y);if(c.gang||(c.st&&c.st.gang)){setTimeout(()=>explode(w,c.x+rr(-12,12),c.y+rr(-12,12)),180);if(w.player&&Math.hypot(c.x-w.player.x,c.y-w.player.y)<500)shakeA=Math.max(shakeA,9)}if((c.kind==='police'||c.gang)&&w.onKill)w.onKill(c)}
+    if(c.hp<=0&&!c.wreck&&c!==w.player){c.wreck=1;c.hp=0;explode(w,c.x,c.y);if(w.player&&Math.hypot(c.x-w.player.x,c.y-w.player.y)<700){if(c.boss){quipCD=0;quip(w,'boss')}else if(R()<.6)quip(w,'boom')}if(c.gang||(c.st&&c.st.gang)){setTimeout(()=>explode(w,c.x+rr(-12,12),c.y+rr(-12,12)),180);if(w.player&&Math.hypot(c.x-w.player.x,c.y-w.player.y)<500)shakeA=Math.max(shakeA,9)}if((c.kind==='police'||c.gang)&&w.onKill)w.onKill(c)}
     if(c.hp<c.maxhp*.4||c.wreck){c.smokeT-=dt;if(c.smokeT<0){c.smokeT=c.wreck?.08:.18;part(w,{x:c.x,y:c.y,vx:rr(-10,10),vy:rr(-10,10),life:rr(.8,1.6),max:1.6,type:c.wreck&&R()<.5?'fire':'smoke',size:rr(6,11),z:.02})}}
     if(c.wreck)c.wreck+=dt;
     if(c.say){c.sayL-=dt;if(c.sayL<=0)c.say=null}
@@ -1520,7 +1524,7 @@ function nitroTick(p,dt,act){if(act&&!RS.aPrev){RS.nLatch=!RS.nLatch&&RS.nitro>.
 function freeGun(w,p,dt,fire){RS.gCD=(RS.gCD||0)-dt;if(RS.gOver){RS.gHeat-=dt*.45;if(RS.gHeat<=.25)RS.gOver=false}else RS.gHeat=Math.max(0,(RS.gHeat||0)-dt*.3);
   if(fire&&!RS.gOver&&RS.gCD<=0){RS.gCD=.1;let a=p.a,best=null,bd=1e9;for(const c of w.cars){if(c===p||c.wreck||c.parked||(c.st&&c.st.police&&!c.st.gang))continue;const dx=c.x-p.x,dy=c.y-p.y,d=Math.hypot(dx,dy);if(d>480)continue;const da=Math.abs(wrapA(Math.atan2(dy,dx)-p.a));if(da<.5&&d<bd){bd=d;best=c}}
     if(best)a=Math.atan2(best.y-p.y,best.x-p.x);a+=rr(-.05,.05);const ca=Math.cos(p.a),sa=Math.sin(p.a);
-    w.bullets.push({x:p.x+ca*p.L*.55-sa*6,y:p.y+sa*p.L*.55+ca*6,vx:Math.cos(a)*950+p.vx,vy:Math.sin(a)*950+p.vy,life:.5,dmg:12});w.muzzle=.05;Snd.shot();RS.gHeat+=.055;if(RS.gHeat>=1){RS.gHeat=1;RS.gOver=true;floatMsg('PŘEHŘÁTO!',.7)}}
+    w.bullets.push({x:p.x+ca*p.L*.55-sa*6,y:p.y+sa*p.L*.55+ca*6,vx:Math.cos(a)*950+p.vx,vy:Math.sin(a)*950+p.vy,life:.5,dmg:12});w.muzzle=.05;Snd.shot();if(R()<.08)quip(w,'shoot');RS.gHeat+=.055;if(RS.gHeat>=1){RS.gHeat=1;RS.gOver=true;floatMsg('PŘEHŘÁTO!',.7)}}
   w.muzzle=Math.max(0,(w.muzzle||0)-dt)}
 function updateRoam(dt){const w=G.world,p=w.player;
   const ctl=playerCtl();const act=G.keys.a;
@@ -1722,7 +1726,7 @@ function updateRace(dt){const w=G.world,p=w.player,L=RS.L;RS.t+=dt;
   if(L.type==='chase'){RS.fireCD-=dt;if(RS.over){RS.heat-=dt*.45;if(RS.heat<=.25)RS.over=false}else RS.heat=Math.max(0,RS.heat-dt*.32);
     if(act&&!RS.over&&RS.fireCD<=0){RS.fireCD=RS.fireRate;let a=p.a;let best=null,bd=1e9;for(const c of w.cars){if(c.kind!=='police'||c.wreck||(c.st&&c.st.police&&!c.st.gang))continue;const dx=c.x-p.x,dy=c.y-p.y,d=Math.hypot(dx,dy);if(d>480)continue;const da=Math.abs(wrapA(Math.atan2(dy,dx)-p.a));if(da<.5&&d<bd){bd=d;best=c}}
       if(best)a=Math.atan2(best.y-p.y,best.x-p.x);a+=rr(-.05,.05);const ca=Math.cos(p.a),sa=Math.sin(p.a);
-      w.bullets.push({x:p.x+ca*p.L*.55-sa*6,y:p.y+sa*p.L*.55+ca*6,vx:Math.cos(a)*950+p.vx,vy:Math.sin(a)*950+p.vy,life:.5,dmg:10*RS.dmgMul});w.muzzle=.05;Snd.shot();RS.heat+=RS.heatPer;if(RS.heat>=1){RS.heat=1;RS.over=true;floatMsg('PŘEHŘÁTO!',.7)}}
+      w.bullets.push({x:p.x+ca*p.L*.55-sa*6,y:p.y+sa*p.L*.55+ca*6,vx:Math.cos(a)*950+p.vx,vy:Math.sin(a)*950+p.vy,life:.5,dmg:10*RS.dmgMul});w.muzzle=.05;Snd.shot();if(R()<.08)quip(w,'shoot');RS.heat+=RS.heatPer;if(RS.heat>=1){RS.heat=1;RS.over=true;floatMsg('PŘEHŘÁTO!',.7)}}
     w.muzzle=Math.max(0,(w.muzzle||0)-dt);
     $('kA').style.setProperty('--p',((1-RS.heat)*100)+'%');$('kA').classList.toggle('hot',RS.over);
   }else if(shR){$('kA').style.setProperty('--p',((1-(RS.gHeat||0))*100)+'%');$('kA').classList.toggle('hot',!!RS.gOver)}else{if(act&&!RS.aPrev){RS.nLatch=!RS.nLatch&&RS.nitro>.08}RS.aPrev=act;if(RS.nLatch&&RS.nitro>.02){if(!p.boost)Snd.nitro();p.boost=true;RS.nitro=Math.max(0,RS.nitro-.42*dt)}else{p.boost=false;RS.nLatch=false;RS.nitro=Math.min(1,RS.nitro+RS.nitroFill*dt)}$('kA').style.setProperty('--p',(RS.nitro*100)+'%');$('kA').classList.toggle('hot',!!RS.nLatch);}
