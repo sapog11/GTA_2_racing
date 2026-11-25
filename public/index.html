@@ -471,6 +471,20 @@ function genCityOSM(){const r=rng(20260124),rp=a=>a[Math.floor(r()*a.length)];
   RG={adj:new Map(),edges:[],grid:new Map()};U0.edges.forEach((e,i)=>{const pts=e[2].map(p=>({x:p[0]*T,y:p[1]*T}));const E={a:e[0],b:e[1],pts,w:e[3],ow:e[4],i};RG.edges.push(E);
     for(const[nd,dir]of[[e[0],1],[e[1],-1]]){if(dir===-1&&E.ow)continue;(RG.adj.get(nd)||RG.adj.set(nd,[]).get(nd)).push({E,dir})}
     const m=pts[pts.length>>1],key=((m.x/(16*T))|0)+','+((m.y/(16*T))|0);(RG.grid.get(key)||RG.grid.set(key,[]).get(key)).push(E)})}
+const DECO={zebra:[],sign:[],bench:[],stop:[],bin:[],rail:[]};
+function buildDeco(){if(!U0||!RG)return;rgPrep();const hsh=(x,y)=>{let h=((x|0)*374761393+(y|0)*668265263)>>>0;h=(h^(h>>>13))*1274126177>>>0;return((h^(h>>>16))>>>0)/4294967296};
+  for(const[n,list]of RG.und){const big=list.filter(o=>o.E.w>=1.6&&!o.E.pts.some(()=>0));if(big.length<3)continue;const P=RG.np.get(n);let sgn=0;
+   for(const{E,dir}of big){const Q=dir>0?E.pts:E.pts.slice().reverse();let k=1;while(k<Q.length-1&&Math.hypot(Q[k].x-P.x,Q[k].y-P.y)<8)k++;const a=Math.atan2(Q[k].y-P.y,Q[k].x-P.x),hw=E.w*T/2,d=Math.max(30,hw+18);
+    if(Math.hypot(Q[k].x-P.x,Q[k].y-P.y)<d+20)continue;const zx=P.x+Math.cos(a)*d,zy=P.y+Math.sin(a)*d;DECO.zebra.push({x:zx,y:zy,a,w:E.w*T});
+    if(E.w>=2.2){const nx=-Math.sin(a),ny=Math.cos(a);for(const sd of[-1,1]){const rx=zx+Math.cos(a)*22+nx*sd*(hw+10),ry=zy+Math.sin(a)*22+ny*sd*(hw+10);DECO.rail.push({x:rx,y:ry,a})}}
+    if(!sgn&&hsh(P.x,P.y)<.8){sgn=1;const nx=-Math.sin(a),ny=Math.cos(a);DECO.sign.push({x:zx+nx*(hw+12),y:zy+ny*(hw+12),a,k:(hsh(P.y,P.x)*4)|0})}}}
+  for(const E of RG.edges){if(E.w<2.2)continue;let acc=0,lastT=-999,lastS=-999,lastB=-999;const hw=E.w*T/2;for(let i=1;i<E.pts.length;i++){const A=E.pts[i-1],B=E.pts[i],L=Math.hypot(B.x-A.x,B.y-A.y);if(L<1)continue;const ux=(B.x-A.x)/L,uy=(B.y-A.y)/L,nx=-uy,ny=ux;
+    for(let t=0;t<L;t+=20){const s=acc+t,x=A.x+ux*t,y=A.y+uy*t;for(const sd of[-1,1]){const px=x+nx*sd*(hw+16),py=y+ny*sd*(hw+16),tt=tileAt(Math.floor(px/T),Math.floor(py/T));if(!isWalk(tt))continue;
+      if(s-lastT>70&&hsh(px,py)<.5){trees.push({x:px+nx*sd*10,y:py+ny*sd*10,r:12+hsh(py,px)*6,c:'#2f5a2c'});lastT=s}
+      else if(s-lastS>900&&hsh(px+1,py)<.25){DECO.stop.push({x:px,y:py,a:Math.atan2(uy,ux)+(sd>0?Math.PI:0)});DECO.bin.push({x:px+ux*30,y:py+uy*30});lastS=s}
+      else if(s-lastB>260&&hsh(px,py+3)<.12){DECO.bench.push({x:px+nx*sd*4,y:py+ny*sd*4,a:Math.atan2(uy,ux)+(sd>0?Math.PI:0)});lastB=s}}}acc+=L}}
+  for(let ty=0;ty<MAPH;ty+=2)for(let tx=0;tx<MAPW;tx+=2){if(tileAt(tx,ty)!==GRASS)continue;if(!(isWalk(tileAt(tx+1,ty))||isWalk(tileAt(tx-1,ty))||isWalk(tileAt(tx,ty+1))||isWalk(tileAt(tx,ty-1))))continue;if(hsh(tx,ty)>.06)continue;const a=isWalk(tileAt(tx+1,ty))?0:isWalk(tileAt(tx-1,ty))?Math.PI:isWalk(tileAt(tx,ty+1))?Math.PI/2:-Math.PI/2;DECO.bench.push({x:(tx+.5)*T+Math.cos(a)*T*.3,y:(ty+.5)*T+Math.sin(a)*T*.3,a:a+Math.PI/2,park:1})}
+  window.DECO=DECO}
 function lanePts(E,dir){const P=dir>0?E.pts:E.pts.slice().reverse(),off=E.ow?0:Math.max(11,E.w*T*.25),out=[];for(let i=0;i<P.length;i++){const A=P[Math.max(0,i-1)],B=P[Math.min(P.length-1,i+1)],L=Math.hypot(B.x-A.x,B.y-A.y)||1,nx=-(B.y-A.y)/L,ny=(B.x-A.x)/L;out.push({x:P[i].x+nx*off,y:P[i].y+ny*off})}return out}
 function rgNext(nd,fromE){const o=(RG.adj.get(nd)||[]).filter(q=>q.E!==fromE);const L=o.length?o:(RG.adj.get(nd)||[]);return L.length?pick(L):null}
 function genCity(){if(U0)return genCityOSM();
@@ -986,7 +1000,7 @@ function makePed(type,x,y){const p={type,x,y,a:pick([0,Math.PI/2,Math.PI,-Math.P
  p.dx=Math.round(Math.cos(p.a));p.dy=Math.round(Math.sin(p.a));return p}
 function spawnC(w){const p=w.player;if(p&&G.mode==='roam'){const v=Math.hypot(p.vx||0,p.vy||0);if(v>40)return{x:w.cam.x+p.vx/v*Math.min(500,v*1.6),y:w.cam.y+p.vy/v*Math.min(500,v*1.6)}}return w.cam}
 function randWalkTile(w,minD,maxD){const C=spawnC(w);for(let k=0;k<30;k++){const a=R()*6.28,d=rr(minD,maxD);const x=C.x+Math.cos(a)*d,y=C.y+Math.sin(a)*d;if(G.mode==='roam'&&Math.hypot(x-w.cam.x,y-w.cam.y)<420)continue;const tx=Math.floor(x/T),ty=Math.floor(y/T);if(isWalk(tileAt(tx,ty)))return{x:(tx+.2+R()*.6)*T,y:(ty+.2+R()*.6)*T}}return null}
-function spawnPed(w,minD,maxD){const q=randWalkTile(w,minD,maxD);if(!q)return;const k=R();
+function spawnPed(w,minD,maxD){if(window.DECO&&DECO.bench.length&&R()<.2){const C=w.player||w.cam,L=DECO.bench.filter(b=>{const d=Math.hypot(b.x-C.x,b.y-C.y);return d>350&&d<1100&&!b.used});if(L.length){const b=pick(L);b.used=1;for(const sd of[-1,1]){if(R()<.35&&sd>0)break;const q=makePed(pick(['walker','girl','smoker','drunk']),b.x+Math.cos(b.a)*sd*6,b.y+Math.sin(b.a)*sd*6);q.sp=0;q.stand=1;q.sit=1;q.a=b.a-Math.PI/2;q.dx=Math.cos(q.a);q.dy=Math.sin(q.a);q.bench=b;w.peds.push(q)}return}}const q=randWalkTile(w,minD,maxD);if(!q)return;const k=R();
  if(k<.07){const a=makePed('fight',q.x,q.y),b=makePed('fight',q.x+16,q.y);a.mate=b;b.mate=a;a.a=0;b.a=Math.PI;w.peds.push(a,b)}
  else if(k<.16){const n=3+(R()<.4?1:0),C={x:q.x,y:q.y};for(let j=0;j<n;j++){const an=j/n*6.283,c=makePed('crew',q.x+Math.cos(an)*13,q.y+Math.sin(an)*13);c.sp=0;c.crewC=C;c.sayT=rr(.3,4);w.peds.push(c)}}
  else w.peds.push(makePed(k<.4?'walker':k<.5?'drunk':k<.6?'worker':k<.82?'girl':'smoker',q.x,q.y))}
@@ -1104,7 +1118,7 @@ function updateWorld(w,dt,pctl){
   for(let i=w.peds.length-1;i>=0;i--){const p=w.peds[i];p.sayT-=dt;p.stand=false;if(p.reply){p.replyT-=dt;if(p.replyT<=0){say(p,[p.reply],2.4);p.reply=null}}
     if(p.type==='crew'){p.stand=true;p.walk+=dt*1.2;if(p.crewC)p.a=Math.atan2(p.crewC.y-p.y,p.crewC.x-p.x);if(p.sayT<0&&!p.say){p.sayT=rr(3,7);if(R()<.75)say(p,R()<.25?LINES.drunk:LINES.group,2.6)}}
     if(p.bumpT>0)p.bumpT-=dt;if(p.say){p.sayL-=dt;if(p.sayL<=0)p.say=null}
-    if(Math.hypot(p.x-w.cam.x,p.y-w.cam.y)>(G.mode==='ambient'||G.mode==='promo'?1200:1500)){w.peds.splice(i,1);if(p.mate)p.mate.mate=null;continue}
+    if(Math.hypot(p.x-w.cam.x,p.y-w.cam.y)>(G.mode==='ambient'||G.mode==='promo'?1200:1500)){if(p.bench)p.bench.used=0;w.peds.splice(i,1);if(p.mate)p.mate.mate=null;continue}
     if(isSolid(tileAt(Math.floor(p.x/T),Math.floor(p.y/T)))){w.peds.splice(i,1);continue}
     if(p.kvx){pmove(p,p.kvx*dt,p.kvy*dt);p.kvx*=Math.max(0,1-dt*7);p.kvy*=Math.max(0,1-dt*7);if(Math.abs(p.kvx)+Math.abs(p.kvy)<4)p.kvx=p.kvy=0}
     if(p.down>0){p.down-=dt;if(p.down<=0){if(p.gran||!PL){say(p,LINES.hit,2);if(PL){const a=Math.atan2(p.y-PL.y,p.x-PL.x);p.fdx=Math.cos(a);p.fdy=Math.sin(a);p.flee=1.2}}else{p.angry=1.8;say(p,LINES.angry,1.8)}}continue}
@@ -1517,7 +1531,7 @@ function MARKERS(){const mm=mainMission(),sel=(typeof RS!=='undefined'&&RS&&RS.t
 function mStory(L){const C=COMICS[L.comic];if(!C)return L.story||L.sub||'';for(const P of C.panels){if(P.cap)return P.cap;if(P.bubs&&P.bubs[0])return '„'+P.bubs[0].t+'“'}return L.sub||''}
 let mPopId=null;function mPop(m){const el=$('mpop');if(!m){if(mPopId){el.classList.remove('on');mPopId=null}return}if(mPopId===m.L.id)return;mPopId=m.L.id;const L=m.L;
   el.innerHTML=`<div class="mt">${m.main?'★ HLAVNÍ MISE':'VEDLEJŠÍ MISE'}${SAVE.done[L.id]?' • ZNOVU':''}</div><b>${L.name}</b><p>${mStory(L)}</p><div class="mr">${L.reward?'Odměna '+L.reward.cash.toLocaleString('cs-CZ')+' Kč':''}<button class="btn sm" id="mGo">VZÍT MISI ▶</button></div>`;el.className='on'+(m.main?' main':'');$('mGo').onclick=e=>{e.stopPropagation();Snd.click();mPop(null);if(SAVE.sel!==L.id){SAVE.sel=null;save()}enterMission(L)};Snd.click()}
-function startRoam(at,target){AN.ev('roam_start');hideAll();G.engineOff=false;$('keyB').classList.remove('off');$('keyB').style.display='';at=at||HOME;const w=newWorld({rain:R()<.45,dark:.8,civMax:isTouch?28:34,pedMax:isTouch?80:95});G.world=w;G.mode='roam';G.level=null;
+function startRoam(at,target){AN.ev('roam_start');hideAll();G.engineOff=false;$('keyB').classList.remove('off');$('keyB').style.display='';at=at||HOME;const w=newWorld({rain:R()<.45,dark:.8,civMax:isTouch?28:34,pedMax:isTouch?95:115});G.world=w;G.mode='roam';G.level=null;
   const car=CARS.find(c=>c.id===SAVE.car)||CARS[0];const p=makeCar(Object.assign({},car),at.x,at.y,at.a,'player');applyArmor(p,car.id);p.handMul=SAVE.hero==='lucie'?1.15:1;w.player=p;w.cars.push(p);
   w.cam={x:p.x,y:p.y};w.zoom=baseZoom();for(let i=0;i<18;i++)spawnCiv(w);for(let i=0;i<48;i++)spawnPed(w,40,520);
   RS={roam:true,nitro:.6,nitroFill:SAVE.hero==='lucie'?.098:.07,target:target||SAVE.sel||null,enterCD:2.5};G.roamDist='';
@@ -1643,7 +1657,7 @@ function navPlaces(){const out=[];for(const L of LEVELS){if(SAVE.done[L.id]&&SAV
   const seen={};for(const sg of signs){const m=/FORUM|BOHEMIA|POD VANOU|KOSTEL|NÁDRAŽÍ|MOST|HRAD/i.exec(sg.text||'');if(!m||seen[sg.text])continue;seen[sg.text]=1;out.push({id:'p:'+sg.text,name:sg.text,sub:'Místo ve městě',x:sg.x,y:sg.y,ic:'📍'})}return out}
 function roadTile(tx,ty){const t=tileAt(tx,ty);return t===ROAD||t===BRIDGE}
 function nearestRoad(x,y){const tx=Math.floor(x/T),ty=Math.floor(y/T),ok=U0?isMain:roadTile;if(ok(tx,ty))return[tx,ty];for(let r=1;r<(U0?40:14);r++)for(let dy=-r;dy<=r;dy++)for(let dx=-r;dx<=r;dx++){if(Math.max(Math.abs(dx),Math.abs(dy))!==r)continue;if(ok(tx+dx,ty+dy))return[tx+dx,ty+dy]}return null}
-const NB_P=new Int32Array(MAPW*MAPH),NB_Q=new Int32Array(MAPW*MAPH);prepLevels();
+const NB_P=new Int32Array(MAPW*MAPH),NB_Q=new Int32Array(MAPW*MAPH);prepLevels();buildDeco();
 function navPathOSM(x0,y0,x1,y1){const a=nearestRoad(x0,y0),b=nearestRoad(x1,y1);if(!a||!b)return null;const prev=NB_P.fill(-1),q=NB_Q;let h=0,t=0;const s0=a[1]*MAPW+a[0],g=b[1]*MAPW+b[0];prev[s0]=s0;q[t++]=s0;
   const D=[[1,0],[-1,0],[0,1],[0,-1],[1,1],[1,-1],[-1,1],[-1,-1]];
   while(h<t){const c=q[h++];if(c===g)break;const cx=c%MAPW,cy=(c/MAPW)|0;for(const[dx,dy]of D){const nx=cx+dx,ny=cy+dy;if(nx<0||ny<0||nx>=MAPW||ny>=MAPH)continue;const n=ny*MAPW+nx;if(prev[n]>=0||!roadTile(nx,ny))continue;prev[n]=c;q[t++]=n}}
@@ -2016,7 +2030,7 @@ import {KTX2Loader} from './vendor/jsm/loaders/KTX2Loader.js';
 import {MeshoptDecoder} from './vendor/jsm/libs/meshopt_decoder.module.js';
 import * as SkeletonUtils from './vendor/jsm/utils/SkeletonUtils.js';
 window.THREE=THREE;window.TADD={EffectComposer,RenderPass,UnrealBloomPass,OutputPass,GLTFLoader,RGBELoader,SkeletonUtils,DRACOLoader,KTX2Loader,MeshoptDecoder};
-const s=document.createElement('script');s.src='r3.js?v=123';document.body.appendChild(s);
+const s=document.createElement('script');s.src='r3.js?v=124';document.body.appendChild(s);
 </script>
 </body>
 </html>
