@@ -1635,7 +1635,7 @@ function loadJS(u){return new Promise((ok,ko)=>{const e=document.createElement('
 async function netInit(){if(NET.fb)return NET.fb;const V='10.12.2',B='https://www.gstatic.com/firebasejs/'+V+'/';await loadJS(B+'firebase-app-compat.js');await Promise.all([loadJS(B+'firebase-auth-compat.js'),loadJS(B+'firebase-database-compat.js')]);
   const cfg=await (await fetch('/__/firebase/init.json')).json();if(!firebase.apps.length)firebase.initializeApp(cfg);NET.fb=firebase;NET.cfg=cfg;return firebase}
 async function netLogin(){try{toast('🌐 Připojuji…');const fb=await netInit();const A=fb.auth();let u=A.currentUser;if(!u){const pr=new fb.auth.GoogleAuthProvider();try{u=(await A.signInWithPopup(pr)).user}catch(e){if(/popup/.test(e.code||'')){await A.signInWithRedirect(pr);return}throw e}}
-  if(!NET.cfg.databaseURL)throw new Error('Realtime Database není zapnutá');NET.user=u;startOnline()}catch(e){console.warn(e);NET.err=e.message||String(e);toast('⚠ Online: '+NET.err.slice(0,80))}}
+  if(!NET.cfg.databaseURL){NET.cfg.databaseURL='https://gta-2-racing-default-rtdb.europe-west1.firebasedatabase.app';try{firebase.app().delete&&0}catch(e){}firebase.app().options.databaseURL=NET.cfg.databaseURL}NET.user=u;startOnline()}catch(e){console.warn(e);NET.err=e.message||String(e);toast('⚠ Online: '+NET.err.slice(0,80))}}
 function startOnline(){startRoam(HOME);G.online=true;const u=NET.user,db=NET.fb.database();NET.db=db;NET.on=true;NET.others.clear();
   NET.ref=db.ref('online/players/'+u.uid);NET.ref.onDisconnect().remove();
   db.ref('online/players').on('value',snap=>{const v=snap.val()||{},now=Date.now(),seen=new Set();for(const id in v){if(id===u.uid)continue;const d=v[id];if(!d||now-(d.ts||0)>15000)continue;seen.add(id);let o=NET.others.get(id);
@@ -1644,7 +1644,7 @@ function startOnline(){startRoam(HOME);G.online=true;const u=NET.user,db=NET.fb.
    for(const[id,o]of NET.others)if(!seen.has(id)){NET.others.delete(id);if(G.world){const i=G.world.cars.indexOf(o);if(i>=0)G.world.cars.splice(i,1)}}});
   $('obj').textContent='🌐 ONLINE • '+(u.displayName||'Hráč');toast('🌐 ONLINE — vidíš ostatní hráče');RS.target=null;SAVE.sel=null}
 function netStop(){if(!NET.on)return;NET.on=false;G.online=false;try{NET.ref&&NET.ref.remove();NET.db.ref('online/players').off()}catch(e){}NET.others.clear()}
-function netTick(w,p,dt){if(!NET.on)return;NET.sendT-=dt;if(NET.sendT<=0){NET.sendT=.12;const u=NET.user;NET.ref.set({n:(u.displayName||'Hráč').split(' ')[0].slice(0,14),car:SAVE.car,x:Math.round(p.x),y:Math.round(p.y),a:+p.a.toFixed(3),v:Math.round(p.v),sh:(w.muzzle||0)>0?1:0,w:SAVE.wpn,ts:firebase.database.ServerValue.TIMESTAMP})}
+function netTick(w,p,dt){if(!NET.on)return;$('obj').textContent='🌐 ONLINE • hráčů: '+(NET.others.size+1)+' • '+((NET.user.displayName||'Hráč').split(' ')[0]);NET.sendT-=dt;if(NET.sendT<=0){NET.sendT=.12;const u=NET.user;NET.ref.set({n:(u.displayName||'Hráč').split(' ')[0].slice(0,14),car:SAVE.car,x:Math.round(p.x),y:Math.round(p.y),a:+p.a.toFixed(3),v:Math.round(p.v),sh:(w.muzzle||0)>0?1:0,w:SAVE.wpn,ts:firebase.database.ServerValue.TIMESTAMP})}
   for(const o of NET.others.values()){if(o.tx===undefined)continue;const k=Math.min(1,dt*8);o.x+=(o.tx-o.x)*k;o.y+=(o.ty-o.y)*k;o.a+=wrapA(o.ta-o.a)*k;o.vx=Math.cos(o.a)*o.v;o.vy=Math.sin(o.a)*o.v;o.hp=o.maxhp;
    if(o.netSh&&R()<dt*14){const ca=Math.cos(o.a),sa=Math.sin(o.a);w.bullets.push({x:o.x+ca*o.L*.55,y:o.y+sa*o.L*.55,vx:ca*950,vy:sa*950,life:.45,dmg:0,net:1});Snd.ping&&Snd.ping(.015)}}}
 function updateRoam(dt){const w=G.world,p=w.player;
@@ -1665,7 +1665,7 @@ function updateRoam(dt){const w=G.world,p=w.player;
     if(dd<95&&m.open)inM=m}
   if(!RS.target)best=null;
   RS.arrowTo=best;mPop(inM);
-  if(!G.zombie)$('obj').textContent=NAV.to?`🧭 ${NAV.to.name}`:best?`⭐ ${best.L.name} — jeď podle žluté navigace`:'Volná jízda • mise jsou kruhy ve městě';
+  if(!G.zombie&&!G.online)$('obj').textContent=NAV.to?`🧭 ${NAV.to.name}`:best?`⭐ ${best.L.name} — jeď podle žluté navigace`:'Volná jízda • mise jsou kruhy ve městě';
   if(msgT>0){msgT-=dt;if(msgT<=0)$('center').textContent=''}
   $('hHp').style.width=clamp(p.hp/p.maxhp*100,0,100)+'%';$('hArmW').classList.remove('on');$('hResp').textContent=SAVE.cash.toLocaleString('cs-CZ');spdSet(Math.round(sp*.42));streetHud(p);
   navUpdate(dt);drawMinimap()}
@@ -2002,7 +2002,7 @@ $('keyB').addEventListener('click',toggleEngine);
 function toggleCam(){if(typeof R3==='undefined'||!R3.ok)return;const L=['cockpit','chase','top'];SAVE.cam=L[(L.indexOf(SAVE.cam||'cockpit')+1)%3];save();toast({chase:'🎥 KAMERA: ZVENKU',cockpit:'🎥 KAMERA: Z AUTA',top:'🎥 KAMERA: SHORA'}[SAVE.cam]);AN.ev('cam_change',{cam:SAVE.cam})}
 $('camB').addEventListener('click',toggleCam);addEventListener('keydown',e=>{if(e.code==='KeyC'&&(G.mode==='race'||G.mode==='roam'))toggleCam()});
 
-addEventListener('keydown',e=>{if(e.code==='KeyE')toggleEngine();if(e.code==='KeyQ'&&(G.mode==='roam'||G.mode==='race'))wpnNext()});$('wpB').addEventListener('click',e=>{e.stopPropagation();wpnNext()});$('mZombie').addEventListener('click',()=>{Snd.click();zombieIntro()});$('mRap').addEventListener('click',()=>{Snd.click();rapIntro()});$('mOnline').addEventListener('click',()=>{Snd.click();Snd.unlock&&Snd.unlock();netLogin()});
+addEventListener('keydown',e=>{if(e.code==='KeyE')toggleEngine();if(e.code==='KeyQ'&&(G.mode==='roam'||G.mode==='race'))wpnNext()});$('wpB').addEventListener('click',e=>{e.stopPropagation();wpnNext()});$('mZombie').addEventListener('click',()=>{Snd.click();zombieIntro()});$('mRap').addEventListener('click',()=>{Snd.click();rapIntro()});setInterval(()=>{if(!NET.fb||!NET.user||NET.on)return},5000);$('mOnline').addEventListener('click',()=>{Snd.click();Snd.unlock&&Snd.unlock();netLogin()});
 function rapIntro(){hideAll();ensureAmbient();const el=$('scr-pause');const RL=LEVELS.filter(L=>L.rap),dn=RL.filter(L=>SAVE.done[L.id]).length,next=RL.find(L=>!SAVE.done[L.id]);
   el.innerHTML=`<div style="width:min(560px,94vw);text-align:center"><div style="display:flex;gap:10px;align-items:stretch"><img src="art/rap.jpg" style="width:38%;border-radius:12px;border:3px solid #7a2bd6;object-fit:cover"><img src="art/dr_intro1.jpg" style="width:60%;border-radius:12px;border:3px solid #7a2bd6;object-fit:cover"></div>
   <h2 class="logo" style="margin:8px 0"><span class="b" style="font-size:40px;color:#c04dff">DOKTOR RAP</span></h2><p style="font:15px Oswald;color:#ccd;margin:4px 0">Černej plášť, černý rukavice, zlatej mikrofon. Objevil se z ničeho nic a chce, aby celý Ústí poslouchalo jen jeho rap. Pokaždý ti zmizí v zeleným dýmu… až do posledního verše.</p>
